@@ -1,0 +1,6 @@
+{
+  "name": "Home Mart Fresh",
+  "description": "Ultra-fast fresh grocery delivery app featuring dark store dispatch, smart weight verification, instant UPI & WhatsApp ordering, and live inventory sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
