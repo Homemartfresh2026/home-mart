@@ -85,13 +85,7 @@
     </div>
 
     <!-- Category Filter Pills -->
-    <div class="px-4 flex gap-2 overflow-x-auto no-scrollbar pb-2 text-xs font-semibold">
-      <button onclick="setCategory('all')" class="cat-pill bg-green-600 text-white px-3.5 py-1.5 rounded-full shrink-0 shadow-xs">All Items</button>
-      <button onclick="setCategory('fruits')" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🍎 Fruits & Veggies</button>
-      <button onclick="setCategory('staples')" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🌾 Rice, Dal & Staples</button>
-      <button onclick="setCategory('baby')" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">👶 Baby Care</button>
-      <button onclick="setCategory('toiletries')" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🧼 Toiletries</button>
-    </div>
+    <div id="categoryPills" class="px-4 flex gap-2 overflow-x-auto no-scrollbar pb-2 text-xs font-semibold"></div>
 
     <!-- Freshness Guarantee & Reversal Policy Banner -->
     <div class="px-4 mt-1">
@@ -678,12 +672,7 @@
             </div>
             <div>
               <label class="text-[10px] font-bold text-slate-500">Category</label>
-              <select id="newProdCat" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
-                <option value="fruits">🍎 Fruits & Veggies</option>
-                <option value="staples">🌾 Rice, Dal & Staples</option>
-                <option value="baby">👶 Baby Care</option>
-                <option value="toiletries">🧼 Toiletries</option>
-              </select>
+              <select id="newProdCat" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"></select>
             </div>
           </div>
           <div class="grid grid-cols-3 gap-2">
@@ -704,6 +693,47 @@
             Publish Product to Store
           </button>
         </div>
+      </div>
+
+      <!-- Bulk Add from Excel -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3 text-xs">
+        <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-file-excel text-green-600"></i> Add Many Items (Excel)
+        </h3>
+        <ol class="text-[11px] text-slate-600 space-y-1 list-decimal pl-4">
+          <li>Download the template, or download your current items to edit them.</li>
+          <li>Fill one item per row in Excel: Name, Category, Unit, Price, MRP, Emoji, Tag, In Stock (Yes/No).</li>
+          <li>Upload the file. Items with the same name are updated, new names are added. New category names are created automatically.</li>
+        </ol>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="downloadProductSheet(false)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl">
+            <i class="fa-solid fa-download"></i> Blank Template
+          </button>
+          <button onclick="downloadProductSheet(true)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl">
+            <i class="fa-solid fa-download"></i> Current Items
+          </button>
+        </div>
+        <label class="block w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl text-center cursor-pointer">
+          <i class="fa-solid fa-upload"></i> Upload Excel / CSV File
+          <input type="file" id="productFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleProductFile(this)">
+        </label>
+        <button onclick="loadStarterItems()" class="w-full py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold rounded-xl">
+          ✨ Add Starter Items (Chocolates, Stationery, Snacks, Dairy, Drinks, Household)
+        </button>
+        <p class="text-[10px] text-slate-400">Starter items use typical MRP prices. Check and edit the rates to match your shop.</p>
+      </div>
+
+      <!-- Categories -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3 text-xs">
+        <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-layer-group text-green-600"></i> Categories
+        </h3>
+        <div class="flex gap-2">
+          <input type="text" id="newCatEmoji" maxlength="4" placeholder="🛒" class="w-12 p-2 text-center bg-slate-50 border border-slate-200 rounded-xl">
+          <input type="text" id="newCatName" placeholder="e.g. Frozen Foods" class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+          <button onclick="addCategory()" class="px-3 bg-green-600 text-white font-bold rounded-xl">Add</button>
+        </div>
+        <div id="adminCategoryList" class="space-y-1.5"></div>
       </div>
 
       <!-- Manage Rates Table -->
@@ -918,6 +948,7 @@
     // State Variables
     // Products, notices and riders are loaded from the server so every customer sees the owner's latest changes
     let products = [];
+    let categories = [];
     let riderFleet = [];
     let customerCRM = [];
     let notifications = [];
@@ -955,12 +986,14 @@
         const data = await api('/api/store');
         if (!isAdminAuthenticated) {
           products = data.products;
+          categories = data.categories;
           notifications = data.notifications;
         }
         publicRider = data.rider;
       } catch (err) {
         console.error(err);
       }
+      renderCategoryPills();
       renderStorefront();
       renderNotifications();
       updateCartCounts();
@@ -970,6 +1003,7 @@
     async function loadAdminData() {
       const data = await api('/api/admin/data');
       products = data.products;
+      categories = data.categories;
       notifications = data.notifications;
       riderFleet = data.riders;
       customerCRM = data.crm;
@@ -989,6 +1023,8 @@
 
     function saveProducts() {
       pushToServer('products', products);
+      renderCategoryPills();
+      renderAdminCategories();
       renderStorefront();
       renderAdminProducts();
       updateAdminStats();
@@ -1468,11 +1504,200 @@
 
     function setCategory(cat) {
       activeCat = cat;
-      document.querySelectorAll('.cat-pill').forEach(btn => {
-        btn.className = "cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0";
-      });
-      event.target.className = "cat-pill bg-green-600 text-white px-3.5 py-1.5 rounded-full shrink-0 shadow-xs";
+      renderCategoryPills();
       renderStorefront();
+    }
+
+    // Shows only categories that have at least one item, plus "All Items"
+    function renderCategoryPills() {
+      const bar = document.getElementById('categoryPills');
+      if (!bar) return;
+      const used = new Set(products.map(p => p.cat));
+      const pills = [{ id: 'all', name: 'All Items', emoji: '' }, ...categories.filter(c => used.has(c.id))];
+      if (!pills.some(c => c.id === activeCat)) activeCat = 'all';
+      bar.innerHTML = pills.map(c => `
+        <button onclick="setCategory('${c.id}')" class="cat-pill ${c.id === activeCat ? 'bg-green-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200'} px-3.5 py-1.5 rounded-full shrink-0">${c.emoji ? c.emoji + ' ' : ''}${c.name}</button>
+      `).join('');
+    }
+
+    function categoryName(id) {
+      const c = categories.find(c => c.id === id);
+      return c ? `${c.emoji} ${c.name}` : 'Uncategorised';
+    }
+
+    function renderCategoryOptions() {
+      const select = document.getElementById('newProdCat');
+      if (!select) return;
+      select.innerHTML = categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+    }
+
+    function slugify(name) {
+      return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'cat';
+    }
+
+    // Finds a category by id or name, creating it if it doesn't exist yet
+    function ensureCategory(label, emoji = '🛒') {
+      const text = String(label || '').replace(/[<>"'`&]/g, '').trim();
+      if (!text) return categories[0]?.id || 'other';
+      const lower = text.toLowerCase();
+      const found = categories.find(c => c.id === lower || c.name.toLowerCase() === lower);
+      if (found) return found.id;
+      let id = slugify(text);
+      while (categories.some(c => c.id === id)) id += '-2';
+      categories.push({ id, name: text, emoji: emoji.replace(/[<>"'`&]/g, '') || '🛒' });
+      return id;
+    }
+
+    function saveCategories() {
+      pushToServer('categories', categories);
+      renderCategoryPills();
+      renderCategoryOptions();
+      renderAdminCategories();
+    }
+
+    function addCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      const emoji = document.getElementById('newCatEmoji').value.trim() || '🛒';
+      if (!name) return alert("Enter a category name.");
+      if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) return alert("That category already exists.");
+      ensureCategory(name, emoji);
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatEmoji').value = '';
+      saveCategories();
+    }
+
+    function deleteCategory(id) {
+      const count = products.filter(p => p.cat === id).length;
+      const c = categories.find(c => c.id === id);
+      if (count > 0) return alert(`"${c?.name}" still has ${count} items. Move or delete them first.`);
+      categories = categories.filter(c => c.id !== id);
+      saveCategories();
+    }
+
+    function renderAdminCategories() {
+      const list = document.getElementById('adminCategoryList');
+      if (!list) return;
+      list.innerHTML = categories.map(c => {
+        const count = products.filter(p => p.cat === c.id).length;
+        return `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="font-bold text-slate-800">${c.emoji} ${c.name} <span class="text-[10px] text-slate-400 font-normal">• ${count} items</span></span>
+            <button onclick="deleteCategory('${c.id}')" class="text-red-500 p-1" title="Delete category"><i class="fa-solid fa-trash-can"></i></button>
+          </div>`;
+      }).join('');
+    }
+
+    // ===== Excel / CSV bulk items =====
+    const SHEET_COLUMNS = ['Name', 'Category', 'Unit', 'Price', 'MRP', 'Emoji', 'Tag', 'In Stock'];
+
+    function loadSheetLibrary() {
+      if (window.XLSX) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Could not load the Excel reader. Check your internet connection.'));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function downloadProductSheet(withItems) {
+      try {
+        await loadSheetLibrary();
+      } catch (err) {
+        return alert(err.message);
+      }
+      const rows = withItems
+        ? products.map(p => [p.name, categories.find(c => c.id === p.cat)?.name || p.cat, p.unit, p.price, p.strike || '', p.emoji, p.tag, p.inStock === false ? 'No' : 'Yes'])
+        : [['Cadbury Dairy Milk', 'Chocolates & Sweets', '50 g', 50, 50, '🍫', 'Bestseller', 'Yes'],
+           ['Classmate Notebook', 'Stationery', '172 pages', 55, 60, '📓', 'School Essential', 'Yes']];
+      const sheet = XLSX.utils.aoa_to_sheet([SHEET_COLUMNS, ...rows]);
+      sheet['!cols'] = [{ wch: 32 }, { wch: 22 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 7 }, { wch: 18 }, { wch: 9 }];
+      const book = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, sheet, 'Items');
+      XLSX.writeFile(book, withItems ? 'home-mart-items.xlsx' : 'home-mart-items-template.xlsx');
+    }
+
+    async function handleProductFile(input) {
+      const file = input.files[0];
+      input.value = '';
+      if (!file) return;
+      try {
+        await loadSheetLibrary();
+        const book = XLSX.read(await file.arrayBuffer());
+        const rows = XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]], { defval: '' });
+        importProductRows(rows);
+      } catch (err) {
+        alert(`Could not read the file: ${err.message}`);
+      }
+    }
+
+    function importProductRows(rows) {
+      // Header names are matched loosely, e.g. "price", "Price (₹)" and "PRICE" all work
+      const pick = (row, ...names) => {
+        const key = Object.keys(row).find(k => names.some(n => k.toLowerCase().replace(/[^a-z]/g, '').startsWith(n)));
+        return key === undefined ? '' : String(row[key]).trim();
+      };
+      const toNumber = v => parseFloat(String(v).replace(/[^0-9.]/g, ''));
+      const clean = v => v.replace(/[<>"'`&]/g, '');
+      const catsBefore = categories.length;
+      let added = 0, updated = 0, skipped = 0;
+      let nextId = Math.max(Date.now(), ...products.map(p => Number(p.id) || 0)) + 1;
+
+      rows.forEach(row => {
+        const name = clean(pick(row, 'name', 'item', 'product'));
+        const price = toNumber(pick(row, 'price', 'rate', 'ourrate', 'sellingprice'));
+        if (!name || !(price > 0)) { skipped++; return; }
+        const mrp = toNumber(pick(row, 'mrp', 'strike'));
+        const stock = pick(row, 'instock', 'stock', 'available').toLowerCase();
+        const fields = {
+          name,
+          cat: ensureCategory(pick(row, 'category', 'cat')),
+          unit: clean(pick(row, 'unit', 'pack', 'size', 'quantity')) || '1 pc',
+          price,
+          strike: mrp > 0 ? mrp : price,
+          emoji: clean(pick(row, 'emoji', 'icon')) || '📦',
+          tag: clean(pick(row, 'tag', 'label')) || 'Fresh Arrival',
+          inStock: !['no', 'n', 'false', '0', 'out'].includes(stock),
+        };
+        const existing = products.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (existing) { Object.assign(existing, fields); updated++; }
+        else { products.push({ id: nextId++, ...fields }); added++; }
+      });
+
+      const newCats = categories.length - catsBefore;
+      if (added + updated === 0) {
+        return alert("No items found. Each row needs at least a Name and a Price.");
+      }
+      if (newCats) saveCategories();
+      saveProducts();
+      alert(`Done: ${added} items added, ${updated} updated${newCats ? `, ${newCats} new categories` : ''}${skipped ? `. ${skipped} rows skipped (missing name or price)` : ''}.`);
+    }
+
+    async function loadStarterItems() {
+      if (!confirm("Add the starter items to your store? Items you already have (same name) are not changed.")) return;
+      try {
+        const { addedItems, addedCategories } = await api('/api/admin/starter-items', { method: 'POST' });
+        await loadAdminData();
+        renderAdminProducts();
+        updateAdminStats();
+        renderStorefront();
+        renderCategoryPills();
+        renderCategoryOptions();
+        renderAdminCategories();
+        alert(`Added ${addedItems} items and ${addedCategories} categories. Review the rates below.`);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function deleteProduct(id) {
+      const item = products.find(p => p.id === id);
+      if (!item || !confirm(`Delete "${item.name}" from the store?`)) return;
+      products = products.filter(p => p.id !== id);
+      delete cart[id];
+      saveCart();
+      saveProducts();
     }
 
     function calculateTotals() {
@@ -1589,6 +1814,8 @@
         renderFleetList();
         renderCRMList();
         renderAdminProducts();
+        renderCategoryOptions();
+        renderAdminCategories();
         renderAdminNotifications();
       }
       updateCartCounts();
@@ -1900,7 +2127,7 @@
             <span class="text-xl">${p.emoji}</span>
             <div>
               <div class="font-bold text-slate-900">${p.name}</div>
-              <div class="text-[10px] text-slate-400">${p.unit} • ${isOut ? '<span class="text-red-500 font-bold">Sold Out</span>' : '<span class="text-green-600 font-bold">In Stock</span>'}</div>
+              <div class="text-[10px] text-slate-400">${categoryName(p.cat)} • ${p.unit} • ${isOut ? '<span class="text-red-500 font-bold">Sold Out</span>' : '<span class="text-green-600 font-bold">In Stock</span>'}</div>
             </div>
           </div>
           <div class="flex items-center gap-1.5">
@@ -1910,6 +2137,7 @@
             <button onclick="toggleProductStock(${p.id})" class="px-2 py-1 ${isOut ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-bold rounded">
               ${isOut ? 'Stock' : 'Out'}
             </button>
+            <button onclick="deleteProduct(${p.id})" class="px-1.5 py-1 text-red-500" title="Delete item"><i class="fa-solid fa-trash-can"></i></button>
           </div>
         `;
         list.appendChild(card);
@@ -2035,7 +2263,7 @@
       loadStorefront();
       if (adminToken) {
         loadAdminData()
-          .then(() => { renderStorefront(); renderNotifications(); updateCartCounts(); applyActiveRiderToUI(); })
+          .then(() => { renderCategoryPills(); renderStorefront(); renderNotifications(); updateCartCounts(); applyActiveRiderToUI(); })
           .catch(() => endAdminSession());
       }
     });

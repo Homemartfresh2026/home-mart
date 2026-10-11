@@ -15,8 +15,9 @@ type Customer = {
 };
 
 async function storefront() {
-  const [products, notifications, riders] = await Promise.all([
+  const [products, categories, notifications, riders] = await Promise.all([
     getCollection('products'),
+    getCollection('categories'),
     getCollection('notifications'),
     getCollection('riders'),
   ]);
@@ -27,6 +28,7 @@ async function storefront() {
     : null;
   return Response.json({
     products,
+    categories,
     notifications: notifications.filter((n: any) => n.active !== false),
     rider,
   });

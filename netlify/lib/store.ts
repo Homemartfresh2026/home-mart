@@ -1,8 +1,9 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { storeState } from '../../db/schema.js';
+import { STARTER_CATEGORIES, STARTER_PRODUCTS } from './catalogue.js';
 
-export const COLLECTIONS = ['products', 'notifications', 'riders', 'crm'] as const;
+export const COLLECTIONS = ['products', 'categories', 'notifications', 'riders', 'crm'] as const;
 export type Collection = (typeof COLLECTIONS)[number];
 
 // Starting data used until the owner saves their own from the Admin panel
@@ -20,7 +21,9 @@ const DEFAULTS: Record<Collection, unknown[]> = {
     { id: 10, name: 'Himalaya Baby Wipes', cat: 'baby', unit: '72s Pack', price: 145, strike: 175, emoji: '🌿', tag: 'Alcohol Free', inStock: true },
     { id: 11, name: 'Dettol Liquid Handwash Refill', cat: 'toiletries', unit: '200ml pouch', price: 89, strike: 99, emoji: '🧴', tag: 'Germ Shield', inStock: true },
     { id: 12, name: 'Colgate MaxFresh Gel', cat: 'toiletries', unit: '150g pack', price: 110, strike: 135, emoji: '🪥', tag: 'Spicy Fresh', inStock: true },
+    ...STARTER_PRODUCTS,
   ],
+  categories: STARTER_CATEGORIES,
   notifications: [
     { id: 1, title: '⚡ Flash Discount: ₹50 OFF Orders Over ₹300!', desc: 'Direct farm harvest discount automatically applied at checkout.', isBanner: true, active: true },
     { id: 2, title: '🛵 Express EV Delivery Active in 15–25 mins', desc: 'Temperature-controlled insulated boxes keep your vegetables crisp.', isBanner: false, active: true },
