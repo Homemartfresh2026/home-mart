@@ -16,8 +16,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   onPlaceOrderSuccess,
   onShowToast,
 }) => {
-  const [custName, setCustName] = useState('Rahul S.');
-  const [custPhone, setCustPhone] = useState('+91 98765 43210');
+  const [custName, setCustName] = useState('');
+  const [custPhone, setCustPhone] = useState('');
   const [custAddress, setCustAddress] = useState(currentAddress);
   const [payMethod, setPayMethod] = useState<'upi' | 'cod'>('upi');
   const [copiedUpi, setCopiedUpi] = useState(false);
@@ -58,6 +58,15 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   };
 
   const handlePlaceOrder = () => {
+    if (cartDetails.length === 0) {
+      onShowToast('Your basket is empty. Add items before ordering.');
+      return;
+    }
+    if (!custName.trim() || !custPhone.trim() || !custAddress.trim()) {
+      onShowToast('Please enter your name, phone and delivery address.');
+      return;
+    }
+
     const orderId = `HM-${Math.floor(10000 + Math.random() * 90000)}`;
     const itemsListText = cartDetails
       .map((item) => `• ${item.product.name} (${item.selectedWeight || item.product.unit}) x ${item.quantity} = ₹${item.lineTotal}`)

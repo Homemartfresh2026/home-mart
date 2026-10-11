@@ -22,26 +22,27 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  const fallbackOrder: OrderRecord = {
-    id: 'HM-84920',
-    date: 'Just now',
-    customerName: 'Rahul S.',
-    customerPhone: '+91 98765 43210',
-    customerAddress: 'Flat 402, Green Glen Layout, Indiranagar East, Bengaluru',
-    items: [
-      { name: 'Honeycrisp Apples', unit: '1 kg', qty: 1, price: 180 },
-      { name: 'Baby Palak / Spinach', unit: '250g pack', qty: 2, price: 60 },
-      { name: 'Ripe Hass Avocados', unit: 'Pack of 2', qty: 1, price: 190 },
-      { name: 'Hybrid Tomatoes', unit: '1.5 kg', qty: 1, price: 56 },
-    ],
-    total: 492,
-    paymentMethod: 'UPI QR (9082207857@ybl)',
-    status: 'packing',
-    riderName: 'Ramesh K.',
-    riderPhone: '+91 98765 12345',
-  };
+  if (!order) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full pb-24 max-w-md mx-auto p-6 pt-16 text-center space-y-3">
+        <div className="w-16 h-16 bg-[#eaedff] text-[#006b2c] rounded-full flex items-center justify-center mx-auto">
+          <span className="material-symbols-outlined text-[32px]">receipt_long</span>
+        </div>
+        <h2 className="text-[18px] font-black text-[#131b2e]">No orders yet</h2>
+        <p className="text-xs text-[#6e7b6c] font-medium">
+          Your order details appear here after you send an order via WhatsApp.
+        </p>
+        <button
+          onClick={onBackToMarket}
+          className="mt-2 px-5 py-2.5 bg-[#006b2c] text-white rounded-xl text-xs font-black shadow-sm transition active:scale-95"
+        >
+          Start Shopping
+        </button>
+      </div>
+    );
+  }
 
-  const currentOrder = order || fallbackOrder;
+  const currentOrder = order;
 
   return (
     <div className="flex flex-col w-full pb-24 max-w-md mx-auto p-4 space-y-4">

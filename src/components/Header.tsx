@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
                   location_on
                 </span>
                 <span className="text-[11px] font-semibold truncate group-hover:underline max-w-[170px] sm:max-w-[220px]">
-                  {currentAddress}
+                  {currentAddress || 'Set delivery address'}
                 </span>
                 <span className="material-symbols-outlined text-[13px] text-[#6e7b6c] shrink-0">
                   expand_more
