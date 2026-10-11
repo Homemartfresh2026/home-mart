@@ -21,3 +21,17 @@ export const storeMeta = pgTable('store_meta', {
   key: text().primaryKey(),
   value: text().notNull(),
 });
+
+// Shared store data edited from the Admin panel (products, notices, riders, customers), one row per collection
+export const storeState = pgTable('store_state', {
+  key: text().primaryKey(),
+  data: jsonb().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Signed-in admin devices. Only a hash of each session token is stored.
+export const adminSessions = pgTable('admin_sessions', {
+  tokenHash: text('token_hash').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

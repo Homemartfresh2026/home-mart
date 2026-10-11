@@ -1,22 +1,2272 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Home Mart Fresh</title>
-    <meta name="description" content="Ultra-fast fresh grocery delivery app featuring dark store dispatch, smart weight verification, instant UPI & WhatsApp ordering, and live inventory sync." />
-    <meta property="og:title" content="Home Mart Fresh" />
-    <meta property="og:description" content="Ultra-fast fresh grocery delivery app featuring dark store dispatch, smart weight verification, instant UPI & WhatsApp ordering, and live inventory sync." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-  </head>
-  <body class="bg-[#faf8ff] text-[#131b2e] antialiased selection:bg-[#acf847]">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Home Mart FRESH — Online Grocery, Fleet & Customer Loyalty</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #faf8ff; -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="text-slate-800 pb-24 select-none min-h-screen">
 
+  <!-- ================= TOP FLASH ANNOUNCEMENT BAR ================= -->
+  <div id="adminTopBanner" class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white text-[11px] font-bold px-4 py-2 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-2 max-w-md mx-auto w-full">
+      <span class="text-xs">🎉</span>
+      <span id="bannerText" class="truncate flex-1">Flash Discount: ₹50 OFF Orders Over ₹300! Direct Farm Harvest.</span>
+      <button onclick="dismissBanner()" class="text-white/80 hover:text-white text-xs pl-2">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-3 shadow-xs">
+    <div class="flex items-center justify-between max-w-md mx-auto">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center text-white font-extrabold text-base shadow-sm">
+          HM
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-slate-900 tracking-tight text-base">Home Mart</span>
+            <span class="bg-green-100 text-green-700 font-bold text-[10px] px-1.5 py-0.5 rounded-full uppercase tracking-wider">FRESH</span>
+          </div>
+          <p class="text-[11px] text-slate-500 flex items-center gap-1">
+            <i class="fa-solid fa-location-dot text-green-600 text-xs"></i> <span id="headerLocation">Indiranagar</span> • <span class="text-green-700 font-semibold" id="headerEta">15–25 mins</span>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Customer Notifications Bell -->
+        <button onclick="openCustomerNotificationsModal()" class="relative w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm border border-slate-200/80 transition" title="Store Announcements">
+          <i class="fa-regular fa-bell"></i>
+          <span id="unreadNotifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">3</span>
+        </button>
+
+        <!-- Store Owner Admin Login -->
+        <button onclick="openPinModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 border border-slate-200/80 transition" title="Store Ops & Fleet Admin">
+          <i class="fa-solid fa-shield-halved text-green-600"></i>
+          <span>Admin</span>
+        </button>
+
+        <!-- WhatsApp Support Helpline -->
+        <a href="https://wa.me/917006934064" id="headerWaLink" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-base shadow-xs border border-emerald-100" title="Store WhatsApp Helpline">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Search Box (Storefront Tab Only) -->
+    <div id="searchBarContainer" class="mt-2.5 max-w-md mx-auto relative">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+      <input type="text" id="searchInput" oninput="renderStorefront()" placeholder="Search apples, tomatoes, rice, diaper, dal..." class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-slate-200/80 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition">
+    </div>
+  </header>
+
+  <!-- ================= VIEW 1: STOREFRONT ================= -->
+  <section id="view-store" class="block max-w-md mx-auto">
+    <!-- Promotional Hero Banner -->
+    <div class="p-4">
+      <div class="bg-gradient-to-r from-green-700 via-emerald-600 to-green-600 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
+        <span class="bg-white/20 text-white font-semibold text-[10px] uppercase px-2 py-0.5 rounded-full tracking-wider">Direct Farm Harvest</span>
+        <h2 class="text-lg font-black mt-1 leading-tight">Super Fresh Produce & Daily Staples</h2>
+        <p class="text-xs text-green-100 mt-0.5">Free 20-min delivery on orders above ₹199</p>
+        <div class="mt-2.5 inline-flex items-center gap-1.5 bg-white text-green-800 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs">
+          ⚡ 0% Fee UPI & WhatsApp Ready <i class="fa-solid fa-bolt text-[10px]"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div id="categoryPills" class="px-4 flex gap-2 overflow-x-auto no-scrollbar pb-2 text-xs font-semibold"></div>
+
+    <!-- Freshness Guarantee & Reversal Policy Banner -->
+    <div class="px-4 mt-1">
+      <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 shadow-xs flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-sm">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-emerald-950">100% Freshness Guarantee</p>
+            <p class="text-[11px] text-emerald-800 leading-tight">Instant UPI reversal within 2 hours for damaged greens</p>
+          </div>
+        </div>
+        <button onclick="switchView('receipt')" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 shrink-0 flex items-center gap-1">
+          Returns <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <main class="px-4 mt-3">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-extrabold text-slate-900 text-sm">Fresh Daily Catalog</h3>
+        <span class="text-[11px] font-semibold text-green-700"><i class="fa-solid fa-badge-check"></i> Best Market Rates</span>
+      </div>
+      <div id="productGrid" class="grid grid-cols-2 gap-3 pb-8"></div>
+    </main>
+  </section>
+
+  <!-- ================= VIEW 2: BASKET ================= -->
+  <section id="view-basket" class="hidden p-4 max-w-md mx-auto">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+        <i class="fa-solid fa-basket-shopping text-green-600"></i> Your Basket
+      </h2>
+      <button onclick="clearBasket()" class="text-xs text-red-500 font-semibold flex items-center gap-1">
+        <i class="fa-solid fa-trash-can text-[10px]"></i> Clear
+      </button>
+    </div>
+
+    <!-- Active Delivery Partner Live Preview Card -->
+    <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 flex items-center justify-between mb-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center font-bold text-base shadow-xs">
+          <i class="fa-solid fa-person-biking"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-slate-900" id="basketRiderName">Ramesh K.</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-200 text-emerald-900 font-bold uppercase">Active Partner</span>
+          </div>
+          <p class="text-[11px] text-slate-600" id="basketHubDesc">Electric EV Hub #4 • Delivery in 15–25 mins</p>
+        </div>
+      </div>
+      <a href="tel:+917006934064" id="basketRiderCall" class="w-8 h-8 rounded-full bg-white text-green-700 border border-green-200 flex items-center justify-center text-xs shadow-xs">
+        <i class="fa-solid fa-phone"></i>
+      </a>
+    </div>
+
+    <div id="basketItemsList" class="space-y-3"></div>
+
+    <div id="emptyBasketNotice" class="hidden text-center py-16">
+      <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-2xl mx-auto mb-3">
+        <i class="fa-solid fa-basket-shopping"></i>
+      </div>
+      <h3 class="font-bold text-slate-800 text-sm">Your basket is empty</h3>
+      <p class="text-xs text-slate-400 mt-1 mb-4">Add crisp fruits, fresh veggies & daily staples</p>
+      <button onclick="switchView('store')" class="bg-green-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs">
+        Browse Fresh Produce
+      </button>
+    </div>
+
+    <!-- Bill Breakdown Card -->
+    <div id="billCard" class="mt-5 bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+      <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-3">Bill Breakdown</h3>
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between text-slate-600">
+          <span>Items Subtotal</span>
+          <span id="subtotalDisplay" class="font-semibold text-slate-800">₹0</span>
+        </div>
+        <div class="flex justify-between text-emerald-600">
+          <span>Flash Discount (₹50 off > ₹300)</span>
+          <span id="discountDisplay" class="font-semibold">-₹0</span>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Delivery Partner Fee</span>
+          <span class="text-green-600 font-bold uppercase text-[10px] bg-green-50 px-1.5 py-0.5 rounded">FREE (Express)</span>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Eco Packaging & Handling</span>
+          <span class="font-semibold text-slate-800">₹6</span>
+        </div>
+        <div class="border-t border-slate-100 pt-2 flex justify-between text-sm font-extrabold text-slate-900">
+          <span>Total Payable</span>
+          <span id="totalDisplay" class="text-green-700 font-black">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="proceedCheckoutBtn" class="mt-4">
+      <button onclick="switchView('checkout')" class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-between text-sm transition">
+        <span id="basketPayAmount">Pay ₹0</span>
+        <span class="flex items-center gap-1.5">Proceed to Checkout <i class="fa-solid fa-arrow-right text-xs"></i></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= VIEW 3: CHECKOUT & PAYMENT ================= -->
+  <section id="view-checkout" class="hidden p-4 space-y-4 max-w-md mx-auto">
+    <div class="flex items-center justify-between">
+      <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+        <i class="fa-solid fa-shield-check text-green-600"></i> Express Checkout
+      </h2>
+      <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+        100% Safe
+      </span>
+    </div>
+
+    <!-- Customer Recognition & Loyalty Badge (Dynamic Lookup) -->
+    <div id="checkoutLoyaltyBanner" class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+          <i class="fa-solid fa-gift"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-slate-900" id="checkoutCustTierBadge">🌱 Home Mart Shopper</span>
+            <span class="text-[9px] bg-amber-200 text-amber-900 font-extrabold px-1.5 py-0.2 rounded-full">CRM Synced</span>
+          </div>
+          <p class="text-[11px] text-amber-900 font-medium mt-0.5" id="checkoutCustPerkDesc">Order today to earn loyalty harvest points & gifts!</p>
+        </div>
+      </div>
+      <i class="fa-solid fa-certificate text-amber-600 text-lg"></i>
+    </div>
+
+    <!-- Customer Address Details Card -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-house-chimney text-green-600"></i> Delivery Address & Customer Details
+        </span>
+        <span class="text-[10px] text-slate-400">Auto-saved to CRM</span>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Your Full Name</label>
+        <input type="text" id="custName" oninput="lookupCustomerByPhone()" placeholder="e.g. Aditi Sharma" class="w-full text-xs font-bold text-slate-800 border-b border-slate-200 pb-1.5 focus:outline-none focus:border-green-500">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Mobile Phone (10 digits)</label>
+        <input type="tel" id="custPhone" oninput="lookupCustomerByPhone()" placeholder="e.g. 9876543210" class="w-full text-xs text-slate-700 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-green-500">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Delivery Address & Landmark</label>
+        <textarea id="custAddress" rows="2" placeholder="Flat No, Apartment, Street, Landmark, Indiranagar" class="w-full text-xs text-slate-600 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+      </div>
+    </div>
+
+    <!-- UPI QR Code & Direct Pay Card -->
+    <div class="bg-gradient-to-br from-white to-green-50/50 border-2 border-green-500/30 rounded-2xl p-4 shadow-xs">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-green-600 text-white flex items-center justify-center text-xs">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-xs text-slate-900">Home Mart Official UPI</h3>
+            <p class="text-[10px] text-green-700 font-semibold">0% Surcharge • Scan & Pay</p>
+          </div>
+        </div>
+        <span class="bg-green-600 text-white font-bold text-[9px] uppercase px-2 py-0.5 rounded-full">Official</span>
+      </div>
+
+      <div class="bg-white border border-green-200/80 rounded-xl p-3 flex items-center justify-between">
+        <div>
+          <div class="text-[10px] text-slate-400 font-medium">Store UPI ID</div>
+          <div class="text-xs font-extrabold text-slate-900 font-mono tracking-tight" id="checkoutUpiIdDisplay">9082207857@ybl</div>
+          <div class="text-[10px] text-slate-500">Merchant: Home Mart Fresh Retail</div>
+        </div>
+        <button onclick="copyUpi()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+          <i class="fa-regular fa-copy text-[10px]"></i> <span id="copyUpiLabel">Copy</span>
+        </button>
+      </div>
+      <div class="mt-3 flex items-center gap-3 text-[11px] text-slate-500">
+        <span class="flex items-center gap-1"><i class="fa-brands fa-google-pay text-base text-slate-700"></i> GPay</span>
+        <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-xs text-purple-600"></i> PhonePe</span>
+        <span class="flex items-center gap-1"><i class="fa-solid fa-wallet text-xs text-blue-600"></i> Paytm</span>
+      </div>
+    </div>
+
+    <!-- Payment Choice Radios -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
+      <h3 class="font-bold text-xs text-slate-900 mb-2">Select Payment Method</h3>
+      <label class="flex items-center justify-between p-2.5 border border-green-500 bg-green-50/40 rounded-xl cursor-pointer">
+        <div class="flex items-center gap-2.5">
+          <input type="radio" name="payMethod" value="UPI QR (9082207857@ybl)" checked class="text-green-600 focus:ring-green-500">
+          <div>
+            <div class="text-xs font-bold text-slate-800">Scan UPI QR / 9082207857@ybl</div>
+            <div class="text-[10px] text-slate-500">Fast UPI app transfer or WhatsApp screenshot</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-circle-check text-green-600 text-sm"></i>
+      </label>
+      <label class="flex items-center justify-between p-2.5 border border-slate-200 rounded-xl cursor-pointer">
+        <div class="flex items-center gap-2.5">
+          <input type="radio" name="payMethod" value="Cash on Delivery (COD)" class="text-green-600 focus:ring-green-500">
+          <div>
+            <div class="text-xs font-bold text-slate-800">Cash on Delivery (COD)</div>
+            <div class="text-[10px] text-slate-500">Pay cash or rider QR upon receipt</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-money-bill-wave text-slate-400 text-sm"></i>
+      </label>
+    </div>
+
+    <!-- 1-Tap Place WhatsApp Order CTA -->
+    <button onclick="placeWhatsAppOrder()" class="w-full bg-green-700 hover:bg-green-800 text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-xl flex items-center justify-between text-sm transition">
+      <span id="checkoutTotalBtn">Pay ₹0</span>
+      <span class="flex items-center gap-2">Place Order on WhatsApp <i class="fa-brands fa-whatsapp text-base"></i></span>
+    </button>
+  </section>
+
+  <!-- ================= VIEW 4: RECEIPT, TRACKING & UPI RETURN REVERSAL ================= -->
+  <section id="view-receipt" class="hidden p-4 space-y-4 max-w-md mx-auto">
+    <div class="text-center pt-2">
+      <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mx-auto shadow-inner">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <span class="inline-block bg-green-100 text-green-800 font-bold text-[10px] px-2.5 py-0.5 rounded-full mt-2 uppercase tracking-wide">
+        ● Live Order Active
+      </span>
+      <h2 class="text-xl font-extrabold text-slate-900 mt-1">Order Confirmed!</h2>
+      <p id="receiptOrderId" class="text-xs text-slate-500 font-mono mt-0.5">Order #HM-84920</p>
+    </div>
+
+    <!-- Valued Customer Perk Badge on Receipt -->
+    <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="text-xl">⭐</span>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h4 class="text-xs font-bold text-slate-900" id="receiptCustName">Valued Shopper</h4>
+            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-200 text-amber-900" id="receiptCustTier">Gold Tier</span>
+          </div>
+          <p class="text-[11px] text-amber-800" id="receiptCustPerk">Special perk: Free 500g Fresh Mangoes credited!</p>
+        </div>
+      </div>
+      <button onclick="alert('🎁 Your loyalty points & perks are credited to your WhatsApp profile after delivery!')" class="text-xs font-bold text-green-700">Details</button>
+    </div>
+
+    <!-- Live ETA Tracker -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div class="text-[11px] text-slate-400 font-medium">Estimated Arrival</div>
+          <div class="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+            <span class="text-green-600" id="receiptEtaText">Arriving in 15–25 mins</span>
+          </div>
+        </div>
+        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-lg">Express EV</span>
+      </div>
+      <div class="grid grid-cols-4 gap-1 text-center pt-2 border-t border-slate-100">
+        <div>
+          <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] mx-auto mb-1">✓</div>
+          <div class="text-[9px] font-bold text-slate-800">Placed</div>
+        </div>
+        <div>
+          <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] mx-auto mb-1 animate-pulse">📦</div>
+          <div class="text-[9px] font-bold text-green-700">Packing</div>
+        </div>
+        <div>
+          <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[10px] mx-auto mb-1">🛵</div>
+          <div class="text-[9px] text-slate-400">On Way</div>
+        </div>
+        <div>
+          <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[10px] mx-auto mb-1">🏠</div>
+          <div class="text-[9px] text-slate-400">Delivered</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Delivery Partner Card (Dynamic from Fleet) -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-lg">🛵</div>
+          <div>
+            <div class="text-xs font-bold text-slate-900" id="receiptRiderTitle">Ramesh K. (Partner)</div>
+            <div class="text-[10px] text-slate-400" id="receiptRiderSub">★ 4.9 • Electric Delivery Hub</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <a href="tel:+917006934064" id="receiptRiderCallBtn" class="w-8 h-8 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-xs" title="Call Rider">
+            <i class="fa-solid fa-phone"></i>
+          </a>
+          <a href="https://wa.me/917006934064" id="receiptRiderWaBtn" target="_blank" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs" title="WhatsApp Rider">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 pt-2 flex items-center justify-between text-xs">
+        <span class="text-slate-500">Store Helpline:</span>
+        <a href="tel:7006934064" id="receiptStorePhone" class="font-bold text-green-700">+91 7006934064</a>
+      </div>
+    </div>
+
+    <!-- COMPREHENSIVE CUSTOMER RETURN & INSTANT UPI REFUND REVERSAL DESK -->
+    <div class="bg-white border-2 border-emerald-500/20 rounded-2xl p-4 shadow-xs space-y-3">
+      <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-rotate-left"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-xs text-slate-900">Return Items & Instant UPI Reversal</h3>
+            <p class="text-[10px] text-slate-400">Within 2 hours of delivery</p>
+          </div>
+        </div>
+        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">100% Guaranteed</span>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-slate-500 block">Select item(s) to return for refund:</label>
+        <div id="returnItemsCheckList" class="space-y-1.5 text-xs">
+          <!-- Dynamically populated or defaults -->
+          <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 cursor-pointer">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" value="180" data-name="Honeycrisp Apples (1 kg)" onchange="calcReturnRefund()" class="return-checkbox rounded text-green-600">
+              <span class="font-medium text-slate-800">Honeycrisp Apples (1 kg)</span>
+            </div>
+            <span class="font-bold text-slate-900">₹180</span>
+          </label>
+          <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 cursor-pointer">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" value="30" data-name="Baby Palak / Spinach (250g)" onchange="calcReturnRefund()" class="return-checkbox rounded text-green-600">
+              <span class="font-medium text-slate-800">Baby Palak (250g)</span>
+            </div>
+            <span class="font-bold text-slate-900">₹30</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Return Reason</label>
+          <select id="returnReason" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            <option value="Damaged / Not Fresh">🥬 Not Fresh / Damaged</option>
+            <option value="Wrong Item Delivered">📦 Wrong Item</option>
+            <option value="Bruised in Transit">⚠️ Bruised in Transit</option>
+            <option value="Item Missing">❌ Item Missing</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Refund Total</label>
+          <div id="refundTotalDisplay" class="text-xs font-black p-2 bg-red-50 text-red-600 rounded-xl text-center">₹0</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Your UPI ID for Instant Reversal</label>
+        <input type="text" id="custRefundUpi" placeholder="e.g. aditi@okhdfcbank or 9876543210@paytm" value="customer@okhdfcbank" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+      </div>
+
+      <button onclick="submitReturnRequest()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+        <i class="fa-brands fa-whatsapp text-sm"></i> Submit Return & Alert Store Desk
+      </button>
+    </div>
+
+    <button onclick="switchView('store')" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-bold shadow-md">
+      Continue Shopping
+    </button>
+  </section>
+
+  <!-- ================= VIEW 5: STORE ADMIN PANEL (PIN PROTECTED) ================= -->
+  <section id="view-admin" class="hidden p-4 space-y-4 max-w-md mx-auto">
+    <!-- Admin Header -->
+    <div class="bg-slate-900 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center text-white text-lg">
+          <i class="fa-solid fa-lock-open"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm font-black">Store Owner Admin</h2>
+            <span class="bg-green-500/20 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/30">PIN Verified</span>
+          </div>
+          <p class="text-[11px] text-slate-300">Fleet, Customers, Rates & Broadcasts</p>
+        </div>
+      </div>
+      <button onclick="lockAdmin()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Exit Admin
+      </button>
+    </div>
+
+    <!-- Admin Section Tabs: Fleet, Customers, Products, Broadcasts, Returns -->
+    <div class="grid grid-cols-5 gap-1 bg-slate-100 p-1 rounded-xl text-center text-[10px] font-bold">
+      <button onclick="switchAdminTab('fleet')" id="adminTabBtn-fleet" class="py-2 rounded-lg bg-green-600 text-white shadow-xs truncate">
+        🛵 Fleet
+      </button>
+      <button onclick="switchAdminTab('crm')" id="adminTabBtn-crm" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 truncate">
+        ⭐ CRM
+      </button>
+      <button onclick="switchAdminTab('products')" id="adminTabBtn-products" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 truncate">
+        📦 Rates
+      </button>
+      <button onclick="switchAdminTab('broadcasts')" id="adminTabBtn-broadcasts" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 truncate">
+        📢 Alerts
+      </button>
+      <button onclick="switchAdminTab('returns')" id="adminTabBtn-returns" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 truncate">
+        🔄 Returns
+      </button>
+    </div>
+
+    <!-- SUBSECTION 1: UNLIMITED RIDER FLEET MANAGER -->
+    <div id="adminSection-fleet" class="space-y-3.5">
+      <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+            <i class="fa-solid fa-motorcycle text-emerald-600"></i> Unlimited Delivery Fleet Manager
+          </h3>
+          <p class="text-[11px] text-emerald-800">Add, edit, or assign active dispatch riders in 1-tap.</p>
+        </div>
+        <span class="text-[10px] font-extrabold bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full" id="fleetBadgeCount">3 Riders</span>
+      </div>
+
+      <!-- Add New Rider Accordion Toggle -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-900" id="riderFormTitle">Register New Delivery Rider</h4>
+          <button onclick="toggleRiderForm()" id="btnToggleRiderForm" class="text-xs font-bold text-green-700 bg-green-50 px-2.5 py-1 rounded-lg">
+            + Add Rider
+          </button>
+        </div>
+
+        <div id="riderFormPanel" class="hidden space-y-3 pt-3 border-t border-slate-100 mt-2 text-xs">
+          <input type="hidden" id="editRiderId" value="">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Rider Full Name</label>
+              <input type="text" id="riderNameInput" placeholder="e.g. Ramesh Kumar" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Mobile Phone (10 digits)</label>
+              <input type="tel" id="riderPhoneInput" placeholder="7006934064" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Vehicle / Hub Tag</label>
+              <input type="text" id="riderVehicleInput" placeholder="Electric EV Hub #4" value="Electric EV Hub #4" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Rider Rating</label>
+              <input type="text" id="riderRatingInput" placeholder="4.9★" value="4.9★" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-1.5 cursor-pointer font-bold text-slate-700">
+              <input type="checkbox" id="riderSetCurrent" class="rounded text-green-600">
+              <span>Set as Active Dispatch Rider Now</span>
+            </label>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="toggleRiderForm(false)" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">Cancel</button>
+            <button onclick="saveRiderToFleet()" class="py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl">Save Rider</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Riders List -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Active Fleet Pool</h4>
+          <span class="text-[10px] text-slate-400">1-tap to switch on shift</span>
+        </div>
+        <div id="fleetCardsList" class="space-y-2.5">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBSECTION 2: CUSTOMER CRM & LOYALTY / GIFT DIRECTORY -->
+    <div id="adminSection-crm" class="hidden space-y-3.5">
+      <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3 rounded-2xl flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+            <i class="fa-solid fa-gift text-amber-600"></i> Customer CRM & Loyalty Desk
+          </h3>
+          <p class="text-[11px] text-amber-900">Track orders, award VIP perks & WhatsApp gift vouchers.</p>
+        </div>
+        <span class="text-[10px] font-extrabold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full" id="crmBadgeCount">3 Shoppers</span>
+      </div>
+
+      <!-- Add New Customer Toggle -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-900" id="crmFormTitle">Add / Edit Customer Record</h4>
+          <button onclick="toggleCrmForm()" id="btnToggleCrmForm" class="text-xs font-bold text-green-700 bg-green-50 px-2.5 py-1 rounded-lg">
+            + Add Customer
+          </button>
+        </div>
+
+        <div id="crmFormPanel" class="hidden space-y-3 pt-3 border-t border-slate-100 mt-2 text-xs">
+          <input type="hidden" id="editCustId" value="">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Customer Name</label>
+              <input type="text" id="crmNameInput" placeholder="Aditi Sharma" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Phone Number</label>
+              <input type="tel" id="crmPhoneInput" placeholder="9876543210" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Delivery Address</label>
+            <input type="text" id="crmAddressInput" placeholder="Flat 402, Green Glen Layout, Indiranagar" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Customer Tier</label>
+              <select id="crmTierInput" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="⭐ VIP Gold (10+ orders)">⭐ VIP Gold (10+ orders)</option>
+                <option value="🥈 Silver Regular (4+ orders)">🥈 Silver Regular (4+ orders)</option>
+                <option value="🌱 New Shopper">🌱 New Shopper</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block mb-0.5">Active Gift Perk</label>
+              <input type="text" id="crmPerkInput" placeholder="Free 500g Alphonso Mangoes" value="Free 500g Alphonso Mangoes" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="toggleCrmForm(false)" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">Cancel</button>
+            <button onclick="saveCustomerRecord()" class="py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl">Save to CRM</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Directory List -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Registered Valued Shoppers</h4>
+          <span class="text-[10px] text-slate-400">Auto-updated per order</span>
+        </div>
+        <div id="crmCustomerList" class="space-y-2.5">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBSECTION 3: PRODUCTS & RATES MANAGEMENT -->
+    <div id="adminSection-products" class="hidden space-y-3.5">
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-xs">
+          <div class="text-[10px] text-slate-400 font-bold uppercase">Products</div>
+          <div id="adminStatTotal" class="text-base font-extrabold text-slate-900 mt-0.5">12</div>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-xs">
+          <div class="text-[10px] text-slate-400 font-bold uppercase">In Stock</div>
+          <div id="adminStatInStock" class="text-base font-extrabold text-green-600 mt-0.5">12</div>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-xs">
+          <div class="text-[10px] text-slate-400 font-bold uppercase">UPI ID</div>
+          <div class="text-[11px] font-extrabold text-slate-800 mt-1 truncate">9082207857@ybl</div>
+        </div>
+      </div>
+
+      <!-- Add New Item Card -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-plus-circle text-green-600"></i> Add New Product
+          </h3>
+          <button onclick="toggleAddProductForm()" id="toggleAddProductBtn" class="text-xs font-bold text-green-700 bg-green-50 px-2.5 py-1 rounded-lg">
+            + Open Form
+          </button>
+        </div>
+
+        <div id="newProductFormPanel" class="hidden space-y-3 pt-2 border-t border-slate-100 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500">Product Name</label>
+              <input type="text" id="newProdName" placeholder="e.g. Alphonso Mangoes" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500">Category</label>
+              <select id="newProdCat" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"></select>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500">Unit / Pack</label>
+              <input type="text" id="newProdUnit" placeholder="1 kg" value="1 kg" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500">Our Rate (₹)</label>
+              <input type="number" id="newProdPrice" placeholder="120" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500">MRP Strike (₹)</label>
+              <input type="number" id="newProdStrike" placeholder="150" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+          </div>
+          <button onclick="saveNewProduct()" class="w-full py-2.5 bg-green-600 text-white font-extrabold rounded-xl">
+            Publish Product to Store
+          </button>
+        </div>
+      </div>
+
+      <!-- Bulk Add from Excel -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3 text-xs">
+        <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-file-excel text-green-600"></i> Add Many Items (Excel)
+        </h3>
+        <ol class="text-[11px] text-slate-600 space-y-1 list-decimal pl-4">
+          <li>Download the template, or download your current items to edit them.</li>
+          <li>Fill one item per row in Excel: Name, Category, Unit, Price, MRP, Emoji, Tag, In Stock (Yes/No).</li>
+          <li>Upload the file. Items with the same name are updated, new names are added. New category names are created automatically.</li>
+        </ol>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="downloadProductSheet(false)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl">
+            <i class="fa-solid fa-download"></i> Blank Template
+          </button>
+          <button onclick="downloadProductSheet(true)" class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl">
+            <i class="fa-solid fa-download"></i> Current Items
+          </button>
+        </div>
+        <label class="block w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl text-center cursor-pointer">
+          <i class="fa-solid fa-upload"></i> Upload Excel / CSV File
+          <input type="file" id="productFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleProductFile(this)">
+        </label>
+        <button onclick="loadStarterItems()" class="w-full py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold rounded-xl">
+          ✨ Add Starter Items (Chocolates, Stationery, Snacks, Dairy, Drinks, Household)
+        </button>
+        <p class="text-[10px] text-slate-400">Starter items use typical MRP prices. Check and edit the rates to match your shop.</p>
+      </div>
+
+      <!-- Categories -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3 text-xs">
+        <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-layer-group text-green-600"></i> Categories
+        </h3>
+        <div class="flex gap-2">
+          <input type="text" id="newCatEmoji" maxlength="4" placeholder="🛒" class="w-12 p-2 text-center bg-slate-50 border border-slate-200 rounded-xl">
+          <input type="text" id="newCatName" placeholder="e.g. Frozen Foods" class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+          <button onclick="addCategory()" class="px-3 bg-green-600 text-white font-bold rounded-xl">Add</button>
+        </div>
+        <div id="adminCategoryList" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Manage Rates Table -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Live Rates & Stock</h4>
+          <span class="text-[10px] text-slate-400">Updates instantly</span>
+        </div>
+        <div id="adminProductList" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- SUBSECTION 4: BROADCASTS & NOTIFICATIONS -->
+    <div id="adminSection-broadcasts" class="hidden space-y-3.5">
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-bullhorn text-amber-500"></i> Post Broadcast Notice / Deal
+        </h4>
+        <div>
+          <label class="text-[10px] font-bold text-slate-500">Title</label>
+          <input type="text" id="notifTitle" placeholder="e.g. 20% OFF on Fresh Green Veggies!" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-500">Message</label>
+          <textarea id="notifMsg" rows="2" placeholder="Fresh harvest arrived at 7 AM. Use code FRESH50 on WhatsApp." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="notifIsBanner" checked class="text-green-600 rounded">
+          <label for="notifIsBanner" class="text-xs font-bold text-slate-700">Pin to Top Store Banner</label>
+        </div>
+        <button onclick="publishBroadcast()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl">
+          Publish to All Customers
+        </button>
+      </div>
+
+      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
+        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Active Broadcasts</h4>
+        <div id="adminNotificationsList" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- SUBSECTION 5: RETURNS & REFUND DESK -->
+    <div id="adminSection-returns" class="hidden space-y-3.5">
+      <div class="bg-amber-50 border border-amber-200 p-3 rounded-2xl flex items-center justify-between">
+        <div>
+          <h4 class="text-xs font-bold text-amber-950">Returns & UPI Reversals Desk</h4>
+          <p class="text-[11px] text-amber-800">1-tap instant refund reversal to customer UPI IDs</p>
+        </div>
+        <span class="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full" id="adminPendingReturnsBadge">2 Pending</span>
+      </div>
+
+      <div id="adminReturnsQueue" class="space-y-3">
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900">Order #HM-8842</span>
+            <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">Action Needed</span>
+          </div>
+          <div class="space-y-0.5 text-slate-600 text-[11px]">
+            <p><strong>Item:</strong> Honeycrisp Apples (1 kg)</p>
+            <p><strong>Reason:</strong> Not Fresh / Bruised</p>
+            <p><strong>Customer UPI:</strong> <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-green-700 font-bold">aditi@okhdfcbank</code></p>
+            <p class="font-bold text-red-600 text-xs mt-1">Refund Due: ₹180</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="upi://pay?pa=aditi@okhdfcbank&pn=CustomerRefund&am=180&cu=INR" class="py-2 bg-green-600 text-white font-bold text-center rounded-xl flex items-center justify-center gap-1">
+              <i class="fa-solid fa-bolt text-xs"></i> 1-Tap UPI Pay
+            </a>
+            <button onclick="this.parentElement.parentElement.remove(); alert('Refund marked reversed!');" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">
+              Mark Reversed
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900">Order #HM-8839</span>
+            <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">Action Needed</span>
+          </div>
+          <div class="space-y-0.5 text-slate-600 text-[11px]">
+            <p><strong>Item:</strong> Baby Palak (250g)</p>
+            <p><strong>Reason:</strong> Bruised in Transit</p>
+            <p><strong>Customer UPI:</strong> <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-green-700 font-bold">rahul@paytm</code></p>
+            <p class="font-bold text-red-600 text-xs mt-1">Refund Due: ₹30</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="upi://pay?pa=rahul@paytm&pn=CustomerRefund&am=30&cu=INR" class="py-2 bg-green-600 text-white font-bold text-center rounded-xl flex items-center justify-center gap-1">
+              <i class="fa-solid fa-bolt text-xs"></i> 1-Tap UPI Pay
+            </a>
+            <button onclick="this.parentElement.parentElement.remove(); alert('Refund marked reversed!');" class="py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">
+              Mark Reversed
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & PIN Management Card -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+      <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <i class="fa-solid fa-key text-slate-600"></i> Change Secret Admin PIN
+      </h3>
+      <div class="space-y-2">
+        <input type="password" inputmode="numeric" id="currentAdminPin" maxlength="8" placeholder="Current PIN" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+        <input type="password" inputmode="numeric" id="newAdminPin" maxlength="8" placeholder="New PIN (6–8 digits)" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+        <input type="password" inputmode="numeric" id="confirmAdminPin" maxlength="8" placeholder="Confirm new PIN" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500">
+        <button onclick="updateAdminPin()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+          Update PIN
+        </button>
+      </div>
+      <p class="text-[10px] text-slate-400 mt-1">Changing the PIN signs out every other device.</p>
+    </div>
+  </section>
+
+  <!-- ================= CUSTOMER NOTIFICATIONS MODAL ================= -->
+  <div id="customerNotifModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl text-left relative border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-bullhorn"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-slate-900">Store Notices & Offers</h3>
+            <p class="text-[10px] text-slate-400">Direct from Home Mart Dispatch Desk</p>
+          </div>
+        </div>
+        <button onclick="closeCustomerNotificationsModal()" class="text-slate-400 hover:text-slate-600 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="customerNotifList" class="my-4 max-h-72 overflow-y-auto space-y-2.5 pr-1"></div>
+      <button onclick="closeCustomerNotificationsModal()" class="w-full py-2.5 bg-slate-900 text-white font-extrabold text-xs rounded-xl">
+        Got It
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= PIN AUTHENTICATION MODAL ================= -->
+  <div id="pinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center relative border border-slate-100">
+      <button onclick="closePinModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="w-14 h-14 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h3 class="text-base font-black text-slate-900">Store Owner Login</h3>
+      <p id="pinModalSubtitle" class="text-xs text-slate-500 mt-0.5">Enter your admin PIN to manage fleet, CRM, rates & notices</p>
+      <div id="pinLoginStep" class="my-5">
+        <input type="password" inputmode="numeric" id="pinInput" maxlength="8" placeholder="••••" autofocus class="w-40 text-center tracking-widest text-2xl font-black py-2.5 bg-slate-100 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-slate-900">
+        <div id="pinErrorMsg" class="text-[11px] font-bold text-red-500 mt-2 hidden">
+          Incorrect PIN. Please try again.
+        </div>
+      </div>
+      <div id="pinLoginActions" class="space-y-2">
+        <button onclick="verifyPin()" id="pinUnlockBtn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs rounded-xl shadow-md">
+          Unlock Admin Panel
+        </button>
+      </div>
+      <div id="pinSetupStep" class="hidden my-5 space-y-2 text-left">
+        <p class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-2.5">You're using the starter PIN. Set your own private PIN to unlock the Admin panel.</p>
+        <input type="password" inputmode="numeric" id="setupNewPin" maxlength="8" placeholder="New PIN (6–8 digits)" class="w-full text-sm p-2.5 bg-slate-100 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500">
+        <input type="password" inputmode="numeric" id="setupConfirmPin" maxlength="8" placeholder="Confirm new PIN" class="w-full text-sm p-2.5 bg-slate-100 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500">
+        <div id="setupPinError" class="text-[11px] font-bold text-red-500 hidden"></div>
+        <button onclick="completePinSetup()" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs rounded-xl shadow-md">
+          Save PIN & Unlock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STICKY SLIDE-UP CART BAR ================= -->
+  <div id="stickyCartBar" class="fixed bottom-16 inset-x-4 max-w-md mx-auto z-40 transition-all duration-300 transform translate-y-32">
+    <div onclick="switchView('basket')" class="cursor-pointer bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between border border-slate-700/50">
+      <div class="flex items-center gap-3">
+        <div id="cartCountBadge" class="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center font-bold text-white text-sm">0</div>
+        <div>
+          <div class="text-xs text-slate-300">Total Basket</div>
+          <div id="cartTotalDisplay" class="text-sm font-extrabold text-white">₹0</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-bold bg-green-600 text-white px-3.5 py-2 rounded-xl">
+        Review Basket <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BOTTOM NAVIGATION TABS ================= -->
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200/80 px-4 py-2 z-40 flex justify-around max-w-md mx-auto">
+    <button onclick="switchView('store')" id="tab-store" class="flex flex-col items-center text-green-600 font-bold text-[10px]">
+      <i class="fa-solid fa-store text-base mb-0.5"></i> Market
+    </button>
+    <button onclick="switchView('basket')" id="tab-basket" class="flex flex-col items-center text-slate-400 text-[10px]">
+      <i class="fa-solid fa-basket-shopping text-base mb-0.5"></i> Basket
+    </button>
+    <button onclick="switchView('checkout')" id="tab-checkout" class="flex flex-col items-center text-slate-400 text-[10px]">
+      <i class="fa-solid fa-credit-card text-base mb-0.5"></i> Pay
+    </button>
+    <button onclick="switchView('receipt')" id="tab-receipt" class="flex flex-col items-center text-slate-400 text-[10px]">
+      <i class="fa-solid fa-receipt text-base mb-0.5"></i> Receipt
+    </button>
+    <button onclick="openPinModal()" id="tab-admin" class="flex flex-col items-center text-slate-400 text-[10px]">
+      <i class="fa-solid fa-shield-halved text-base mb-0.5"></i> Admin
+    </button>
+  </nav>
+
+  <!-- ================= MASTER APP JAVASCRIPT LOGIC ================= -->
+  <script>
+    const STORE_WHATSAPP = "917006934064";
+    const STORE_UPI = "9082207857@ybl";
+
+    // State Variables
+    // Products, notices and riders are loaded from the server so every customer sees the owner's latest changes
+    let products = [];
+    let categories = [];
+    let riderFleet = [];
+    let customerCRM = [];
+    let notifications = [];
+    let publicRider = null;
+    // Admin session token, kept only for this browser tab
+    let adminToken = sessionStorage.getItem('hm_admin_token');
+    let isAdminAuthenticated = false;
+    ['hm_products', 'hm_riders', 'hm_crm', 'hm_notifications', 'hm_admin_pin'].forEach(k => localStorage.removeItem(k));
+
+    let cart = JSON.parse(localStorage.getItem('hm_cart')) || {};
+    let activeCat = 'all';
+    let currentView = 'store';
+    let currentOrderId = localStorage.getItem('hm_last_order_id') || 'HM-8842';
+
+    // Persist Helpers
+    async function api(path, options = {}) {
+      const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+      if (adminToken) headers.Authorization = `Bearer ${adminToken}`;
+      const res = await fetch(path, { ...options, headers });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401 && path.startsWith('/api/admin/') && path !== '/api/admin/login') endAdminSession();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+      return data;
+    }
+
+    // Saves an admin collection to the server so the change reaches every customer
+    function pushToServer(key, items) {
+      if (!isAdminAuthenticated) return;
+      api(`/api/admin/data/${key}`, { method: 'PUT', body: JSON.stringify(items) })
+        .catch(err => alert(`Not saved: ${err.message}`));
+    }
+
+    async function loadStorefront() {
+      try {
+        const data = await api('/api/store');
+        if (!isAdminAuthenticated) {
+          products = data.products;
+          categories = data.categories;
+          notifications = data.notifications;
+        }
+        publicRider = data.rider;
+      } catch (err) {
+        console.error(err);
+      }
+      renderCategoryPills();
+      renderStorefront();
+      renderNotifications();
+      updateCartCounts();
+      applyActiveRiderToUI();
+    }
+
+    async function loadAdminData() {
+      const data = await api('/api/admin/data');
+      products = data.products;
+      categories = data.categories;
+      notifications = data.notifications;
+      riderFleet = data.riders;
+      customerCRM = data.crm;
+      isAdminAuthenticated = true;
+    }
+
+    function saveFleet() {
+      pushToServer('riders', riderFleet);
+      renderFleetList();
+      applyActiveRiderToUI();
+    }
+
+    function saveCRM() {
+      pushToServer('crm', customerCRM);
+      renderCRMList();
+    }
+
+    function saveProducts() {
+      pushToServer('products', products);
+      renderCategoryPills();
+      renderAdminCategories();
+      renderStorefront();
+      renderAdminProducts();
+      updateAdminStats();
+    }
+
+    function saveCart() {
+      localStorage.setItem('hm_cart', JSON.stringify(cart));
+      updateCartCounts();
+    }
+
+    function saveNotifications() {
+      pushToServer('notifications', notifications);
+      renderNotifications();
+      renderAdminNotifications();
+    }
+
+    // Active Rider Helpers
+    function getActiveRider() {
+      if (!isAdminAuthenticated && publicRider) return publicRider;
+      return riderFleet.find(r => r.isCurrent) || riderFleet[0] || {
+        name: "Ramesh K.",
+        phone: "7006934064",
+        vehicle: "Electric EV Hub #4",
+        rating: "4.9★"
+      };
+    }
+
+    function applyActiveRiderToUI() {
+      const active = getActiveRider();
+      // Basket Preview
+      const bRider = document.getElementById('basketRiderName');
+      const bHub = document.getElementById('basketHubDesc');
+      const bCall = document.getElementById('basketRiderCall');
+      if (bRider) bRider.innerText = `${active.name}`;
+      if (bHub) bHub.innerText = `${active.vehicle} • Delivery in 15–25 mins`;
+      if (bCall) bCall.href = `tel:+91${active.phone}`;
+
+      // Receipt Screen
+      const rTitle = document.getElementById('receiptRiderTitle');
+      const rSub = document.getElementById('receiptRiderSub');
+      const rCall = document.getElementById('receiptRiderCallBtn');
+      const rWa = document.getElementById('receiptRiderWaBtn');
+      if (rTitle) rTitle.innerText = `${active.name} (Partner)`;
+      if (rSub) rSub.innerText = `${active.rating} • ${active.vehicle}`;
+      if (rCall) rCall.href = `tel:+91${active.phone}`;
+      if (rWa) rWa.href = `https://wa.me/91${active.phone}?text=Hello%20${encodeURIComponent(active.name)},%20checking%20order%20status`;
+    }
+
+    // ================= 1. RIDER FLEET LOGIC =================
+    function renderFleetList() {
+      const container = document.getElementById('fleetCardsList');
+      const badge = document.getElementById('fleetBadgeCount');
+      if (!container) return;
+
+      if (badge) badge.innerText = `${riderFleet.length} Riders`;
+
+      container.innerHTML = riderFleet.map(r => `
+        <div class="p-3 rounded-2xl border ${r.isCurrent ? 'border-green-600 bg-emerald-50/50 ring-1 ring-green-600' : 'border-slate-100 bg-slate-50/80'} flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl ${r.isCurrent ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-700'} flex items-center justify-center font-bold text-xs">
+                <i class="fa-solid fa-person-biking"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="font-bold text-xs text-slate-900">${r.name}</h4>
+                  ${r.isCurrent ? '<span class="bg-green-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">On Duty</span>' : ''}
+                </div>
+                <p class="text-[10px] text-slate-500">${r.vehicle} • <span class="text-amber-600 font-bold">${r.rating}</span></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <a href="tel:+91${r.phone}" class="p-1.5 rounded-lg bg-white border border-slate-200 text-green-700 text-xs" title="Call">
+                <i class="fa-solid fa-phone"></i>
+              </a>
+              <a href="https://wa.me/91${r.phone}" target="_blank" class="p-1.5 rounded-lg bg-white border border-slate-200 text-[#25D366] text-xs" title="WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-xs">
+            <span class="font-mono text-[11px] text-slate-500">+91 ${r.phone}</span>
+            <div class="flex items-center gap-1.5">
+              ${!r.isCurrent ? `
+                <button onclick="setActiveRider('${r.id}')" class="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded-lg">
+                  Set Active
+                </button>
+              ` : `
+                <span class="text-[11px] text-green-700 font-bold flex items-center gap-0.5">
+                  <i class="fa-solid fa-check text-[10px]"></i> Current Shift
+                </span>
+              `}
+              <button onclick="editRider('${r.id}')" class="p-1 text-slate-400 hover:text-slate-800 rounded" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              ${riderFleet.length > 1 ? `
+                <button onclick="deleteRider('${r.id}')" class="p-1 text-red-400 hover:text-red-600 rounded" title="Delete">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleRiderForm(show = null) {
+      const panel = document.getElementById('riderFormPanel');
+      const btn = document.getElementById('btnToggleRiderForm');
+      const title = document.getElementById('riderFormTitle');
+      const editId = document.getElementById('editRiderId');
+      if (!panel) return;
+
+      const willShow = show !== null ? show : panel.classList.contains('hidden');
+      if (willShow) {
+        panel.classList.remove('hidden');
+        if (btn) btn.innerText = "✕ Close";
+      } else {
+        panel.classList.add('hidden');
+        if (btn) btn.innerText = "+ Add Rider";
+        if (editId) editId.value = "";
+        if (title) title.innerText = "Register New Delivery Rider";
+        resetRiderInputs();
+      }
+    }
+
+    function resetRiderInputs() {
+      document.getElementById('riderNameInput').value = '';
+      document.getElementById('riderPhoneInput').value = '';
+      document.getElementById('riderVehicleInput').value = 'Electric EV Hub #4';
+      document.getElementById('riderRatingInput').value = '4.9★';
+      document.getElementById('riderSetCurrent').checked = false;
+      document.getElementById('editRiderId').value = '';
+    }
+
+    function saveRiderToFleet() {
+      const name = document.getElementById('riderNameInput').value.trim();
+      const phone = document.getElementById('riderPhoneInput').value.trim().replace(/\D/g, '');
+      const vehicle = document.getElementById('riderVehicleInput').value.trim() || 'Electric EV Hub #4';
+      const rating = document.getElementById('riderRatingInput').value.trim() || '4.9★';
+      const setCurrent = document.getElementById('riderSetCurrent').checked;
+      const editId = document.getElementById('editRiderId').value.trim();
+
+      if (!name || phone.length < 10) {
+        alert("Please provide rider name and valid 10-digit mobile number.");
+        return;
+      }
+
+      if (editId) {
+        const idx = riderFleet.findIndex(r => r.id === editId);
+        if (idx !== -1) {
+          riderFleet[idx].name = name;
+          riderFleet[idx].phone = phone;
+          riderFleet[idx].vehicle = vehicle;
+          riderFleet[idx].rating = rating;
+          if (setCurrent) {
+            riderFleet.forEach(r => r.isCurrent = false);
+            riderFleet[idx].isCurrent = true;
+          }
+        }
+      } else {
+        const newRider = {
+          id: 'r_' + Date.now(),
+          name,
+          phone,
+          vehicle,
+          rating,
+          isCurrent: setCurrent
+        };
+        if (setCurrent) {
+          riderFleet.forEach(r => r.isCurrent = false);
+        }
+        riderFleet.unshift(newRider);
+      }
+
+      if (!riderFleet.some(r => r.isCurrent)) {
+        riderFleet[0].isCurrent = true;
+      }
+
+      saveFleet();
+      toggleRiderForm(false);
+      alert(`Rider "${name}" saved to fleet successfully!`);
+    }
+
+    function editRider(id) {
+      const rider = riderFleet.find(r => r.id === id);
+      if (!rider) return;
+
+      toggleRiderForm(true);
+      document.getElementById('editRiderId').value = rider.id;
+      document.getElementById('riderFormTitle').innerText = `Edit Rider: ${rider.name}`;
+      document.getElementById('riderNameInput').value = rider.name;
+      document.getElementById('riderPhoneInput').value = rider.phone;
+      document.getElementById('riderVehicleInput').value = rider.vehicle;
+      document.getElementById('riderRatingInput').value = rider.rating;
+      document.getElementById('riderSetCurrent').checked = rider.isCurrent;
+    }
+
+    function setActiveRider(id) {
+      riderFleet.forEach(r => r.isCurrent = (r.id === id));
+      saveFleet();
+    }
+
+    function deleteRider(id) {
+      if (riderFleet.length <= 1) {
+        alert("You must keep at least one active rider in the fleet.");
+        return;
+      }
+      const r = riderFleet.find(item => item.id === id);
+      if (confirm(`Remove rider "${r?.name}" from store fleet?`)) {
+        riderFleet = riderFleet.filter(item => item.id !== id);
+        if (!riderFleet.some(item => item.isCurrent)) {
+          riderFleet[0].isCurrent = true;
+        }
+        saveFleet();
+      }
+    }
+
+    // ================= 2. CUSTOMER CRM & LOYALTY LOGIC =================
+    let lookupTimer = null;
+    let lookedUpCustomer = null;
+    let lastLookupPhone = '';
+
+    function lookupCustomerByPhone() {
+      const phoneInput = document.getElementById('custPhone')?.value.trim().replace(/\D/g, '') || '';
+      if (phoneInput !== lastLookupPhone) {
+        lastLookupPhone = phoneInput;
+        lookedUpCustomer = null;
+        clearTimeout(lookupTimer);
+        if (phoneInput.length === 10) {
+          lookupTimer = setTimeout(async () => {
+            try {
+              const { customer } = await api('/api/customer-lookup', { method: 'POST', body: JSON.stringify({ phone: phoneInput }) });
+              if (lastLookupPhone === phoneInput) {
+                lookedUpCustomer = customer;
+                showCustomerTier();
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }, 400);
+        }
+      }
+      showCustomerTier();
+    }
+
+    function showCustomerTier() {
+      const nameInput = document.getElementById('custName')?.value.trim() || 'Valued Shopper';
+      const existing = lookedUpCustomer;
+      const tierBadge = document.getElementById('checkoutCustTierBadge');
+      const perkDesc = document.getElementById('checkoutCustPerkDesc');
+
+      if (existing) {
+        if (tierBadge) tierBadge.innerText = existing.tier;
+        if (perkDesc) perkDesc.innerText = `Active Loyalty Perk: ${existing.activePerk}`;
+      } else {
+        if (tierBadge) tierBadge.innerText = "🌱 New Shopper Tier";
+        if (perkDesc) perkDesc.innerText = "Place order today to unlock VIP Gold perks & harvest gifts!";
+      }
+
+      // Sync Receipt Display
+      const rName = document.getElementById('receiptCustName');
+      const rTier = document.getElementById('receiptCustTier');
+      const rPerk = document.getElementById('receiptCustPerk');
+      if (rName) rName.innerText = nameInput;
+      if (rTier) rTier.innerText = existing ? existing.tier : "Valued Member";
+      if (rPerk) rPerk.innerText = existing ? `Gift Perk: ${existing.activePerk}` : "Welcome harvest gift unlocked on 1st order!";
+    }
+
+    // Adds the order to the store's customer list on the server
+    function recordCustomerOrder() {
+      const name = document.getElementById('custName')?.value.trim() || "Valued Shopper";
+      const phone = document.getElementById('custPhone')?.value.trim().replace(/\D/g, '') || "";
+      const address = document.getElementById('custAddress')?.value.trim() || "";
+      if (phone.length !== 10) return;
+      api('/api/orders', { method: 'POST', body: JSON.stringify({ name, phone, address, cart: { ...cart } }) })
+        .catch(err => console.error(err));
+    }
+
+    function renderCRMList() {
+      const container = document.getElementById('crmCustomerList');
+      const badge = document.getElementById('crmBadgeCount');
+      if (!container) return;
+
+      if (badge) badge.innerText = `${customerCRM.length} Shoppers`;
+
+      container.innerHTML = customerCRM.map(c => `
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-bold text-xs text-slate-900">${c.name}</h4>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full ${c.tier.includes('VIP') ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-700'}">${c.tier}</span>
+              </div>
+              <p class="text-[10px] text-slate-500 font-mono mt-0.5">+91 ${c.phone} • ${c.ordersCount} Orders (₹${c.totalSpent})</p>
+            </div>
+            <div class="flex items-center gap-1">
+              <a href="tel:+91${c.phone}" class="p-1.5 rounded-lg bg-white border border-slate-200 text-green-700 text-xs">
+                <i class="fa-solid fa-phone"></i>
+              </a>
+              <button onclick="sendWhatsAppGift('${c.id}')" class="p-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[#25D366] text-xs" title="Send WhatsApp Gift">
+                <i class="fa-brands fa-whatsapp"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-2 rounded-xl bg-amber-50/80 border border-amber-200/60 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm">🎁</span>
+              <span class="text-[11px] font-bold text-amber-950">${c.activePerk}</span>
+            </div>
+            <button onclick="editCustomerPerk('${c.id}')" class="text-[10px] font-bold text-green-700 hover:underline">
+              Change Perk
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleCrmForm(show = null) {
+      const panel = document.getElementById('crmFormPanel');
+      const btn = document.getElementById('btnToggleCrmForm');
+      if (!panel) return;
+
+      const willShow = show !== null ? show : panel.classList.contains('hidden');
+      if (willShow) {
+        panel.classList.remove('hidden');
+        if (btn) btn.innerText = "✕ Close";
+      } else {
+        panel.classList.add('hidden');
+        if (btn) btn.innerText = "+ Add Customer";
+      }
+    }
+
+    function saveCustomerRecord() {
+      const name = document.getElementById('crmNameInput').value.trim();
+      const phone = document.getElementById('crmPhoneInput').value.trim().replace(/\D/g, '');
+      const address = document.getElementById('crmAddressInput').value.trim();
+      const tier = document.getElementById('crmTierInput').value;
+      const perk = document.getElementById('crmPerkInput').value.trim() || 'Complimentary Harvest Gift';
+
+      if (!name || phone.length < 10) {
+        alert("Please provide customer name and 10-digit phone number.");
+        return;
+      }
+
+      const existingIndex = customerCRM.findIndex(c => c.phone === phone);
+      if (existingIndex !== -1) {
+        customerCRM[existingIndex].name = name;
+        customerCRM[existingIndex].address = address;
+        customerCRM[existingIndex].tier = tier;
+        customerCRM[existingIndex].activePerk = perk;
+      } else {
+        customerCRM.unshift({
+          id: 'c_' + Date.now(),
+          name,
+          phone,
+          address,
+          ordersCount: tier.includes('VIP') ? 10 : 3,
+          totalSpent: 1500,
+          tier,
+          activePerk: perk
+        });
+      }
+
+      saveCRM();
+      toggleCrmForm(false);
+      alert(`Customer profile for "${name}" saved to CRM!`);
+    }
+
+    function editCustomerPerk(id) {
+      const c = customerCRM.find(item => item.id === id);
+      if (!c) return;
+      const newPerk = prompt(`Enter new loyalty perk/gift for ${c.name}:`, c.activePerk);
+      if (newPerk) {
+        c.activePerk = newPerk;
+        saveCRM();
+      }
+    }
+
+    function sendWhatsAppGift(id) {
+      const c = customerCRM.find(item => item.id === id);
+      if (!c) return;
+
+      const text = `🎁 *EXCLUSIVE HOME MART LOYALTY GIFT FOR ${c.name.toUpperCase()}*\n\n` +
+                   `Dear ${c.name}, thank you for being our valued shopper!\n\n` +
+                   `🌟 *Tier Status:* ${c.tier}\n` +
+                   `🎁 *Your Active Gift:* ${c.activePerk}\n\n` +
+                   `This gift will be included complimentary in your next fresh produce delivery box!\n\n` +
+                   `🛒 *Order Today:* ${window.location.origin + window.location.pathname}`;
+
+      const url = `https://api.whatsapp.com/send?phone=91${c.phone}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    // ================= 3. STOREFRONT & CART LOGIC =================
+    function renderStorefront() {
+      const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      const grid = document.getElementById('productGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchesCat = activeCat === 'all' || p.cat === activeCat;
+        const matchesSearch = p.name.toLowerCase().includes(query) || p.unit.toLowerCase().includes(query);
+        return matchesCat && matchesSearch;
+      });
+
+      filtered.forEach(p => {
+        const qty = cart[p.id] || 0;
+        const isOut = p.inStock === false;
+        const card = document.createElement('div');
+        card.className = `bg-white border ${isOut ? 'border-slate-200 opacity-60' : 'border-slate-100'} rounded-2xl p-3 shadow-xs flex flex-col justify-between`;
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="${isOut ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'} text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                ${isOut ? 'Sold Out' : p.tag}
+              </span>
+              <div class="text-2xl">${p.emoji}</div>
+            </div>
+            <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+            <div class="text-[10px] text-slate-400 mt-0.5">${p.unit}</div>
+            <div class="mt-2 flex items-baseline gap-1.5">
+              <span class="font-extrabold text-sm text-slate-900">₹${p.price}</span>
+              ${p.strike ? `<span class="text-[10px] text-slate-400 line-through">₹${p.strike}</span>` : ''}
+            </div>
+          </div>
+          <div class="mt-3">
+            ${isOut ? `
+              <div class="w-full py-1.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold text-center">
+                Out of Stock
+              </div>
+            ` : qty === 0 ? `
+              <button onclick="addToCart(${p.id})" class="w-full py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> Add
+              </button>
+            ` : `
+              <div class="flex items-center justify-between bg-green-600 text-white rounded-xl px-2 py-1">
+                <button onclick="changeQty(${p.id}, -1)" class="w-6 h-6 flex items-center justify-center font-bold text-sm">－</button>
+                <span class="text-xs font-bold">${qty}</span>
+                <button onclick="changeQty(${p.id}, 1)" class="w-6 h-6 flex items-center justify-center font-bold text-sm">＋</button>
+              </div>
+            `}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      if (prod && prod.inStock === false) {
+        alert("This item is currently sold out.");
+        return;
+      }
+      cart[id] = (cart[id] || 0) + 1;
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function changeQty(id, delta) {
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function clearBasket() {
+      cart = {};
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function setCategory(cat) {
+      activeCat = cat;
+      renderCategoryPills();
+      renderStorefront();
+    }
+
+    // Shows only categories that have at least one item, plus "All Items"
+    function renderCategoryPills() {
+      const bar = document.getElementById('categoryPills');
+      if (!bar) return;
+      const used = new Set(products.map(p => p.cat));
+      const pills = [{ id: 'all', name: 'All Items', emoji: '' }, ...categories.filter(c => used.has(c.id))];
+      if (!pills.some(c => c.id === activeCat)) activeCat = 'all';
+      bar.innerHTML = pills.map(c => `
+        <button onclick="setCategory('${c.id}')" class="cat-pill ${c.id === activeCat ? 'bg-green-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200'} px-3.5 py-1.5 rounded-full shrink-0">${c.emoji ? c.emoji + ' ' : ''}${c.name}</button>
+      `).join('');
+    }
+
+    function categoryName(id) {
+      const c = categories.find(c => c.id === id);
+      return c ? `${c.emoji} ${c.name}` : 'Uncategorised';
+    }
+
+    function renderCategoryOptions() {
+      const select = document.getElementById('newProdCat');
+      if (!select) return;
+      select.innerHTML = categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+    }
+
+    function slugify(name) {
+      return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'cat';
+    }
+
+    // Finds a category by id or name, creating it if it doesn't exist yet
+    function ensureCategory(label, emoji = '🛒') {
+      const text = String(label || '').replace(/[<>"'`&]/g, '').trim();
+      if (!text) return categories[0]?.id || 'other';
+      const lower = text.toLowerCase();
+      const found = categories.find(c => c.id === lower || c.name.toLowerCase() === lower);
+      if (found) return found.id;
+      let id = slugify(text);
+      while (categories.some(c => c.id === id)) id += '-2';
+      categories.push({ id, name: text, emoji: emoji.replace(/[<>"'`&]/g, '') || '🛒' });
+      return id;
+    }
+
+    function saveCategories() {
+      pushToServer('categories', categories);
+      renderCategoryPills();
+      renderCategoryOptions();
+      renderAdminCategories();
+    }
+
+    function addCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      const emoji = document.getElementById('newCatEmoji').value.trim() || '🛒';
+      if (!name) return alert("Enter a category name.");
+      if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) return alert("That category already exists.");
+      ensureCategory(name, emoji);
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatEmoji').value = '';
+      saveCategories();
+    }
+
+    function deleteCategory(id) {
+      const count = products.filter(p => p.cat === id).length;
+      const c = categories.find(c => c.id === id);
+      if (count > 0) return alert(`"${c?.name}" still has ${count} items. Move or delete them first.`);
+      categories = categories.filter(c => c.id !== id);
+      saveCategories();
+    }
+
+    function renderAdminCategories() {
+      const list = document.getElementById('adminCategoryList');
+      if (!list) return;
+      list.innerHTML = categories.map(c => {
+        const count = products.filter(p => p.cat === c.id).length;
+        return `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="font-bold text-slate-800">${c.emoji} ${c.name} <span class="text-[10px] text-slate-400 font-normal">• ${count} items</span></span>
+            <button onclick="deleteCategory('${c.id}')" class="text-red-500 p-1" title="Delete category"><i class="fa-solid fa-trash-can"></i></button>
+          </div>`;
+      }).join('');
+    }
+
+    // ===== Excel / CSV bulk items =====
+    const SHEET_COLUMNS = ['Name', 'Category', 'Unit', 'Price', 'MRP', 'Emoji', 'Tag', 'In Stock'];
+
+    function loadSheetLibrary() {
+      if (window.XLSX) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Could not load the Excel reader. Check your internet connection.'));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function downloadProductSheet(withItems) {
+      try {
+        await loadSheetLibrary();
+      } catch (err) {
+        return alert(err.message);
+      }
+      const rows = withItems
+        ? products.map(p => [p.name, categories.find(c => c.id === p.cat)?.name || p.cat, p.unit, p.price, p.strike || '', p.emoji, p.tag, p.inStock === false ? 'No' : 'Yes'])
+        : [['Cadbury Dairy Milk', 'Chocolates & Sweets', '50 g', 50, 50, '🍫', 'Bestseller', 'Yes'],
+           ['Classmate Notebook', 'Stationery', '172 pages', 55, 60, '📓', 'School Essential', 'Yes']];
+      const sheet = XLSX.utils.aoa_to_sheet([SHEET_COLUMNS, ...rows]);
+      sheet['!cols'] = [{ wch: 32 }, { wch: 22 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 7 }, { wch: 18 }, { wch: 9 }];
+      const book = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, sheet, 'Items');
+      XLSX.writeFile(book, withItems ? 'home-mart-items.xlsx' : 'home-mart-items-template.xlsx');
+    }
+
+    async function handleProductFile(input) {
+      const file = input.files[0];
+      input.value = '';
+      if (!file) return;
+      try {
+        await loadSheetLibrary();
+        const book = XLSX.read(await file.arrayBuffer());
+        const rows = XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]], { defval: '' });
+        importProductRows(rows);
+      } catch (err) {
+        alert(`Could not read the file: ${err.message}`);
+      }
+    }
+
+    function importProductRows(rows) {
+      // Header names are matched loosely, e.g. "price", "Price (₹)" and "PRICE" all work
+      const pick = (row, ...names) => {
+        const key = Object.keys(row).find(k => names.some(n => k.toLowerCase().replace(/[^a-z]/g, '').startsWith(n)));
+        return key === undefined ? '' : String(row[key]).trim();
+      };
+      const toNumber = v => parseFloat(String(v).replace(/[^0-9.]/g, ''));
+      const clean = v => v.replace(/[<>"'`&]/g, '');
+      const catsBefore = categories.length;
+      let added = 0, updated = 0, skipped = 0;
+      let nextId = Math.max(Date.now(), ...products.map(p => Number(p.id) || 0)) + 1;
+
+      rows.forEach(row => {
+        const name = clean(pick(row, 'name', 'item', 'product'));
+        const price = toNumber(pick(row, 'price', 'rate', 'ourrate', 'sellingprice'));
+        if (!name || !(price > 0)) { skipped++; return; }
+        const mrp = toNumber(pick(row, 'mrp', 'strike'));
+        const stock = pick(row, 'instock', 'stock', 'available').toLowerCase();
+        const fields = {
+          name,
+          cat: ensureCategory(pick(row, 'category', 'cat')),
+          unit: clean(pick(row, 'unit', 'pack', 'size', 'quantity')) || '1 pc',
+          price,
+          strike: mrp > 0 ? mrp : price,
+          emoji: clean(pick(row, 'emoji', 'icon')) || '📦',
+          tag: clean(pick(row, 'tag', 'label')) || 'Fresh Arrival',
+          inStock: !['no', 'n', 'false', '0', 'out'].includes(stock),
+        };
+        const existing = products.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (existing) { Object.assign(existing, fields); updated++; }
+        else { products.push({ id: nextId++, ...fields }); added++; }
+      });
+
+      const newCats = categories.length - catsBefore;
+      if (added + updated === 0) {
+        return alert("No items found. Each row needs at least a Name and a Price.");
+      }
+      if (newCats) saveCategories();
+      saveProducts();
+      alert(`Done: ${added} items added, ${updated} updated${newCats ? `, ${newCats} new categories` : ''}${skipped ? `. ${skipped} rows skipped (missing name or price)` : ''}.`);
+    }
+
+    async function loadStarterItems() {
+      if (!confirm("Add the starter items to your store? Items you already have (same name) are not changed.")) return;
+      try {
+        const { addedItems, addedCategories } = await api('/api/admin/starter-items', { method: 'POST' });
+        await loadAdminData();
+        renderAdminProducts();
+        updateAdminStats();
+        renderStorefront();
+        renderCategoryPills();
+        renderCategoryOptions();
+        renderAdminCategories();
+        alert(`Added ${addedItems} items and ${addedCategories} categories. Review the rates below.`);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function deleteProduct(id) {
+      const item = products.find(p => p.id === id);
+      if (!item || !confirm(`Delete "${item.name}" from the store?`)) return;
+      products = products.filter(p => p.id !== id);
+      delete cart[id];
+      saveCart();
+      saveProducts();
+    }
+
+    function calculateTotals() {
+      let subtotal = 0;
+      let count = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = products.find(p => p.id == id);
+        if (item && qty > 0) {
+          count += qty;
+          subtotal += (item.price * qty);
+        }
+      }
+      const discount = subtotal > 300 ? 50 : 0;
+      const total = subtotal > 0 ? (subtotal - discount + 6) : 0;
+      return { count, subtotal, discount, total };
+    }
+
+    function updateCartCounts() {
+      const { count, total } = calculateTotals();
+      const stickyBar = document.getElementById('stickyCartBar');
+      if (count > 0 && currentView === 'store') {
+        document.getElementById('cartCountBadge').innerText = count;
+        document.getElementById('cartTotalDisplay').innerText = `₹${total}`;
+        stickyBar.classList.remove('translate-y-32');
+      } else {
+        stickyBar.classList.add('translate-y-32');
+      }
+    }
+
+    function renderBasket() {
+      const { count, subtotal, discount, total } = calculateTotals();
+      const container = document.getElementById('basketItemsList');
+      container.innerHTML = '';
+
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = products.find(p => p.id == id);
+        if (item && qty > 0) {
+          const lineTotal = item.price * qty;
+          const el = document.createElement('div');
+          el.className = "bg-white border border-slate-100 rounded-2xl p-3 shadow-xs flex items-center justify-between";
+          el.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="text-2xl">${item.emoji}</div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">${item.name}</h4>
+                <div class="text-[10px] text-slate-400">₹${item.price} • ${item.unit}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center bg-slate-100 rounded-xl px-2 py-1">
+                <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 flex items-center justify-center font-bold text-xs text-slate-600">－</button>
+                <span class="text-xs font-bold text-slate-800 px-2">${qty}</span>
+                <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 flex items-center justify-center font-bold text-xs text-slate-600">＋</button>
+              </div>
+              <div class="text-xs font-extrabold text-slate-900 w-12 text-right">₹${lineTotal}</div>
+            </div>
+          `;
+          container.appendChild(el);
+        }
+      }
+
+      if (count === 0) {
+        document.getElementById('emptyBasketNotice').classList.remove('hidden');
+        document.getElementById('billCard').classList.add('hidden');
+        document.getElementById('proceedCheckoutBtn').classList.add('hidden');
+      } else {
+        document.getElementById('emptyBasketNotice').classList.add('hidden');
+        document.getElementById('billCard').classList.remove('hidden');
+        document.getElementById('proceedCheckoutBtn').classList.remove('hidden');
+
+        document.getElementById('subtotalDisplay').innerText = `₹${subtotal}`;
+        document.getElementById('discountDisplay').innerText = `-₹${discount}`;
+        document.getElementById('totalDisplay').innerText = `₹${total}`;
+        document.getElementById('basketPayAmount').innerText = `Pay ₹${total}`;
+        document.getElementById('checkoutTotalBtn').innerText = `Total: ₹${total}`;
+      }
+    }
+
+    function switchView(view) {
+      if (view === 'admin' && !isAdminAuthenticated) {
+        openPinModal();
+        return;
+      }
+      currentView = view;
+      ['store', 'basket', 'checkout', 'receipt', 'admin'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const tab = document.getElementById(`tab-${v}`);
+        if (el) {
+          if (v === view) {
+            el.classList.remove('hidden');
+            if (tab) tab.className = "flex flex-col items-center text-green-600 font-bold text-[10px]";
+          } else {
+            el.classList.add('hidden');
+            if (tab) tab.className = "flex flex-col items-center text-slate-400 text-[10px]";
+          }
+        }
+      });
+
+      const searchBox = document.getElementById('searchBarContainer');
+      if (view === 'store') searchBox.classList.remove('hidden');
+      else searchBox.classList.add('hidden');
+
+      if (view === 'basket') renderBasket();
+      if (view === 'checkout') {
+        const { total, count } = calculateTotals();
+        if (count === 0) {
+          switchView('basket');
+          return;
+        }
+        document.getElementById('checkoutTotalBtn').innerText = `Total: ₹${total}`;
+        lookupCustomerByPhone();
+      }
+      if (view === 'admin') {
+        renderFleetList();
+        renderCRMList();
+        renderAdminProducts();
+        renderCategoryOptions();
+        renderAdminCategories();
+        renderAdminNotifications();
+      }
+      updateCartCounts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyUpi() {
+      navigator.clipboard.writeText(STORE_UPI);
+      const label = document.getElementById('copyUpiLabel');
+      label.innerText = "Copied!";
+      setTimeout(() => { label.innerText = "Copy"; }, 2000);
+    }
+
+    function placeWhatsAppOrder() {
+      const name = document.getElementById('custName').value.trim() || "Customer";
+      const address = document.getElementById('custAddress').value.trim() || "Indiranagar, Bengaluru";
+      const phone = document.getElementById('custPhone').value.trim() || "";
+      const method = document.querySelector('input[name="payMethod"]:checked')?.value || "UPI QR (9082207857@ybl)";
+      const orderId = "HM-" + Math.floor(10000 + Math.random() * 90000);
+      currentOrderId = orderId;
+      localStorage.setItem('hm_last_order_id', orderId);
+
+      const { total, count } = calculateTotals();
+      if (count === 0) {
+        alert("Your basket is empty. Please add items to proceed!");
+        switchView('store');
+        return;
+      }
+
+      // Record Customer into CRM
+      recordCustomerOrder();
+
+      let itemList = "";
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = products.find(p => p.id == id);
+        if (item && qty > 0) {
+          itemList += `• ${item.name} (${item.unit}) x ${qty} = ₹${item.price * qty}\n`;
+        }
+      }
+
+      const activeRider = getActiveRider();
+      const baseUrl = window.location.origin + window.location.pathname;
+      const trackUrl = `${baseUrl}?track=${orderId}`;
+
+      const msg = `🛒 *NEW ORDER: HOME MART FRESH*\n` +
+                  `Order ID: *#${orderId}*\n\n` +
+                  `👤 *Customer:* ${name}\n` +
+                  (phone ? `📞 *Phone:* ${phone}\n` : '') +
+                  `📍 *Delivery Address:* ${address}\n\n` +
+                  `📦 *Order Items:*\n${itemList}\n` +
+                  `💰 *Total Amount:* ₹${total}\n` +
+                  `💳 *Payment:* ${method}\n` +
+                  `⚡ *Official UPI:* ${STORE_UPI}\n\n` +
+                  `🛵 *Assigned Dispatch Partner:* ${activeRider.name} (+91 ${activeRider.phone})\n` +
+                  `📍 *Live Order Tracking:* ${trackUrl}\n\n` +
+                  `_Please confirm packing and dispatch!_`;
+
+      document.getElementById('receiptOrderId').innerText = `Order #${orderId}`;
+
+      const waUrl = `https://api.whatsapp.com/send?phone=${STORE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+
+      cart = {};
+      saveCart();
+      switchView('receipt');
+    }
+
+    // ================= 4. RETURNS & UPI REVERSAL LOGIC =================
+    function calcReturnRefund() {
+      let sum = 0;
+      document.querySelectorAll('.return-checkbox:checked').forEach(cb => {
+        sum += parseFloat(cb.value);
+      });
+      document.getElementById('refundTotalDisplay').innerText = `₹${sum}`;
+    }
+
+    function submitReturnRequest() {
+      const checkedBoxes = Array.from(document.querySelectorAll('.return-checkbox:checked'));
+      if (checkedBoxes.length === 0) {
+        alert("Please select at least one item to return.");
+        return;
+      }
+      const reason = document.getElementById('returnReason').value;
+      const upi = document.getElementById('custRefundUpi').value.trim();
+      if (!upi) {
+        alert("Please provide your UPI ID for instant reversal.");
+        return;
+      }
+      let sum = 0;
+      let itemsList = "";
+      checkedBoxes.forEach(cb => {
+        sum += parseFloat(cb.value);
+        itemsList += `• ${cb.dataset.name} (₹${cb.value})\n`;
+      });
+
+      const ticketId = "RT-" + Math.floor(1000 + Math.random() * 9000);
+      const text = `🔄 *HOME MART RETURN & INSTANT UPI REFUND REQUEST*\n` +
+                   `Return Ticket: *#${ticketId}*\n` +
+                   `Order Reference: *#${currentOrderId}*\n\n` +
+                   `📦 *Items to Return:*\n${itemsList}\n` +
+                   `⚠️ *Reason:* ${reason}\n` +
+                   `💰 *Refund Claim:* ₹${sum}\n` +
+                   `⚡ *Customer UPI for Reversal:* ${upi}\n\n` +
+                   `_Please reverse payment within 2 hours as per 100% Freshness Guarantee!_`;
+
+      const url = `https://api.whatsapp.com/send?phone=${STORE_WHATSAPP}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      alert(`Return Ticket #${ticketId} submitted! Store manager has been alerted for instant UPI reversal.`);
+    }
+
+    // ================= 5. ADMIN & PIN SECURITY =================
+    function openPinModal() {
+      if (isAdminAuthenticated) {
+        switchView('admin');
+        return;
+      }
+      showPinStep('login');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinErrorMsg').classList.add('hidden');
+      document.getElementById('pinModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('pinInput').focus(), 150);
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.add('hidden');
+    }
+
+    function showPinStep(step) {
+      const setup = step === 'setup';
+      document.getElementById('pinLoginStep').classList.toggle('hidden', setup);
+      document.getElementById('pinLoginActions').classList.toggle('hidden', setup);
+      document.getElementById('pinSetupStep').classList.toggle('hidden', !setup);
+      document.getElementById('setupPinError').classList.add('hidden');
+    }
+
+    function showPinError(id, message) {
+      const el = document.getElementById(id);
+      el.innerText = message;
+      el.classList.remove('hidden');
+    }
+
+    async function enterAdmin() {
+      await loadAdminData();
+      closePinModal();
+      switchView('admin');
+    }
+
+    let starterPin = '';
+
+    async function verifyPin() {
+      const entered = document.getElementById('pinInput').value.trim();
+      const btn = document.getElementById('pinUnlockBtn');
+      if (!entered) return;
+      btn.disabled = true;
+      try {
+        const { token, mustChangePin } = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ pin: entered }) });
+        adminToken = token;
+        sessionStorage.setItem('hm_admin_token', token);
+        document.getElementById('pinInput').value = '';
+        if (mustChangePin) {
+          starterPin = entered;
+          showPinStep('setup');
+          return;
+        }
+        await enterAdmin();
+      } catch (err) {
+        showPinError('pinErrorMsg', err.message);
+        document.getElementById('pinInput').classList.add('border-red-500');
+        setTimeout(() => document.getElementById('pinInput').classList.remove('border-red-500'), 1000);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function completePinSetup() {
+      const newPin = document.getElementById('setupNewPin').value.trim();
+      const confirmPin = document.getElementById('setupConfirmPin').value.trim();
+      if (!/^\d{6,8}$/.test(newPin)) return showPinError('setupPinError', 'PIN must be 6 to 8 digits.');
+      if (newPin !== confirmPin) return showPinError('setupPinError', 'The two PINs do not match.');
+      try {
+        await api('/api/admin/pin', { method: 'POST', body: JSON.stringify({ currentPin: starterPin, newPin }) });
+        starterPin = '';
+        document.getElementById('setupNewPin').value = '';
+        document.getElementById('setupConfirmPin').value = '';
+        await enterAdmin();
+        alert('Your new admin PIN is saved. Keep it private.');
+      } catch (err) {
+        showPinError('setupPinError', err.message);
+      }
+    }
+
+    document.getElementById('pinInput')?.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') verifyPin();
+    });
+
+    // Clears the admin session in this tab and goes back to the customer view
+    function endAdminSession() {
+      adminToken = null;
+      sessionStorage.removeItem('hm_admin_token');
+      if (!isAdminAuthenticated) return;
+      isAdminAuthenticated = false;
+      riderFleet = [];
+      customerCRM = [];
+      switchView('store');
+      loadStorefront();
+    }
+
+    function lockAdmin() {
+      if (adminToken) api('/api/admin/logout', { method: 'POST' }).catch(() => {});
+      endAdminSession();
+    }
+
+    async function updateAdminPin() {
+      const currentPin = document.getElementById('currentAdminPin').value.trim();
+      const newPin = document.getElementById('newAdminPin').value.trim();
+      const confirmPin = document.getElementById('confirmAdminPin').value.trim();
+      if (!currentPin) return alert("Enter your current PIN.");
+      if (!/^\d{6,8}$/.test(newPin)) return alert("New PIN must be 6 to 8 digits.");
+      if (newPin !== confirmPin) return alert("The two new PINs do not match.");
+      try {
+        await api('/api/admin/pin', { method: 'POST', body: JSON.stringify({ currentPin, newPin }) });
+        ['currentAdminPin', 'newAdminPin', 'confirmAdminPin'].forEach(id => document.getElementById(id).value = '');
+        alert("Admin PIN updated. Other devices have been signed out.");
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const tabs = ['fleet', 'crm', 'products', 'broadcasts', 'returns'];
+      tabs.forEach(t => {
+        const sec = document.getElementById(`adminSection-${t}`);
+        const btn = document.getElementById(`adminTabBtn-${t}`);
+        if (t === tab) {
+          if (sec) sec.classList.remove('hidden');
+          if (btn) btn.className = "py-2 rounded-lg bg-green-600 text-white shadow-xs truncate";
+        } else {
+          if (sec) sec.classList.add('hidden');
+          if (btn) btn.className = "py-2 rounded-lg text-slate-600 hover:text-slate-900 truncate";
+        }
+      });
+      if (tab === 'fleet') renderFleetList();
+      if (tab === 'crm') renderCRMList();
+      if (tab === 'products') renderAdminProducts();
+      if (tab === 'broadcasts') renderAdminNotifications();
+    }
+
+    function updateAdminStats() {
+      const total = products.length;
+      const inStock = products.filter(p => p.inStock !== false).length;
+      const statT = document.getElementById('adminStatTotal');
+      const statS = document.getElementById('adminStatInStock');
+      if (statT) statT.innerText = total;
+      if (statS) statS.innerText = inStock;
+    }
+
+    function toggleAddProductForm() {
+      const panel = document.getElementById('newProductFormPanel');
+      const btn = document.getElementById('toggleAddProductBtn');
+      if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        btn.innerText = "✕ Close";
+      } else {
+        panel.classList.add('hidden');
+        btn.innerText = "+ Open Form";
+      }
+    }
+
+    function saveNewProduct() {
+      const name = document.getElementById('newProdName').value.trim();
+      const cat = document.getElementById('newProdCat').value;
+      const unit = document.getElementById('newProdUnit').value.trim() || '1 kg';
+      const price = parseFloat(document.getElementById('newProdPrice').value) || 0;
+      const strike = parseFloat(document.getElementById('newProdStrike').value) || (price + 20);
+
+      if (!name || price <= 0) {
+        alert("Please provide valid product name and price.");
+        return;
+      }
+
+      products.unshift({
+        id: Date.now(),
+        name,
+        cat,
+        unit,
+        price,
+        strike,
+        emoji: "📦",
+        tag: "Fresh Arrival",
+        inStock: true
+      });
+
+      saveProducts();
+      toggleAddProductForm();
+      alert(`Product "${name}" published at ₹${price}!`);
+    }
+
+    function renderAdminProducts() {
+      const list = document.getElementById('adminProductList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      products.forEach(p => {
+        const isOut = p.inStock === false;
+        const card = document.createElement('div');
+        card.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 flex items-center justify-between gap-2 text-xs";
+        card.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">${p.emoji}</span>
+            <div>
+              <div class="font-bold text-slate-900">${p.name}</div>
+              <div class="text-[10px] text-slate-400">${categoryName(p.cat)} • ${p.unit} • ${isOut ? '<span class="text-red-500 font-bold">Sold Out</span>' : '<span class="text-green-600 font-bold">In Stock</span>'}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] text-slate-400">₹</span>
+            <input type="number" id="price-edit-${p.id}" value="${p.price}" class="w-14 p-1 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded text-center">
+            <button onclick="updatePrice(${p.id})" class="px-2 py-1 bg-green-600 text-white font-bold rounded">Save</button>
+            <button onclick="toggleProductStock(${p.id})" class="px-2 py-1 ${isOut ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-bold rounded">
+              ${isOut ? 'Stock' : 'Out'}
+            </button>
+            <button onclick="deleteProduct(${p.id})" class="px-1.5 py-1 text-red-500" title="Delete item"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function updatePrice(id) {
+      const val = parseFloat(document.getElementById(`price-edit-${id}`)?.value);
+      if (val > 0) {
+        const item = products.find(p => p.id === id);
+        if (item) {
+          item.price = val;
+          saveProducts();
+          alert(`Rate for ${item.name} updated to ₹${val}!`);
+        }
+      }
+    }
+
+    function toggleProductStock(id) {
+      const item = products.find(p => p.id === id);
+      if (item) {
+        item.inStock = !item.inStock;
+        saveProducts();
+      }
+    }
+
+    // Broadcasts
+    function dismissBanner() {
+      document.getElementById('adminTopBanner').classList.add('hidden');
+    }
+
+    function renderNotifications() {
+      const activeList = notifications.filter(n => n.active !== false);
+      const badge = document.getElementById('unreadNotifBadge');
+      if (badge) badge.innerText = activeList.length;
+
+      const bannerItem = activeList.find(n => n.isBanner);
+      const bannerEl = document.getElementById('adminTopBanner');
+      if (bannerItem && bannerEl) {
+        bannerEl.classList.remove('hidden');
+        document.getElementById('bannerText').innerText = `${bannerItem.title} — ${bannerItem.desc}`;
+      } else if (bannerEl) {
+        bannerEl.classList.add('hidden');
+      }
+
+      const custList = document.getElementById('customerNotifList');
+      if (custList) {
+        custList.innerHTML = activeList.map(n => `
+          <div class="p-3 rounded-2xl border border-emerald-100 bg-emerald-50/60">
+            <h4 class="font-bold text-xs text-slate-900">${n.title}</h4>
+            <p class="text-[11px] text-slate-600 mt-0.5">${n.desc}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function openCustomerNotificationsModal() {
+      renderNotifications();
+      document.getElementById('customerNotifModal').classList.remove('hidden');
+    }
+
+    function closeCustomerNotificationsModal() {
+      document.getElementById('customerNotifModal').classList.add('hidden');
+    }
+
+    function publishBroadcast() {
+      const title = document.getElementById('notifTitle').value.trim();
+      const desc = document.getElementById('notifMsg').value.trim();
+      const isBanner = document.getElementById('notifIsBanner').checked;
+
+      if (!title || !desc) {
+        alert("Please enter title and message.");
+        return;
+      }
+
+      if (isBanner) notifications.forEach(n => n.isBanner = false);
+
+      notifications.unshift({
+        id: Date.now(),
+        title,
+        desc,
+        isBanner,
+        active: true
+      });
+
+      saveNotifications();
+      document.getElementById('notifTitle').value = '';
+      document.getElementById('notifMsg').value = '';
+      alert(`Broadcast "${title}" published live!`);
+    }
+
+    function renderAdminNotifications() {
+      const list = document.getElementById('adminNotificationsList');
+      if (!list) return;
+      list.innerHTML = notifications.map(n => `
+        <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs">
+          <div>
+            <div class="font-bold text-slate-900">${n.title}</div>
+            <div class="text-[10px] text-slate-500">${n.isBanner ? '📌 Top Banner' : 'General Notice'}</div>
+          </div>
+          <button onclick="deleteNotification(${n.id})" class="text-red-500 p-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function deleteNotification(id) {
+      notifications = notifications.filter(n => n.id !== id);
+      saveNotifications();
+    }
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const trackId = urlParams.get('track') || urlParams.get('order');
+      if (trackId) {
+        currentOrderId = trackId;
+        document.getElementById('receiptOrderId').innerText = `Order #${trackId}`;
+        switchView('receipt');
+      }
+      lookupCustomerByPhone();
+      loadStorefront();
+      if (adminToken) {
+        loadAdminData()
+          .then(() => { renderCategoryPills(); renderStorefront(); renderNotifications(); updateCartCounts(); applyActiveRiderToUI(); })
+          .catch(() => endAdminSession());
+      }
+    });
+  </script>
+</body>
+</html>
