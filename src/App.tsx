@@ -3,7 +3,6 @@ import { Product, CartItem, OrderRecord, AppNotification, DispatchState } from '
 import {
   INITIAL_PRODUCTS,
   INITIAL_DISPATCH,
-  INITIAL_NOTIFICATIONS,
 } from './data/initialData';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -29,7 +28,7 @@ export default function App() {
   });
 
   const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem('hm_cart');
+    const saved = localStorage.getItem('hm_cart_v2');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -37,13 +36,8 @@ export default function App() {
         // fallback
       }
     }
-    // Default 4 items in basket matching the provided template & screenshot
-    return [
-      { productId: 'prod-1', quantity: 1, selectedWeight: '1kg', pricePerUnit: 180 },
-      { productId: 'prod-2', quantity: 2, selectedWeight: '250g bag', pricePerUnit: 30 },
-      { productId: 'prod-3', quantity: 1, selectedWeight: 'pack of 2', pricePerUnit: 190 },
-      { productId: 'prod-4', quantity: 1, selectedWeight: '1.5 kg', pricePerUnit: 56 },
-    ];
+    // Every new customer starts with an empty basket
+    return [];
   });
 
   const [favorites, setFavorites] = useState<Set<string>>(() => {
@@ -55,14 +49,12 @@ export default function App() {
         // fallback
       }
     }
-    return new Set(['prod-1', 'prod-3']);
+    return new Set<string>();
   });
 
-  const [currentAddress, setCurrentAddress] = useState<string>(
-    'Flat 402, Green Glen Layout, Bellandur, Bengaluru • 15 mins'
-  );
+  const [currentAddress, setCurrentAddress] = useState<string>('');
 
-  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [activeTab, setActiveTab] = useState<string>('market');
   const [activeOrder, setActiveOrder] = useState<OrderRecord | null>(null);
   const [dispatchState, setDispatchState] = useState<DispatchState>(INITIAL_DISPATCH);
@@ -74,7 +66,7 @@ export default function App() {
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('hm_cart', JSON.stringify(cart));
+    localStorage.setItem('hm_cart_v2', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
