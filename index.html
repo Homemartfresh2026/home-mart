@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Home Mart FRESH — 10-15 Min Grocery Delivery</title>
-  <meta name="theme-color" content="#16a34a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Home Mart FRESH — 10-15 Min Grocery Delivery</title>
+<meta content="#16a34a" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #faf8ff; color: #1e293b; touch-action: manipulation; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -23,545 +23,550 @@
   </style>
 </head>
 <body class="pb-28 select-none min-h-screen relative">
-
-  <!-- TOP APP BAR -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-2.5 shadow-xs">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+<!-- TOP APP BAR -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-2.5 shadow-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-green-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
           HM
         </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-extrabold text-slate-900 tracking-tight text-sm">Home Mart</span>
-            <span class="bg-green-100 text-green-700 font-extrabold text-[9px] px-1.5 py-0.5 rounded-full uppercase">FRESH</span>
-          </div>
-          <p class="text-[10px] text-slate-500 flex items-center gap-1">
-            <i class="fa-solid fa-bolt text-green-600 text-xs"></i> 10–15 MINS • <span class="font-semibold text-slate-700">Sadar Bazar, Delhi Cantt</span>
-          </p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <a id="headerWaBtn" href="https://wa.me/917006934064" target="_blank" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shadow-xs border border-emerald-100" title="Store WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-        <button onclick="switchTab('admin')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs" title="Store Admin">
-          <i class="fa-solid fa-user-shield"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Search Box -->
-    <div id="searchContainer" class="mt-2 relative">
-      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-      <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Search 'mango, palak, atta, dal, milk...'" class="w-full pl-8 pr-3 py-1.5 bg-slate-100 border border-slate-200/80 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition">
-    </div>
-  </header>
-
-  <!-- TAB 1: STOREFRONT -->
-  <main id="tab-market-view" class="block">
-    <div class="p-4 pb-2">
-      <div class="bg-gradient-to-r from-green-700 via-emerald-600 to-green-600 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
-        <div class="relative z-10">
-          <span class="bg-white/20 text-white font-bold text-[9px] uppercase px-2 py-0.5 rounded-full tracking-wider">🥭 100% Direct From Farm</span>
-          <h2 class="text-base font-black mt-1 leading-tight">MANGO & SUMMER HARVEST FESTIVAL</h2>
-          <p class="text-[11px] text-green-100 mt-0.5 font-medium">FLAT 35% OFF Alphonso & Fresh Berries</p>
-          <div class="mt-2.5 flex items-center gap-2">
-            <span class="bg-white text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xs" id="storeUpiPill">
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-extrabold text-slate-900 tracking-tight text-sm">Home Mart</span>
+<span class="bg-green-100 text-green-700 font-extrabold text-[9px] px-1.5 py-0.5 rounded-full uppercase">FRESH</span>
+</div>
+<p class="text-[10px] text-slate-500 flex items-center gap-1">
+<i class="fa-solid fa-bolt text-green-600 text-xs"></i> 10–15 MINS • <span class="font-semibold text-slate-700">Sadar Bazar, Delhi Cantt</span>
+</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shadow-xs border border-emerald-100" href="https://wa.me/917006934064" id="headerWaBtn" target="_blank" title="Store WhatsApp">
+<i class="fa-brands fa-whatsapp"></i>
+</a>
+<button class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs" onclick="switchTab('admin')" title="Store Admin">
+<i class="fa-solid fa-user-shield"></i>
+</button>
+</div>
+</div>
+<!-- Search Box -->
+<div class="mt-2 relative" id="searchContainer">
+<i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+<input class="w-full pl-8 pr-3 py-1.5 bg-slate-100 border border-slate-200/80 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition" id="searchInput" oninput="filterProducts()" placeholder="Search 'mango, palak, atta, maggi, ghee...'" type="text"/>
+</div>
+</header>
+<!-- TAB 1: STOREFRONT -->
+<main class="block" id="tab-market-view">
+<div class="p-4 pb-2">
+<div class="bg-gradient-to-r from-green-700 via-emerald-600 to-green-600 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
+<div class="relative z-10">
+<span class="bg-white/20 text-white font-bold text-[9px] uppercase px-2 py-0.5 rounded-full tracking-wider">🥭 100% Direct From Farm</span>
+<h2 class="text-base font-black mt-1 leading-tight">MANGO &amp; SUMMER HARVEST FESTIVAL</h2>
+<p class="text-[11px] text-green-100 mt-0.5 font-medium">FLAT 35% OFF Alphonso &amp; Fresh Berries</p>
+<div class="mt-2.5 flex items-center gap-2">
+<span class="bg-white text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xs" id="storeUpiPill">
               0% Fee UPI: 9082207857@ybl
             </span>
-            <button onclick="copyUpi()" class="bg-black/20 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
-              <span id="copyUpiBtn">COPY UPI</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Category Pills -->
-    <div class="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar text-xs font-semibold">
-      <button onclick="setCategory('all', this)" class="cat-pill bg-green-600 text-white px-3.5 py-1.5 rounded-full shrink-0 shadow-xs">All Items</button>
-      <button onclick="setCategory('veggies', this)" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🥬 Vegetables</button>
-      <button onclick="setCategory('fruits', this)" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🍎 Fruits</button>
-      <button onclick="setCategory('staples', this)" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🌾 Staples & Atta</button>
-      <button onclick="setCategory('dairy', this)" class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0">🥛 Dairy & Bread</button>
-    </div>
-
-    <!-- Products Grid -->
-    <section class="px-4 mt-2">
-      <div class="flex items-center justify-between mb-2.5">
-        <h3 class="font-black text-slate-900 text-sm">Fresh Daily Catalog</h3>
-        <span class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">✓ 100% Quality Inspected</span>
-      </div>
-      <div id="productGrid" class="grid grid-cols-2 gap-3 pb-8"></div>
-    </section>
-  </main>
-
-  <!-- TAB 2: BASKET & CHECKOUT -->
-  <main id="tab-basket-view" class="hidden p-4">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-        <i class="fa-solid fa-basket-shopping text-green-600"></i> Your Fresh Basket
+<button class="bg-black/20 text-white text-[10px] font-bold px-2 py-1 rounded-lg" onclick="copyUpi()">
+<span id="copyUpiBtn">COPY UPI</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 10 Category Pills -->
+<div class="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar text-xs font-semibold">
+<button class="cat-pill bg-green-600 text-white px-3.5 py-1.5 rounded-full shrink-0 shadow-xs" onclick="setCategory('all', this)">All Items</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('veggies', this)">🥬 Vegetables</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('fruits', this)">🍎 Fruits</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('staples', this)">🌾 Staples &amp; Atta</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('dairy', this)">🥛 Dairy &amp; Bread</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('snacks', this)">🧃 Snacks &amp; Beverages</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('frozen', this)">❄️ Frozen</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('toiletries', this)">🧼 Toiletries &amp; Personal Care</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('oilmasala', this)">🫒 Oil, Ghee &amp; Masala</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('instant', this)">🍜 Instant Foods &amp; Maggi</button>
+<button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full shrink-0" onclick="setCategory('paan', this)">🍬 Mouth Fresheners &amp; Paan</button>
+</div>
+<!-- Products Grid -->
+<section class="px-4 mt-2">
+<div class="flex items-center justify-between mb-2.5">
+<h3 class="font-black text-slate-900 text-sm">Fresh Daily Catalog</h3>
+<span class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">✓ 100% Quality Inspected</span>
+</div>
+<div class="grid grid-cols-2 gap-3 pb-8" id="productGrid"></div>
+</section>
+</main>
+<!-- TAB 2: BASKET & CHECKOUT -->
+<main class="hidden p-4" id="tab-basket-view">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+<i class="fa-solid fa-basket-shopping text-green-600"></i> Your Fresh Basket
       </h2>
-      <button onclick="clearCart()" class="text-xs text-red-500 font-semibold flex items-center gap-1">
-        <i class="fa-solid fa-trash-can text-[10px]"></i> Clear
+<button class="text-xs text-red-500 font-semibold flex items-center gap-1" onclick="clearCart()">
+<i class="fa-solid fa-trash-can text-[10px]"></i> Clear
       </button>
-    </div>
-
-    <div id="cartItemsList" class="space-y-2.5"></div>
-
-    <div id="emptyCartView" class="hidden text-center py-12">
-      <div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-xl mx-auto mb-2">
-        <i class="fa-solid fa-basket-shopping"></i>
-      </div>
-      <h3 class="font-bold text-slate-800 text-sm">Your basket is empty</h3>
-      <p class="text-xs text-slate-400 mt-0.5 mb-3">Add Alphonso mangoes, baby palak & daily staples</p>
-      <button onclick="switchTab('market')" class="bg-green-600 text-white font-bold text-xs px-4 py-2 rounded-xl">
+</div>
+<div class="space-y-2.5" id="cartItemsList"></div>
+<div class="hidden text-center py-12" id="emptyCartView">
+<div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-xl mx-auto mb-2">
+<i class="fa-solid fa-basket-shopping"></i>
+</div>
+<h3 class="font-bold text-slate-800 text-sm">Your basket is empty</h3>
+<p class="text-xs text-slate-400 mt-0.5 mb-3">Add Alphonso mangoes, baby palak &amp; daily staples</p>
+<button class="bg-green-600 text-white font-bold text-xs px-4 py-2 rounded-xl" onclick="switchTab('market')">
         Browse Catalog
       </button>
-    </div>
-
-    <!-- Customer Address with Smart GPS Auto-fill -->
-    <div id="addressCard" class="mt-4 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot text-green-600"></i> Delivery Address
+</div>
+<!-- Customer Address with Smart GPS Auto-fill -->
+<div class="mt-4 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs" id="addressCard">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-location-dot text-green-600"></i> Delivery Address
         </span>
-        <button id="gpsBtn" onclick="detectLocation()" class="text-[10px] font-bold text-green-700 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-md flex items-center gap-1 transition">
-          <i class="fa-solid fa-crosshairs"></i> <span id="gpsBtnLabel">Auto-Detect GPS</span>
-        </button>
-      </div>
-      <input type="text" id="custName" placeholder="Your Name" value="Customer" class="w-full text-xs font-bold text-slate-800 border-b border-slate-100 pb-1 focus:outline-none mb-1.5">
-      <textarea id="custAddress" rows="2" placeholder="Tap 'Auto-Detect GPS' or enter your delivery address, flat no, landmark" class="w-full text-xs text-slate-700 border border-slate-100 rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-green-500 bg-slate-50/50">Shop 14, Main Market, Sadar Bazar, Delhi Cantt, New Delhi - 110010</textarea>
-      <input type="tel" id="custPhone" placeholder="Mobile Number (10 digits)" value="+91 7006934064" class="w-full text-xs text-slate-700 border border-slate-100 rounded-xl p-2 mt-1.5 focus:outline-none">
-    </div>
-
-    <!-- Payment Choice Card -->
-    <div id="paymentModeCard" class="mt-3 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-2">
-      <h3 class="font-bold text-xs text-slate-900 mb-1">Select Payment Mode</h3>
-      <label class="flex items-center justify-between p-2.5 border border-green-500 bg-green-50/40 rounded-xl cursor-pointer">
-        <div class="flex items-center gap-2">
-          <input type="radio" name="payOption" value="UPI Scan & Pay" checked class="text-green-600">
-          <div>
-            <div class="text-xs font-bold text-slate-800">Scan & Pay via UPI (0% Fee)</div>
-            <div class="text-[10px] text-slate-500" id="cartUpiLabel">GPay, PhonePe, Paytm, BHIM: 9082207857@ybl</div>
-          </div>
-        </div>
-        <i class="fa-solid fa-circle-check text-green-600 text-sm"></i>
-      </label>
-      <label class="flex items-center justify-between p-2.5 border border-slate-200 rounded-xl cursor-pointer">
-        <div class="flex items-center gap-2">
-          <input type="radio" name="payOption" value="Cash on Delivery (COD)" class="text-green-600">
-          <div>
-            <div class="text-xs font-bold text-slate-800">Cash on Delivery (COD)</div>
-            <div class="text-[10px] text-slate-500">Pay cash or rider QR upon delivery</div>
-          </div>
-        </div>
-        <i class="fa-solid fa-money-bill-wave text-slate-400 text-sm"></i>
-      </label>
-    </div>
-
-    <!-- Bill Summary Card -->
-    <div id="billSummaryCard" class="mt-3 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs">
-      <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2">Bill Summary</h3>
-      <div class="space-y-1.5 text-xs">
-        <div class="flex justify-between text-slate-600">
-          <span>Items Subtotal</span>
-          <span id="subtotalDisplay" class="font-semibold text-slate-800">₹0</span>
-        </div>
-        <div class="flex justify-between text-emerald-600">
-          <span>Direct Farm Discount (&gt; ₹300)</span>
-          <span id="discountDisplay" class="font-semibold">-₹0</span>
-        </div>
-        <div class="flex justify-between text-slate-600">
-          <span>Hyperlocal Delivery Fee (10-15m)</span>
-          <span class="text-green-700 font-bold uppercase text-[10px] bg-green-50 px-1.5 py-0.5 rounded">FREE</span>
-        </div>
-        <div class="flex justify-between text-slate-600">
-          <span>Eco Sealed Packaging</span>
-          <span class="font-semibold text-slate-800">₹6</span>
-        </div>
-        <div class="border-t border-slate-100 pt-1.5 flex justify-between text-sm font-black text-slate-900">
-          <span>Total Payable</span>
-          <span id="totalDisplay" class="text-green-700">₹0</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Place WhatsApp Order Action -->
-    <div id="orderBtnContainer" class="mt-4">
-      <button onclick="placeOrderWhatsApp()" class="w-full bg-green-700 hover:bg-green-800 text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-between text-sm transition">
-        <span id="cartBtnPayTotal">Pay ₹0</span>
-        <span class="flex items-center gap-1.5">Place Order on WhatsApp <i class="fa-brands fa-whatsapp text-base"></i></span>
-      </button>
-    </div>
-  </main>
-
-  <!-- TAB 3: LIVE TRACKING -->
-  <main id="tab-track-view" class="hidden p-4 space-y-3.5">
-    <div id="trackOrderHeaderCard" class="bg-gradient-to-r from-slate-900 to-green-950 text-white rounded-2xl p-4 shadow-md transition-all">
-      <div class="flex items-center justify-between text-[11px] text-green-300 font-bold mb-1">
-        <span id="trackOrderHeaderBadge">● Order Active • Express EV Dispatch</span>
-        <span class="bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full" id="trackVehicleTag">Ather 450X</span>
-      </div>
-      <h2 id="trackOrderIdDisplay" class="text-lg font-black tracking-tight">Order #HM-84920</h2>
-      <p class="text-xs text-slate-300">Sadar Bazar Dark Store ➔ Delhi Cantt Destination</p>
-      
-      <!-- Doorstep OTP Box -->
-      <div id="doorstepOtpCard" class="mt-3 bg-white/10 backdrop-blur rounded-xl p-3 flex items-center justify-between border border-white/10">
-        <div>
-          <div class="text-[10px] uppercase tracking-wider text-green-300 font-bold">Doorstep Delivery OTP</div>
-          <div class="text-xl font-black tracking-widest text-white font-mono" id="doorstepOtp">4826</div>
-          <div class="text-[9px] text-slate-300" id="otpHelpText">Share with rider only upon receiving items</div>
-        </div>
-        <button id="copyOtpBtn" onclick="copyOtp()" class="bg-white text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg">
-          <span id="copyOtpLabel">Copy</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Status Milestone -->
-    <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="text-[11px] text-slate-400 font-medium">Delivery Status</div>
-          <div class="text-base font-black text-slate-900" id="etaDisplay">11–14 mins <span class="text-green-600 text-xs font-bold">• On Schedule ⚡</span></div>
-        </div>
-        <span id="deliveryStageBadge" class="bg-green-100 text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-lg">Express Fleet</span>
-      </div>
-
-      <div class="space-y-3 pt-2 border-t border-slate-100 text-xs">
-        <div class="flex items-start gap-2.5">
-          <div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">✓</div>
-          <div>
-            <div class="font-bold text-slate-800">1. Order Placed & Confirmed</div>
-            <div class="text-[10px] text-slate-400">Assigned to Sadar Bazar Dark Store • 10:38 AM</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-2.5">
-          <div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">✓</div>
-          <div>
-            <div class="font-bold text-slate-800">2. Packing Farm Fresh Items</div>
-            <div class="text-[10px] text-slate-400">Hydro-cooled & packed in eco sealed tote • 10:44 AM</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-2.5" id="step3Container">
-          <div id="step3Icon" class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">🛵</div>
-          <div>
-            <div class="font-bold text-green-700" id="step3Title">3. EV Rider On the Way</div>
-            <div class="text-[10px] text-slate-500" id="step3Desc">Rider is 1.2 km away cruising Parade Rd</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-2.5" id="step4Container">
-          <div id="step4Icon" class="w-5 h-5 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[10px] shrink-0 font-bold">4</div>
-          <div>
-            <div class="font-semibold text-slate-400" id="step4Title">4. Delivered at Doorstep</div>
-            <div class="text-[10px] text-slate-400" id="step4Desc">Contactless drop with OTP verification</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Active Rider Profile Card (Live Synced with Admin) -->
-    <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-lg">🛵</div>
-        <div>
-          <div class="text-xs font-bold text-slate-900" id="riderDisplayTrack">Ramesh K. (EV Rider)</div>
-          <div class="text-[10px] text-slate-400" id="riderMetaTrack">★ 4.9 • Ather 450X Express Hub</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <a id="riderPhoneCall" href="tel:+917006934064" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs" title="Call Rider">
-          <i class="fa-solid fa-phone"></i>
-        </a>
-        <a id="riderWaChat" href="https://wa.me/917006934064" target="_blank" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs" title="WhatsApp Rider">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- 2-Hour Return & Cancellation Guarantee -->
-    <div class="bg-amber-50 border border-amber-200/70 rounded-2xl p-3.5">
-      <div class="flex items-center justify-between mb-1">
-        <h4 class="text-xs font-extrabold text-amber-900">2-Hour Cancellation & Instant Refund</h4>
-        <span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">100% Guarantee</span>
-      </div>
-      <p class="text-[10px] text-amber-800 leading-relaxed mb-2.5">
+<button class="text-[10px] font-bold text-green-700 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-md flex items-center gap-1 transition" id="gpsBtn" onclick="detectLocation()">
+<i class="fa-solid fa-crosshairs"></i> <span id="gpsBtnLabel">Auto-Detect GPS</span>
+</button>
+</div>
+<input class="w-full text-xs font-bold text-slate-800 border-b border-slate-100 pb-1 focus:outline-none mb-1.5" id="custName" placeholder="Your Name" type="text" value="Customer"/>
+<textarea class="w-full text-xs text-slate-700 border border-slate-100 rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-green-500 bg-slate-50/50" id="custAddress" placeholder="Tap 'Auto-Detect GPS' or enter your delivery address, flat no, landmark" rows="2">Shop 14, Main Market, Sadar Bazar, Delhi Cantt, New Delhi - 110010</textarea>
+<input class="w-full text-xs text-slate-700 border border-slate-100 rounded-xl p-2 mt-1.5 focus:outline-none" id="custPhone" placeholder="Mobile Number (10 digits)" type="tel" value="+91 7006934064"/>
+</div>
+<!-- Payment Choice Card -->
+<div class="mt-3 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-2" id="paymentModeCard">
+<h3 class="font-bold text-xs text-slate-900 mb-1">Select Payment Mode</h3>
+<label class="flex items-center justify-between p-2.5 border border-green-500 bg-green-50/40 rounded-xl cursor-pointer">
+<div class="flex items-center gap-2">
+<input checked="" class="text-green-600" name="payOption" type="radio" value="UPI Scan &amp; Pay"/>
+<div>
+<div class="text-xs font-bold text-slate-800">Scan &amp; Pay via UPI (0% Fee)</div>
+<div class="text-[10px] text-slate-500" id="cartUpiLabel">GPay, PhonePe, Paytm, BHIM: 9082207857@ybl</div>
+</div>
+</div>
+<i class="fa-solid fa-circle-check text-green-600 text-sm"></i>
+</label>
+<label class="flex items-center justify-between p-2.5 border border-slate-200 rounded-xl cursor-pointer">
+<div class="flex items-center gap-2">
+<input class="text-green-600" name="payOption" type="radio" value="Cash on Delivery (COD)"/>
+<div>
+<div class="text-xs font-bold text-slate-800">Cash on Delivery (COD)</div>
+<div class="text-[10px] text-slate-500">Pay cash or rider QR upon delivery</div>
+</div>
+</div>
+<i class="fa-solid fa-money-bill-wave text-slate-400 text-sm"></i>
+</label>
+</div>
+<!-- Bill Summary Card -->
+<div class="mt-3 bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs" id="billSummaryCard">
+<h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2">Bill Summary</h3>
+<div class="space-y-1.5 text-xs">
+<div class="flex justify-between text-slate-600">
+<span>Items Subtotal</span>
+<span class="font-semibold text-slate-800" id="subtotalDisplay">₹0</span>
+</div>
+<div class="flex justify-between text-emerald-600">
+<span>Direct Farm Discount (&gt; ₹300)</span>
+<span class="font-semibold" id="discountDisplay">-₹0</span>
+</div>
+<div class="flex justify-between text-slate-600">
+<span>Hyperlocal Delivery Fee (10-15m)</span>
+<span class="text-green-700 font-bold uppercase text-[10px] bg-green-50 px-1.5 py-0.5 rounded">FREE</span>
+</div>
+<div class="flex justify-between text-slate-600">
+<span>Eco Sealed Packaging</span>
+<span class="font-semibold text-slate-800">₹6</span>
+</div>
+<div class="border-t border-slate-100 pt-1.5 flex justify-between text-sm font-black text-slate-900">
+<span>Total Payable</span>
+<span class="text-green-700" id="totalDisplay">₹0</span>
+</div>
+</div>
+</div>
+<!-- Place WhatsApp Order Action -->
+<div class="mt-4" id="orderBtnContainer">
+<button class="w-full bg-green-700 hover:bg-green-800 text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-between text-sm transition" onclick="placeOrderWhatsApp()">
+<span id="cartBtnPayTotal">Pay ₹0</span>
+<span class="flex items-center gap-1.5">Place Order on WhatsApp <i class="fa-brands fa-whatsapp text-base"></i></span>
+</button>
+</div>
+</main>
+<!-- TAB 3: LIVE TRACKING -->
+<main class="hidden p-4 space-y-3.5" id="tab-track-view">
+<div class="bg-gradient-to-r from-slate-900 to-green-950 text-white rounded-2xl p-4 shadow-md transition-all" id="trackOrderHeaderCard">
+<div class="flex items-center justify-between text-[11px] text-green-300 font-bold mb-1">
+<span id="trackOrderHeaderBadge">● Order Active • Express EV Dispatch</span>
+<span class="bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full" id="trackVehicleTag">Ather 450X</span>
+</div>
+<h2 class="text-lg font-black tracking-tight" id="trackOrderIdDisplay">Order #HM-84920</h2>
+<p class="text-xs text-slate-300">Sadar Bazar Dark Store ➔ Delhi Cantt Destination</p>
+<!-- Doorstep OTP Box -->
+<div class="mt-3 bg-white/10 backdrop-blur rounded-xl p-3 flex items-center justify-between border border-white/10" id="doorstepOtpCard">
+<div>
+<div class="text-[10px] uppercase tracking-wider text-green-300 font-bold">Doorstep Delivery OTP</div>
+<div class="text-xl font-black tracking-widest text-white font-mono" id="doorstepOtp">4826</div>
+<div class="text-[9px] text-slate-300" id="otpHelpText">Share with rider only upon receiving items</div>
+</div>
+<button class="bg-white text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg" id="copyOtpBtn" onclick="copyOtp()">
+<span id="copyOtpLabel">Copy</span>
+</button>
+</div>
+</div>
+<!-- Status Milestone -->
+<div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs">
+<div class="flex items-center justify-between mb-3">
+<div>
+<div class="text-[11px] text-slate-400 font-medium">Delivery Status</div>
+<div class="text-base font-black text-slate-900" id="etaDisplay">11–14 mins <span class="text-green-600 text-xs font-bold">• On Schedule ⚡</span></div>
+</div>
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-lg" id="deliveryStageBadge">Express Fleet</span>
+</div>
+<div class="space-y-3 pt-2 border-t border-slate-100 text-xs">
+<div class="flex items-start gap-2.5">
+<div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">✓</div>
+<div>
+<div class="font-bold text-slate-800">1. Order Placed &amp; Confirmed</div>
+<div class="text-[10px] text-slate-400">Assigned to Sadar Bazar Dark Store • 10:38 AM</div>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">✓</div>
+<div>
+<div class="font-bold text-slate-800">2. Packing Farm Fresh Items</div>
+<div class="text-[10px] text-slate-400">Hydro-cooled &amp; packed in eco sealed tote • 10:44 AM</div>
+</div>
+</div>
+<div class="flex items-start gap-2.5" id="step3Container">
+<div class="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold" id="step3Icon">🛵</div>
+<div>
+<div class="font-bold text-green-700" id="step3Title">3. EV Rider On the Way</div>
+<div class="text-[10px] text-slate-500" id="step3Desc">Rider is 1.2 km away cruising Parade Rd</div>
+</div>
+</div>
+<div class="flex items-start gap-2.5" id="step4Container">
+<div class="w-5 h-5 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[10px] shrink-0 font-bold" id="step4Icon">4</div>
+<div>
+<div class="font-semibold text-slate-400" id="step4Title">4. Delivered at Doorstep</div>
+<div class="text-[10px] text-slate-400" id="step4Desc">Contactless drop with OTP verification</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Rider Profile Card (Live Synced with Admin) -->
+<div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-lg">🛵</div>
+<div>
+<div class="text-xs font-bold text-slate-900" id="riderDisplayTrack">Ramesh K. (EV Rider)</div>
+<div class="text-[10px] text-slate-400" id="riderMetaTrack">★ 4.9 • Ather 450X Express Hub</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs" href="tel:+917006934064" id="riderPhoneCall" title="Call Rider">
+<i class="fa-solid fa-phone"></i>
+</a>
+<a class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs" href="https://wa.me/917006934064" id="riderWaChat" target="_blank" title="WhatsApp Rider">
+<i class="fa-brands fa-whatsapp"></i>
+</a>
+</div>
+</div>
+<!-- 2-Hour Return & Cancellation Guarantee -->
+<div class="bg-amber-50 border border-amber-200/70 rounded-2xl p-3.5">
+<div class="flex items-center justify-between mb-1">
+<h4 class="text-xs font-extrabold text-amber-900">2-Hour Cancellation &amp; Instant Refund</h4>
+<span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">100% Guarantee</span>
+</div>
+<p class="text-[10px] text-amber-800 leading-relaxed mb-2.5">
         Need to cancel this order or return damaged produce? Cancel anytime within 2 hours for instant 1-tap UPI reversal.
       </p>
-      <button onclick="openRefundModal()" class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-xs">
-        Cancel Order & Request Instant Refund
+<button class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-xs" onclick="openRefundModal()">
+        Cancel Order &amp; Request Instant Refund
       </button>
-    </div>
-  </main>
-
-  <!-- TAB 4: STORE ADMIN OPS (PIN-PROTECTED) -->
-  <main id="tab-admin-view" class="hidden p-4 space-y-4">
-    <!-- PIN Verification Gate -->
-    <div id="adminPinGate" class="text-center py-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-xs">
-      <div class="w-12 h-12 bg-green-50 text-green-700 rounded-full flex items-center justify-center text-xl mx-auto mb-2">
-        <i class="fa-solid fa-lock"></i>
-      </div>
-      <h3 class="font-extrabold text-slate-900 text-sm">Store Owner Unlock</h3>
-      <p class="text-xs text-slate-500 mt-0.5 mb-3">Enter your secret PIN to access the Store Ops Hub</p>
-      <input type="password" id="adminPinInput" maxlength="6" placeholder="Enter Secret PIN" class="w-48 text-center py-2 px-3 border border-slate-200 rounded-xl text-sm font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500 mb-2">
-      <div id="pinErrorMsg" class="text-red-500 text-xs font-bold hidden mb-2">Incorrect PIN. Please try again.</div>
-      <div>
-        <button onclick="unlockAdmin()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-6 py-2 rounded-xl shadow-xs">Unlock</button>
-      </div>
-    </div>
-
-    <!-- Admin Panel (Unlocked Content) -->
-    <div id="adminPanelContent" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-black text-slate-900">Store Ops Hub</h2>
-          <p class="text-[11px] text-slate-500">Sadar Bazar Central Command</p>
-        </div>
-        <button onclick="lockAdmin()" class="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-1">
-          <i class="fa-solid fa-lock text-[10px]"></i> Lock Desk
+</div>
+</main>
+<!-- TAB 4: STORE ADMIN OPS (PIN-PROTECTED) -->
+<main class="hidden p-4 space-y-4" id="tab-admin-view">
+<!-- PIN Verification Gate -->
+<div class="text-center py-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-xs" id="adminPinGate">
+<div class="w-12 h-12 bg-green-50 text-green-700 rounded-full flex items-center justify-center text-xl mx-auto mb-2">
+<i class="fa-solid fa-lock"></i>
+</div>
+<h3 class="font-extrabold text-slate-900 text-sm">Store Owner Unlock</h3>
+<p class="text-xs text-slate-500 mt-0.5 mb-3">Enter your secret PIN to access the Store Ops Hub</p>
+<input class="w-48 text-center py-2 px-3 border border-slate-200 rounded-xl text-sm font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500 mb-2" id="adminPinInput" maxlength="6" placeholder="Enter Secret PIN" type="password"/>
+<div class="text-red-500 text-xs font-bold hidden mb-2" id="pinErrorMsg">Incorrect PIN. Please try again.</div>
+<div>
+<button class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-6 py-2 rounded-xl shadow-xs" onclick="unlockAdmin()">Unlock</button>
+</div>
+</div>
+<!-- Admin Panel (Unlocked Content) -->
+<div class="hidden space-y-4" id="adminPanelContent">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-base font-black text-slate-900">Store Ops Hub</h2>
+<p class="text-[11px] text-slate-500">Sadar Bazar Central Command</p>
+</div>
+<button class="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-1" onclick="lockAdmin()">
+<i class="fa-solid fa-lock text-[10px]"></i> Lock Desk
         </button>
-      </div>
-
-      <!-- 1. ORDER DELIVERED CONFIRMATION DESK -->
-      <div class="bg-white border-2 border-green-500/20 rounded-2xl p-4 shadow-xs">
-        <div class="flex items-center justify-between mb-2">
-          <h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-check text-green-600"></i> Order Handover & Delivery Confirmation
+</div>
+<!-- 1. ORDER DELIVERED CONFIRMATION DESK -->
+<div class="bg-white border-2 border-green-500/20 rounded-2xl p-4 shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-circle-check text-green-600"></i> Order Handover &amp; Delivery Confirmation
           </h4>
-          <span id="adminDeliveryStatusBadge" class="text-[9px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+<span class="text-[9px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200" id="adminDeliveryStatusBadge">
             🛵 In Transit
           </span>
-        </div>
-        <p class="text-[10px] text-slate-500 mb-2.5">
+</div>
+<p class="text-[10px] text-slate-500 mb-2.5">
           Active Order: <b class="text-slate-800">#HM-84920</b> • Customer OTP: <b class="font-mono text-green-700 font-black">4826</b>
-        </p>
-        <div class="flex gap-2">
-          <input type="text" id="verifyOtpInput" maxlength="4" placeholder="Enter 4826" class="w-32 py-2 px-3 border border-slate-200 rounded-xl text-xs font-black font-mono text-center focus:ring-2 focus:ring-green-500 focus:outline-none">
-          <button onclick="verifyDeliveryOtp()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs flex items-center justify-center gap-1">
-            <i class="fa-solid fa-badge-check"></i> Verify & Confirm Handover
+</p>
+<div class="flex gap-2">
+<input class="w-32 py-2 px-3 border border-slate-200 rounded-xl text-xs font-black font-mono text-center focus:ring-2 focus:ring-green-500 focus:outline-none" id="verifyOtpInput" maxlength="4" placeholder="Enter 4826" type="text"/>
+<button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs flex items-center justify-center gap-1" onclick="verifyDeliveryOtp()">
+<i class="fa-solid fa-badge-check"></i> Verify &amp; Confirm Handover
           </button>
-        </div>
-        <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-100">
-          <span class="text-[10px] text-slate-400">Quick status toggle:</span>
-          <div class="flex gap-1.5">
-            <button onclick="quickMarkDelivered()" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md">
+</div>
+<div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-100">
+<span class="text-[10px] text-slate-400">Quick status toggle:</span>
+<div class="flex gap-1.5">
+<button class="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md" onclick="quickMarkDelivered()">
               1-Tap Mark Delivered
             </button>
-            <button onclick="resetOrderToTransit()" class="text-[10px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-md">
+<button class="text-[10px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-md" onclick="resetOrderToTransit()">
               Reset to In-Transit
             </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. EDIT RIDER DETAILS DESK -->
-      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
-        <div class="flex items-center justify-between">
-          <h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
-            <i class="fa-solid fa-motorcycle text-green-600"></i> Edit Active Dispatch Rider
+</div>
+</div>
+</div>
+<!-- 2. EDIT RIDER DETAILS DESK -->
+<div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+<div class="flex items-center justify-between">
+<h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-motorcycle text-green-600"></i> Edit Active Dispatch Rider
           </h4>
-          <span class="text-[9px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Live Synced</span>
-        </div>
-        <p class="text-[10px] text-slate-500">
+<span class="text-[9px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Live Synced</span>
+</div>
+<p class="text-[10px] text-slate-500">
           Update the rider's name, phone, or EV hub tag. Changes immediately update the live tracking map and customer dial links.
         </p>
-
-        <!-- Quick Rider Selectors -->
-        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[10px] font-bold">
-          <button onclick="fillRiderPreset('Ramesh K.', '+917006934064', 'Ather 450X (Hub 4)', '4.9')" class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200">
+<!-- Quick Rider Selectors -->
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[10px] font-bold">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200" onclick="fillRiderPreset('Ramesh K.', '+917006934064', 'Ather 450X (Hub 4)', '4.9')">
             ⚡ Ramesh K. (Ather)
           </button>
-          <button onclick="fillRiderPreset('Suresh Verma', '+918826527514', 'Chetak EV (Hub 1)', '4.8')" class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200" onclick="fillRiderPreset('Suresh Verma', '+918826527514', 'Chetak EV (Hub 1)', '4.8')">
             🛵 Suresh V. (Chetak)
           </button>
-          <button onclick="fillRiderPreset('Amit Pal', '+919082207857', 'Hero Electric', '5.0')" class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-green-50 text-slate-700 hover:text-green-800 rounded-lg shrink-0 border border-slate-200" onclick="fillRiderPreset('Amit Pal', '+919082207857', 'Hero Electric', '5.0')">
             ⚡ Amit Pal (Hero EV)
           </button>
-        </div>
-
-        <div>
-          <label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Full Name</label>
-          <input type="text" id="adminRiderName" value="Ramesh K." class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Phone (for Calls)</label>
-            <input type="tel" id="adminRiderPhone" value="+917006934064" class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-600 mb-1">Vehicle / EV Model</label>
-            <input type="text" id="adminRiderVehicle" value="Ather 450X (Hub 4)" class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Rating Badge</label>
-          <input type="text" id="adminRiderRating" value="★ 4.9 • 1,420+ 5-Star Drops" class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs text-slate-700">
-        </div>
-
-        <button onclick="saveRiderDetails()" class="w-full py-2.5 bg-green-700 hover:bg-green-800 text-white text-xs font-extrabold rounded-xl shadow-xs transition">
-          Save & Update Active Rider Details
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Full Name</label>
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" id="adminRiderName" type="text" value="Ramesh K."/>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Phone (for Calls)</label>
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800" id="adminRiderPhone" type="tel" value="+917006934064"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-600 mb-1">Vehicle / EV Model</label>
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800" id="adminRiderVehicle" type="text" value="Ather 450X (Hub 4)"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-600 mb-1">Rider Rating Badge</label>
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs text-slate-700" id="adminRiderRating" type="text" value="★ 4.9 • 1,420+ 5-Star Drops"/>
+</div>
+<button class="w-full py-2.5 bg-green-700 hover:bg-green-800 text-white text-xs font-extrabold rounded-xl shadow-xs transition" onclick="saveRiderDetails()">
+          Save &amp; Update Active Rider Details
         </button>
-      </div>
-
-      <!-- 3. FILLING & MANAGING ITEMS CATEGORY-WISE -->
-      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
-        <div class="flex items-center justify-between">
-          <h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
-            <i class="fa-solid fa-boxes-stacked text-green-600"></i> Category-Wise Products Manager
+</div>
+<!-- 3. FILLING & MANAGING ITEMS CATEGORY-WISE WITH METHOD 2 PHOTO PRESETS -->
+<div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-3">
+<div class="flex items-center justify-between">
+<h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-boxes-stacked text-green-600"></i> Category-Wise Products Manager
           </h4>
-          <span id="catalogCountBadge" class="text-[10px] font-black text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+<span class="text-[10px] font-black text-green-700 bg-green-50 px-2 py-0.5 rounded-full" id="catalogCountBadge">
             10 SKUs Listed
           </span>
-        </div>
-        <p class="text-[10px] text-slate-500">
-          Filter and manage rates by category, or quickly add new items to any category.
+</div>
+<p class="text-[10px] text-slate-500">
+          Filter and manage rates across all 10 departments, or 1-tap add SKUs with high-res photos.
         </p>
-
-        <!-- Category Selector for Admin View -->
-        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs font-bold">
-          <button onclick="setAdminCategory('all', this)" class="admin-cat-pill bg-green-600 text-white px-3 py-1 rounded-xl shrink-0">All</button>
-          <button onclick="setAdminCategory('fruits', this)" class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0">🍎 Fruits</button>
-          <button onclick="setAdminCategory('veggies', this)" class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0">🥬 Vegetables</button>
-          <button onclick="setAdminCategory('staples', this)" class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0">🌾 Staples</button>
-          <button onclick="setAdminCategory('dairy', this)" class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0">🥛 Dairy</button>
-        </div>
-
-        <!-- Add SKU Category-Wise Accordion / Form -->
-        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-slate-800" id="addFormTitle">➕ Add Item to Catalog</span>
-            <span class="text-[9px] font-bold text-slate-500 uppercase">Instant Sync</span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Select Category</label>
-              <select id="newProdCat" class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white">
-                <option value="fruits">🍎 Fruits</option>
-                <option value="veggies">🥬 Vegetables</option>
-                <option value="staples">🌾 Staples & Atta</option>
-                <option value="dairy">🥛 Dairy & Bread</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Unit / Pack</label>
-              <input type="text" id="newProdUnit" placeholder="e.g. 1 kg / 500g / 2 pcs" value="1 kg" class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs bg-white">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Product Name</label>
-            <input type="text" id="newProdName" placeholder="e.g. Kesar Mango / Shimla Apples" class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 bg-white">
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Our Price ₹</label>
-              <input type="number" id="newProdPrice" placeholder="Selling ₹" class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-black text-green-700 bg-white">
-            </div>
-            <div>
-              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">MRP Strike ₹</label>
-              <input type="number" id="newProdStrike" placeholder="Strike ₹" class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs text-slate-400 bg-white">
-            </div>
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-0.5">
-              <label class="block text-[9px] font-bold text-slate-500">Image URL</label>
-              <span class="text-[9px] text-green-700 font-bold cursor-pointer" onclick="useSamplePhoto()">✨ Use Sample Photo</span>
-            </div>
-            <input type="text" id="newProdImg" placeholder="https://images.unsplash.com/..." class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs text-slate-600 bg-white">
-          </div>
-
-          <button onclick="addNewProductSKU()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-black rounded-xl shadow-xs transition">
+<!-- 10 Category Selector for Admin View -->
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs font-bold">
+<button class="admin-cat-pill bg-green-600 text-white px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('all', this)">All</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('veggies', this)">🥬 Veggies</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('fruits', this)">🍎 Fruits</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('staples', this)">🌾 Staples</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('dairy', this)">🥛 Dairy</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('snacks', this)">🧃 Snacks</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('frozen', this)">❄️ Frozen</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('toiletries', this)">🧼 Toiletries</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('oilmasala', this)">🫒 Oil &amp; Ghee</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('instant', this)">🍜 Instant</button>
+<button class="admin-cat-pill bg-slate-100 text-slate-600 px-3 py-1 rounded-xl shrink-0" onclick="setAdminCategory('paan', this)">🍬 Paan &amp; Mint</button>
+</div>
+<!-- Add SKU Category-Wise Accordion / Form -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-2.5">
+<div class="flex items-center justify-between">
+<span class="text-xs font-black text-slate-800" id="addFormTitle">➕ Add Item to Catalog</span>
+<span class="text-[9px] font-bold text-slate-500 uppercase">Instant Sync</span>
+</div>
+<!-- METHOD 2: 1-TAP INSTANT PHOTO & SKU PRESETS LIBRARY -->
+<div class="bg-white border border-green-200/80 rounded-xl p-2.5 shadow-xs">
+<div class="flex items-center justify-between mb-1.5">
+<span class="text-[10px] font-black text-green-800 flex items-center gap-1">
+<i class="fa-solid fa-wand-magic-sparkles text-green-600"></i> Method 2: Instant 1-Tap Photo Presets
+              </span>
+<span class="text-[9px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">Zero Typing</span>
+</div>
+<p class="text-[9px] text-slate-400 mb-2">Tap any item below to auto-fill title, unit, category, verified photo URL &amp; prices:</p>
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[10px] font-semibold">
+<button class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg shrink-0" onclick="applyPreset('Ratnagiri Alphonso Mango', 'fruits', '1 kg (4-5 pcs)', 349, 450, 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Farm Sweet')" type="button">🥭 Alphonso</button>
+<button class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-900 border border-red-200 rounded-lg shrink-0" onclick="applyPreset('Honeycrisp Red Apples', 'fruits', '1 kg', 198, 240, 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Crisp &amp; Juicy')" type="button">🍎 Apple</button>
+<button class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 border border-yellow-200 rounded-lg shrink-0" onclick="applyPreset('Robusta Fresh Bananas', 'fruits', 'Pack of 6 pcs', 48, 60, 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Energy Rich')" type="button">🍌 Banana</button>
+<button class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg shrink-0" onclick="applyPreset('Fresh Baby Palak (Spinach)', 'veggies', '250g pack', 30, 40, 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Hydro Fresh')" type="button">🥬 Palak</button>
+<button class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-200 rounded-lg shrink-0" onclick="applyPreset('Hybrid Roma Tomatoes', 'veggies', '1 kg', 38, 50, 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Vine Ripe')" type="button">🍅 Tomato</button>
+<button class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg shrink-0" onclick="applyPreset('New Crop Pahadi Potato', 'veggies', '2 kg pack', 56, 70, 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Daily Essential')" type="button">🥔 Potato/Onion</button>
+<button class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg shrink-0" onclick="applyPreset('Aashirvaad Shudh Chakki Atta', 'staples', '5 kg bag', 245, 280, 'https://images.unsplash.com/photo-1627485937980-221c88ac04f9?w=500&amp;auto=format&amp;fit=crop&amp;q=80', '100% Whole Wheat')" type="button">🌾 Basmati/Atta</button>
+<button class="px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 rounded-lg shrink-0" onclick="applyPreset('Amul Taaza Homogenised Milk', 'dairy', '1 Litre carton', 72, 75, 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Pasteurized')" type="button">🥛 Amul Milk</button>
+<button class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 border border-yellow-200 rounded-lg shrink-0" onclick="applyPreset('Lay\'s Classic Salted Potato Chips', 'snacks', '78g pouch', 30, 30, 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Super Crunchy')" type="button">🧃 Chips/Coke</button>
+<button class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 rounded-lg shrink-0" onclick="applyPreset('Safal Tender Green Peas', 'frozen', '1 kg sealed pack', 135, 160, 'https://images.unsplash.com/photo-1592394533824-9440e5d68530?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Farm IQF')" type="button">❄️ Green Peas</button>
+<button class="px-2.5 py-1 bg-lime-50 hover:bg-lime-100 text-lime-900 border border-lime-200 rounded-lg shrink-0" onclick="applyPreset('Dettol Original Germ Protection Soap', 'toiletries', '4 x 125g pack', 155, 180, 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=500&amp;auto=format&amp;fit=crop&amp;q=80', '100% Protection')" type="button">🧼 Dettol/Shampoo</button>
+<button class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 border border-yellow-200 rounded-lg shrink-0" onclick="applyPreset('Amul Pure Desi Ghee Pouch', 'oilmasala', '1 Litre', 585, 620, 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Aroma Fresh')" type="button">🫒 Desi Ghee/Mustard Oil</button>
+<button class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg shrink-0" onclick="applyPreset('Maggi 2-Minute Masala Noodles', 'instant', 'Pack of 8 (560g)', 112, 120, 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Original Taste')" type="button">🍜 Maggi 2-Min</button>
+<button class="px-2.5 py-1 bg-pink-50 hover:bg-pink-100 text-pink-900 border border-pink-200 rounded-lg shrink-0" onclick="applyPreset('Shahi Banarasi Meetha Paan Bites', 'paan', 'Box of 12 pcs', 120, 150, 'https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=500&amp;auto=format&amp;fit=crop&amp;q=80', 'Digestive Mint')" type="button">🍬 Mint Saunf</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[9px] font-bold text-slate-500 mb-0.5">Select Category</label>
+<select class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white" id="newProdCat">
+<option value="veggies">🥬 Vegetables</option>
+<option value="fruits">🍎 Fruits</option>
+<option value="staples">🌾 Staples &amp; Atta</option>
+<option value="dairy">🥛 Dairy &amp; Bread</option>
+<option value="snacks">🧃 Snacks &amp; Beverages</option>
+<option value="frozen">❄️ Frozen</option>
+<option value="toiletries">🧼 Toiletries &amp; Personal Care</option>
+<option value="oilmasala">🫒 Oil, Ghee &amp; Masala</option>
+<option value="instant">🍜 Instant Foods &amp; Maggi</option>
+<option value="paan">🍬 Mouth Fresheners &amp; Paan</option>
+</select>
+</div>
+<div>
+<label class="block text-[9px] font-bold text-slate-500 mb-0.5">Unit / Pack</label>
+<input class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs bg-white" id="newProdUnit" placeholder="e.g. 1 kg / 500g / 2 pcs" type="text" value="1 kg"/>
+</div>
+</div>
+<div>
+<label class="block text-[9px] font-bold text-slate-500 mb-0.5">Product Name</label>
+<input class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 bg-white" id="newProdName" placeholder="e.g. Kesar Mango / Maggi 2-Min" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[9px] font-bold text-slate-500 mb-0.5">Our Price ₹</label>
+<input class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs font-black text-green-700 bg-white" id="newProdPrice" placeholder="Selling ₹" type="number"/>
+</div>
+<div>
+<label class="block text-[9px] font-bold text-slate-500 mb-0.5">MRP Strike ₹</label>
+<input class="w-full py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs text-slate-400 bg-white" id="newProdStrike" placeholder="Strike ₹" type="number"/>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-0.5">
+<label class="block text-[9px] font-bold text-slate-500">Image URL</label>
+<span class="text-[9px] text-green-700 font-bold cursor-pointer" onclick="useSamplePhoto()">✨ Use Category Sample Photo</span>
+</div>
+<div class="flex gap-2 items-center">
+<input class="flex-1 py-1.5 px-2.5 border border-slate-200 rounded-xl text-xs text-slate-600 bg-white" id="newProdImg" oninput="updatePresetPreview()" placeholder="https://images.unsplash.com/..." type="text"/>
+<img alt="Preview" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0" id="presetThumbPreview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvGIDr0on3o3acIjnEzF_1YHYpu6xmz6I7OuziVOrNTWrYTD90mXl5QR6zinPjG2gzhOj04cWxI9eWIRKtE8QXmHIhfYyBicGNHP5gawGdPDFwBzr3dDMfzKSl97_azbfjespmA7oVPsGe4Un1o_RWYtQZi6oGmpEIHIASNYe6IabqO9xrR7G63Y-76DNGI-yc2S-VfZrBmB-X-sDl4Gu3InPKYvgHNGunNyPMDoI48P3bZnwuZhPEPw"/>
+</div>
+</div>
+<button class="w-full py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-black rounded-xl shadow-xs transition" onclick="addNewProductSKU()">
             Save Item to Category
           </button>
-        </div>
-
-        <!-- Live Category Inventory List with In-Line Rate Editor -->
-        <div>
-          <div class="text-[11px] font-black text-slate-700 mb-2">Category Items & Rate Controls:</div>
-          <div id="adminCategoryItemsList" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar pr-1"></div>
-        </div>
-      </div>
-
-      <!-- 4. MERCHANT UPI SETTINGS -->
-      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
-        <h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
-          <i class="fa-solid fa-qrcode text-green-600"></i> Merchant UPI Settings
+</div>
+<!-- Live Category Inventory List with In-Line Rate Editor -->
+<div>
+<div class="text-[11px] font-black text-slate-700 mb-2">Category Items &amp; Rate Controls:</div>
+<div class="space-y-2 max-h-72 overflow-y-auto no-scrollbar pr-1" id="adminCategoryItemsList"></div>
+</div>
+</div>
+<!-- 4. MERCHANT UPI SETTINGS -->
+<div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
+<h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-qrcode text-green-600"></i> Merchant UPI Settings
         </h4>
-        <input type="text" id="adminUpiInput" value="9082207857@ybl" class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-black text-slate-800">
-        <button onclick="saveAdminUpi()" class="w-full py-2 bg-slate-900 text-white text-xs font-extrabold rounded-xl">Update Store UPI ID</button>
-      </div>
-
-      <!-- 5. CHANGE SECRET ADMIN PIN -->
-      <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
-        <h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
-          <i class="fa-solid fa-key text-green-600"></i> Change Secret Admin PIN
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-black text-slate-800" id="adminUpiInput" type="text" value="9082207857@ybl"/>
+<button class="w-full py-2 bg-slate-900 text-white text-xs font-extrabold rounded-xl" onclick="saveAdminUpi()">Update Store UPI ID</button>
+</div>
+<!-- 5. CHANGE SECRET ADMIN PIN -->
+<div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs space-y-2.5">
+<h4 class="font-black text-xs text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-key text-green-600"></i> Change Secret Admin PIN
         </h4>
-        <p class="text-[10px] text-slate-500">Only you will have this new PIN. Once saved, the old PIN will be completely disabled.</p>
-        <input type="password" id="newAdminPin" maxlength="6" placeholder="Enter New 4-Digit PIN" class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-black text-center tracking-widest">
-        <button onclick="changeAdminPin()" class="w-full py-2 bg-slate-900 text-white text-xs font-extrabold rounded-xl">Update & Lock With New PIN</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- FLOATING CART PILL -->
-  <aside id="stickyCartBar" class="fixed bottom-16 inset-x-4 z-40 transition-all duration-300 transform translate-y-36">
-    <div onclick="switchTab('basket')" class="cursor-pointer bg-slate-900 text-white p-3 rounded-2xl shadow-xl flex items-center justify-between border border-slate-700/50">
-      <div class="flex items-center gap-2.5">
-        <div id="stickyCountBadge" class="w-8 h-8 rounded-xl bg-green-600 flex items-center justify-center font-black text-white text-xs">0</div>
-        <div>
-          <div class="text-[10px] text-slate-300 font-medium">Cart Total</div>
-          <div id="stickyTotalDisplay" class="text-xs font-extrabold text-white">₹0</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-1.5 text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-xl">
+<p class="text-[10px] text-slate-500">Only you will have this new PIN. Once saved, the old PIN will be completely disabled.</p>
+<input class="w-full py-2 px-3 border border-slate-200 rounded-xl text-xs font-mono font-black text-center tracking-widest" id="newAdminPin" maxlength="6" placeholder="Enter New 4-Digit PIN" type="password"/>
+<button class="w-full py-2 bg-slate-900 text-white text-xs font-extrabold rounded-xl" onclick="changeAdminPin()">Update &amp; Lock With New PIN</button>
+</div>
+</div>
+</main>
+<!-- FLOATING CART PILL -->
+<aside class="fixed bottom-16 inset-x-4 z-40 transition-all duration-300 transform translate-y-36" id="stickyCartBar">
+<div class="cursor-pointer bg-slate-900 text-white p-3 rounded-2xl shadow-xl flex items-center justify-between border border-slate-700/50" onclick="switchTab('basket')">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-green-600 flex items-center justify-center font-black text-white text-xs" id="stickyCountBadge">0</div>
+<div>
+<div class="text-[10px] text-slate-300 font-medium">Cart Total</div>
+<div class="text-xs font-extrabold text-white" id="stickyTotalDisplay">₹0</div>
+</div>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-xl">
         Review Cart <i class="fa-solid fa-arrow-right text-[10px]"></i>
-      </div>
-    </div>
-  </aside>
-
-  <!-- FIXED BOTTOM NAVIGATION TABS -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200/90 px-2 py-2 z-50 flex justify-around items-center shadow-lg" style="pointer-events: auto;">
-    <button type="button" onclick="switchTab('market')" id="nav-btn-market" class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] tab-active">
-      <i class="fa-solid fa-store text-lg mb-0.5"></i>
-      <span>Market</span>
-    </button>
-    <button type="button" onclick="switchTab('basket')" id="nav-btn-basket" class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400 relative">
-      <i class="fa-solid fa-basket-shopping text-lg mb-0.5"></i>
-      <span>Basket</span>
-      <span id="navCartBadge" class="hidden absolute top-0 right-5 w-4 h-4 bg-green-600 text-white rounded-full text-[9px] font-black flex items-center justify-center">0</span>
-    </button>
-    <button type="button" onclick="switchTab('track')" id="nav-btn-track" class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400">
-      <i class="fa-solid fa-motorcycle text-lg mb-0.5"></i>
-      <span>Live Track</span>
-    </button>
-    <button type="button" onclick="switchTab('admin')" id="nav-btn-admin" class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400">
-      <i class="fa-solid fa-user-shield text-lg mb-0.5"></i>
-      <span>Admin Ops</span>
-    </button>
-  </nav>
-
-  <!-- REFUND MODAL -->
-  <div id="refundModal" class="modal-backdrop fixed inset-0 z-50 bg-black/60 items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-5 max-w-sm w-full shadow-2xl">
-      <h3 class="font-extrabold text-sm text-slate-900 mb-1">Instant 2-Hour UPI Refund</h3>
-      <p class="text-xs text-slate-500 mb-3">Order #HM-84920 • Direct reversal to customer UPI account</p>
-      <input type="text" id="refundUpiId" placeholder="Your UPI ID (e.g. name@okhdfcbank)" class="w-full text-xs p-2 border border-slate-200 rounded-xl mb-3 focus:outline-none">
-      <div class="flex gap-2">
-        <button onclick="closeRefundModal()" class="flex-1 py-2 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl">Cancel</button>
-        <button onclick="confirmRefund()" class="flex-1 py-2 bg-green-600 text-white font-bold text-xs rounded-xl">Submit Refund</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRODUCTION SCRIPT -->
-  <script>
+</div>
+</div>
+</aside>
+<!-- FIXED BOTTOM NAVIGATION TABS -->
+<nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200/90 px-2 py-2 z-50 flex justify-around items-center shadow-lg" style="pointer-events: auto;">
+<button class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] tab-active" id="nav-btn-market" onclick="switchTab('market')" type="button">
+<i class="fa-solid fa-store text-lg mb-0.5"></i>
+<span>Market</span>
+</button>
+<button class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400 relative" id="nav-btn-basket" onclick="switchTab('basket')" type="button">
+<i class="fa-solid fa-basket-shopping text-lg mb-0.5"></i>
+<span>Basket</span>
+<span class="hidden absolute top-0 right-5 w-4 h-4 bg-green-600 text-white rounded-full text-[9px] font-black flex items-center justify-center" id="navCartBadge">0</span>
+</button>
+<button class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400" id="nav-btn-track" onclick="switchTab('track')" type="button">
+<i class="fa-solid fa-motorcycle text-lg mb-0.5"></i>
+<span>Live Track</span>
+</button>
+<button class="tab-btn flex-1 py-1 flex flex-col items-center text-center font-bold text-[10px] text-slate-400" id="nav-btn-admin" onclick="switchTab('admin')" type="button">
+<i class="fa-solid fa-user-shield text-lg mb-0.5"></i>
+<span>Admin Ops</span>
+</button>
+</nav>
+<!-- REFUND MODAL -->
+<div class="modal-backdrop fixed inset-0 z-50 bg-black/60 items-center justify-center p-4" id="refundModal">
+<div class="bg-white rounded-2xl p-5 max-w-sm w-full shadow-2xl">
+<h3 class="font-extrabold text-sm text-slate-900 mb-1">Instant 2-Hour UPI Refund</h3>
+<p class="text-xs text-slate-500 mb-3">Order #HM-84920 • Direct reversal to customer UPI account</p>
+<input class="w-full text-xs p-2 border border-slate-200 rounded-xl mb-3 focus:outline-none" id="refundUpiId" placeholder="Your UPI ID (e.g. name@okhdfcbank)" type="text"/>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl" onclick="closeRefundModal()">Cancel</button>
+<button class="flex-1 py-2 bg-green-600 text-white font-bold text-xs rounded-xl" onclick="confirmRefund()">Submit Refund</button>
+</div>
+</div>
+</div>
+<!-- PRODUCTION SCRIPT -->
+<script>
     var STORE_WHATSAPP = "917006934064";
     var STORE_UPI = localStorage.getItem('hm_upi') || "9082207857@ybl";
     var ADMIN_PIN = localStorage.getItem('hm_pin') || "7006";
@@ -577,7 +582,7 @@
     /* Order Delivery State */
     var isOrderDelivered = localStorage.getItem('hm_order_delivered') === 'true';
 
-    /* Master Catalog */
+    /* Master Catalog across 10 Categories */
     var defaultCatalog = [
       { id: 1, name: "Ratnagiri Alphonso Mango", cat: "fruits", unit: "1 kg (4-5 pcs)", price: 349, strike: 450, img: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=300&auto=format&fit=crop&q=80", tag: "Farm Sweet" },
       { id: 2, name: "Honeycrisp Red Apples", cat: "fruits", unit: "1 kg", price: 198, strike: 240, img: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300&auto=format&fit=crop&q=80", tag: "Crisp & Juicy" },
@@ -588,10 +593,16 @@
       { id: 7, name: "Daawat Rozana Basmati Rice", cat: "staples", unit: "1 kg", price: 85, strike: 110, img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&auto=format&fit=crop&q=80", tag: "Long Grain" },
       { id: 8, name: "Tata Sampann Toor Dal", cat: "staples", unit: "1 kg", price: 165, strike: 190, img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300&auto=format&fit=crop&q=80", tag: "Unpolished" },
       { id: 9, name: "Aashirvaad Chakki Atta", cat: "staples", unit: "5 kg", price: 245, strike: 280, img: "https://images.unsplash.com/photo-1627485937980-221c88ac04f9?w=300&auto=format&fit=crop&q=80", tag: "100% Whole Wheat" },
-      { id: 10, name: "Amul Taaza Fresh Milk", cat: "dairy", unit: "1 Litre", price: 56, strike: 60, img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&auto=format&fit=crop&q=80", tag: "Daily Fresh" }
+      { id: 10, name: "Amul Taaza Fresh Milk", cat: "dairy", unit: "1 Litre", price: 56, strike: 60, img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&auto=format&fit=crop&q=80", tag: "Daily Fresh" },
+      { id: 11, name: "Lay's Classic Salted Chips", cat: "snacks", unit: "78g pack", price: 30, strike: 30, img: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=300&auto=format&fit=crop&q=80", tag: "Crispy" },
+      { id: 12, name: "Safal Tender Green Peas", cat: "frozen", unit: "1 kg pack", price: 135, strike: 160, img: "https://images.unsplash.com/photo-1592394533824-9440e5d68530?w=300&auto=format&fit=crop&q=80", tag: "IQF Frozen" },
+      { id: 13, name: "Dettol Germ Protection Soap", cat: "toiletries", unit: "Pack of 4", price: 155, strike: 180, img: "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=300&auto=format&fit=crop&q=80", tag: "Original" },
+      { id: 14, name: "Amul Pure Desi Ghee", cat: "oilmasala", unit: "1 Litre", price: 585, strike: 620, img: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&auto=format&fit=crop&q=80", tag: "Pure Cow Ghee" },
+      { id: 15, name: "Maggi 2-Minute Masala Noodles", cat: "instant", unit: "Pack of 8", price: 112, strike: 120, img: "https://images.unsplash.com/photo-1612927601601-6638404737ce?w=300&auto=format&fit=crop&q=80", tag: "Instant Treat" },
+      { id: 16, name: "Shahi Meetha Paan Bites", cat: "paan", unit: "Box of 12 pcs", price: 120, strike: 150, img: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=300&auto=format&fit=crop&q=80", tag: "Fresh Breath" }
     ];
 
-    var catalog = JSON.parse(localStorage.getItem('hm_catalog')) || defaultCatalog;
+    var catalog = JSON.parse(localStorage.getItem('hm_catalog_v2')) || defaultCatalog;
     var cart = JSON.parse(localStorage.getItem('hm_cart')) || { 1: 1, 4: 1 };
     var currentCat = 'all';
     var currentAdminCat = 'all';
@@ -650,9 +661,14 @@
 
       var filtered = catalog.filter(function(item) {
         var matchesCat = (currentCat === 'all' || item.cat === currentCat);
-        var matchesQuery = item.name.toLowerCase().includes(query) || item.unit.toLowerCase().includes(query);
+        var matchesQuery = item.name.toLowerCase().includes(query) || item.unit.toLowerCase().includes(query) || item.cat.toLowerCase().includes(query);
         return matchesCat && matchesQuery;
       });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-400 text-xs">No items found in this section. Add items easily from Store Ops Admin!</div>';
+        return;
+      }
 
       filtered.forEach(function(item) {
         var qty = cart[item.id] || 0;
@@ -662,7 +678,7 @@
           <div>
             <div class="relative w-full h-28 rounded-xl overflow-hidden mb-2 bg-slate-50">
               <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover">
-              <span class="absolute top-1 left-1 bg-white/90 backdrop-blur text-green-700 text-[8px] font-extrabold px-1.5 py-0.5 rounded-md">${item.tag}</span>
+              <span class="absolute top-1 left-1 bg-white/90 backdrop-blur text-green-700 text-[8px] font-extrabold px-1.5 py-0.5 rounded-md">${item.tag || 'Fresh Pick'}</span>
             </div>
             <h4 class="font-extrabold text-xs text-slate-900 line-clamp-1 leading-snug">${item.name}</h4>
             <div class="text-[10px] text-slate-400 mt-0.5 font-medium">${item.unit}</div>
@@ -918,7 +934,6 @@
        1. RIDER DETAILS MANAGEMENT (LIVE SYNCED)
        =================================================== */
     function syncRiderUI() {
-      /* Update Live Track Card */
       var trackName = document.getElementById('riderDisplayTrack');
       var trackMeta = document.getElementById('riderMetaTrack');
       var callBtn = document.getElementById('riderPhoneCall');
@@ -934,7 +949,6 @@
       }
       if (vehicleTag) vehicleTag.innerText = activeRider.vehicle;
 
-      /* Update Admin Inputs */
       if (document.getElementById('adminRiderName')) {
         document.getElementById('adminRiderName').value = activeRider.name;
         document.getElementById('adminRiderPhone').value = activeRider.phone;
@@ -1075,7 +1089,7 @@
     }
 
     /* ===================================================
-       3. CATEGORY-WISE PRODUCT MANAGEMENT
+       3. 10 CATEGORIES & METHOD 2 1-TAP PHOTO PRESETS
        =================================================== */
     function setAdminCategory(cat, btnEl) {
       currentAdminCat = cat;
@@ -1085,7 +1099,6 @@
       });
       if (btnEl) btnEl.className = "admin-cat-pill bg-green-600 text-white px-3 py-1 rounded-xl shrink-0";
 
-      /* Auto-set Category dropdown in form */
       if (cat !== 'all') {
         document.getElementById('newProdCat').value = cat;
         document.getElementById('addFormTitle').innerText = "➕ Add Item to " + cat.toUpperCase();
@@ -1093,6 +1106,28 @@
         document.getElementById('addFormTitle').innerText = "➕ Add Item to Catalog";
       }
       renderAdminCategoryItems();
+    }
+
+    function applyPreset(name, cat, unit, price, strike, img, tag) {
+      document.getElementById('newProdName').value = name;
+      document.getElementById('newProdCat').value = cat;
+      document.getElementById('newProdUnit').value = unit;
+      document.getElementById('newProdPrice').value = price;
+      document.getElementById('newProdStrike').value = strike;
+      document.getElementById('newProdImg').value = img;
+      
+      var preview = document.getElementById('presetThumbPreview');
+      if (preview) {
+        preview.src = img;
+      }
+    }
+
+    function updatePresetPreview() {
+      var url = document.getElementById('newProdImg').value.trim();
+      var preview = document.getElementById('presetThumbPreview');
+      if (url && preview) {
+        preview.src = url;
+      }
     }
 
     function renderAdminCategoryItems() {
@@ -1108,7 +1143,7 @@
       if (badge) badge.innerText = catalog.length + " SKUs Listed (" + filtered.length + " in view)";
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">No products in this category yet. Add one above!</div>';
+        container.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">No products in this department yet. Tap a preset above to add!</div>';
         return;
       }
 
@@ -1173,7 +1208,7 @@
       var img = document.getElementById('newProdImg').value.trim() || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&auto=format&fit=crop&q=80";
 
       if (!name) {
-        alert("Please enter product name");
+        alert("Please select a preset above or type product name");
         return;
       }
 
@@ -1207,13 +1242,21 @@
         fruits: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=300&auto=format&fit=crop&q=80",
         veggies: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&auto=format&fit=crop&q=80",
         staples: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&auto=format&fit=crop&q=80",
-        dairy: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&auto=format&fit=crop&q=80"
+        dairy: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&auto=format&fit=crop&q=80",
+        snacks: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=300&auto=format&fit=crop&q=80",
+        frozen: "https://images.unsplash.com/photo-1592394533824-9440e5d68530?w=300&auto=format&fit=crop&q=80",
+        toiletries: "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=300&auto=format&fit=crop&q=80",
+        oilmasala: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&auto=format&fit=crop&q=80",
+        instant: "https://images.unsplash.com/photo-1612927601601-6638404737ce?w=300&auto=format&fit=crop&q=80",
+        paan: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=300&auto=format&fit=crop&q=80"
       };
-      document.getElementById('newProdImg').value = samples[cat] || samples.fruits;
+      var targetImg = samples[cat] || samples.fruits;
+      document.getElementById('newProdImg').value = targetImg;
+      updatePresetPreview();
     }
 
     function saveCatalog() {
-      localStorage.setItem('hm_catalog', JSON.stringify(catalog));
+      localStorage.setItem('hm_catalog_v2', JSON.stringify(catalog));
     }
 
     /* ===================================================
@@ -1277,11 +1320,11 @@
       syncRiderUI();
       syncTrackingUI();
       updateCartTotals();
+      updatePresetPreview();
     });
     renderProducts();
     syncRiderUI();
     syncTrackingUI();
     updateCartTotals();
   </script>
-</body>
-</html>
+</body></html>
