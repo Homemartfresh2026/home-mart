@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Home Mart FRESH — UPI Payment Test</title>
+  <title>Home Mart FRESH</title>
   
   <!-- PWA & Mobile WebApp Capabilities (Zero Browser URL Chrome) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -169,7 +169,9 @@
           <i class="fa-solid fa-crosshairs text-[9px] text-emerald-600"></i> Use GPS Location
         </button>
       </div>
-      <textarea class="w-full text-xs text-slate-700 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none" id="customerAddress" rows="2" placeholder="House number, street, landmark, area and PIN code"></textarea>
+      <textarea class="w-full text-xs text-slate-700 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none" id="customerAddress" rows="2" placeholder="House/flat number, street, landmark, locality, city, state and PIN code"></textarea>
+      <p id="gpsLocationStatus" class="text-[10px] text-slate-500 mt-1" aria-live="polite">Optional: share GPS for accurate delivery. You can still enter your address manually.</p>
+      <button type="button" id="clearGPSButton" class="hidden text-[10px] text-red-600 underline mt-1" onclick="clearGPSLocation()">Remove shared GPS location</button>
       <div class="mt-2 flex gap-2">
         <input class="w-1/2 text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium" id="customerName" placeholder="Your Name" type="text" value=""/>
         <input class="w-1/2 text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium" id="customerPhone" placeholder="Mobile Number" type="tel" value=""/>
@@ -266,7 +268,7 @@
           <h2 class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
             <i class="fa-solid fa-cubes text-emerald-600"></i> Store Ops Hub
           </h2>
-          <p class="text-[10px] text-slate-400">Sadar Bazar Central Command</p>
+          <p class="text-[10px] text-slate-400">Store Management</p>
         </div>
         <button class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-slate-200 transition" onclick="lockAdmin()">
           Sign Out
@@ -303,7 +305,9 @@
           <input id="editPrice" type="number" min="0.01" step="0.01" class="border rounded p-2 text-xs" placeholder="Price ₹">
           <input id="editMrp" type="number" min="0.01" step="0.01" class="border rounded p-2 text-xs" placeholder="MRP ₹">
           <select id="editCategory" class="border rounded p-2 text-xs"></select>
-          <input id="editImage" class="border rounded p-2 text-xs" placeholder="Image HTTPS URL (optional)">
+          <input id="editImage" class="border rounded p-2 text-xs" placeholder="Image HTTPS URL (optional)" oninput="clearSelectedPhoto('edit')">
+          <label class="text-xs">Or choose photo from gallery<input id="editPhotoFile" type="file" accept="image/*" class="block w-full border rounded p-2 text-xs" onchange="selectProductPhoto('edit',this)"></label>
+          <img id="editPhotoPreview" class="hidden w-24 h-24 object-contain rounded-lg border" alt="Selected photo preview">
           <label class="text-xs">Available stock (selling units)<input id="editStockQty" type="number" min="0" step="1" class="w-full border rounded p-2 text-xs" placeholder="e.g. 10"></label>
         </div>
         <div class="flex gap-2"><button onclick="saveProductEdit()" class="flex-1 bg-emerald-700 text-white p-2 rounded text-xs">Save Changes</button><button onclick="resetProductEdit()" class="border p-2 rounded text-xs">Cancel</button></div>
@@ -362,7 +366,8 @@
           </div>
           <label for="newSkuImage" class="text-[11px] font-semibold text-slate-700">Product photo URL (optional)</label>
           <input class="w-full border border-slate-200 rounded-xl p-2 text-xs" id="newSkuImage" type="url" inputmode="url" placeholder="https://example.com/product-photo.jpg" oninput="previewNewSkuImage()"/>
-          <p class="text-[10px] text-slate-500">Paste a direct public HTTPS image URL, not a Google search results link. Photos must be permitted for reuse.</p>
+          <p class="text-[10px] text-slate-500">Paste a direct public HTTPS image URL, or select a photograph from your gallery.</p>
+          <label class="text-[11px] font-semibold text-slate-700">Or choose photo from gallery<input id="newSkuPhotoFile" type="file" accept="image/*" class="block w-full border border-slate-200 rounded-xl p-2 text-xs mt-1" onchange="selectProductPhoto('new',this)"></label>
           <img id="newSkuImagePreview" class="hidden w-24 h-24 object-contain rounded-lg border border-slate-200" alt="Product image preview"/>
           <button class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-xs" onclick="saveCustomSku()">
             Save to Catalog
@@ -524,7 +529,8 @@
     let riderAnimationTimer = null;
     // Coordinates for Sadar Bazar, Delhi Cantt & Delivery route
     const STORE_COORDS = [28.5983, 77.1325]; // Sadar Bazar, Delhi Cantt
-    let customerCoords = [28.6045, 77.1420]; // Customer destination in Delhi Cantt
+    let customerCoords = [28.6045, 77.1420]; // Demo map only; not a customer order location
+    let checkoutGPS = null; // GPS is saved only after the customer explicitly requests it
     let riderCoords = [28.6015, 77.1360];   // Rider en route on Parade Rd
 
     // Core Live Catalog Database with high quality food and grocery imagery
@@ -639,7 +645,7 @@
               <span class="absolute top-1.5 left-1.5 bg-white/90 backdrop-blur-xs text-emerald-800 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-xs uppercase tracking-wider">
                 ${escapeHtml(p.tag)}
               </span>
-              <img src="${escapeHtml(p.img||'https://placehold.co/300x300?text=Grocery')}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">
+              <img src="${escapeHtml(p.img||'https://placehold.co/300x300?text=Grocery')}" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain">
             </div>
             <h4 class="font-extrabold text-xs text-slate-900 line-clamp-1">${escapeHtml(p.name)}</h4>
             <p class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(p.unit)}</p>
@@ -820,15 +826,70 @@
 
           const note=document.createElement('p');note.className='text-[10px] text-slate-500';note.textContent='If your UPI app does not open, copy the UPI ID and pay the displayed amount manually. Payment is verified by the store; opening the app does not mark this order paid.';card.append(note);
         }
+        // Order details and repeat purchase: use current catalog prices and stock.
+        const details=document.createElement('details');details.className='mt-2 border-t border-slate-200 pt-2';
+        const summary=document.createElement('summary');summary.className='cursor-pointer text-xs font-semibold text-slate-700';summary.textContent='View order items';details.append(summary);
+        const pastItems=Array.isArray(o.items)?o.items:[];
+        if(pastItems.length){pastItems.forEach(item=>{const line=document.createElement('p');line.className='text-xs text-slate-600 mt-1';line.textContent=`${item.name||'Item'} • ${item.unit||''} • Qty ${item.qty||0} • ₹${Number(item.price||0).toFixed(2)} each (ordered price)`;details.append(line);});}
+        else {const line=document.createElement('p');line.className='text-xs text-slate-500 mt-1';line.textContent='Item details are unavailable for this order.';details.append(line);}
+        card.append(details);
+        if(pastItems.length){const buy=document.createElement('button');buy.type='button';buy.className='mt-2 bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs font-bold';buy.textContent='Buy Again';buy.onclick=()=>buyAgain(o);card.append(buy);}
         if(['placed','confirmed','packed'].includes(o.status)&&(!o.cancelRequested||o.cancelDecision==='rejected')){const b=document.createElement('button');b.className='text-red-600 text-xs underline';b.textContent='Request Cancellation';b.onclick=async()=>{if(!confirm('Request cancellation of this order?'))return;try{await window.hmFirebase.cancelOrder(o.id);}catch(e){alert(e.message)}};card.append(b);}
         list.append(card);
       });
     }
+    function buyAgain(order){
+      const pastItems=Array.isArray(order.items)?order.items:[];
+      if(!pastItems.length){alert('No products found in this order.');return;}
+      if(Object.keys(cart).length&&!confirm('Replace your current basket with items from this order?'))return;
+      const next={},skipped=[];
+      pastItems.forEach(old=>{
+        const p=products.find(x=>String(x.id)===String(old.id));
+        if(!p||p.available===false||(p.stockQty!==undefined&&Number(p.stockQty)<=0)){
+          skipped.push(old.name||'Unavailable item');return;
+        }
+        const wanted=Math.max(0,Math.floor(Number(old.qty)||0));
+        const available=p.stockQty===undefined?wanted:Math.max(0,Math.floor(Number(p.stockQty)||0));
+        const qty=Math.min(wanted,available);
+        if(qty>0)next[p.id]=(next[p.id]||0)+qty;
+        if(qty<wanted)skipped.push(`${p.name} (only ${qty} available)`);
+      });
+      if(!Object.keys(next).length){alert('These products are currently unavailable. Please browse the Market.');return;}
+      cart=next;saveCart();renderStorefront();renderBasket();switchTab('basket');
+      if(skipped.length)alert('Some items could not be added at their previous quantities:\n'+skipped.join('\n'));
+      else alert('Previous items added to your basket. Review current prices and quantities before ordering.');
+    }
+    function clearGPSLocation(){
+      checkoutGPS=null;
+      document.getElementById('gpsLocationStatus').textContent='GPS location removed. Enter your complete delivery address manually.';
+      document.getElementById('clearGPSButton').classList.add('hidden');
+    }
     function autoDetectGPS(){
-      if(!navigator.geolocation){alert('Location not supported. Enter your delivery address.');return;}
+      if(!navigator.geolocation){alert('GPS is not supported. Please enter your full delivery address.');return;}
+      const status=document.getElementById('gpsLocationStatus');
+      status.textContent='Requesting your location permission…';
       navigator.geolocation.getCurrentPosition(pos=>{
-        alert(`Location coordinates: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}. Please enter your full delivery address manually.`);
-      },()=>alert('Could not get location. Please enter your address manually.'),{timeout:8000});
+        checkoutGPS={latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracyMeters:Math.round(pos.coords.accuracy),capturedAt:new Date().toISOString()};
+        status.textContent=`GPS location captured (accuracy about ${checkoutGPS.accuracyMeters} metres). Confirm your house number, landmark and complete address below.`;
+        document.getElementById('clearGPSButton').classList.remove('hidden');
+      },err=>{
+        clearGPSLocation();
+        status.textContent='Location unavailable or permission denied. You can still order using your full address.';
+      },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+    }
+    function navigationLinkForOrder(o){
+      const gps=o.deliveryGPS;
+      if(gps && Number.isFinite(Number(gps.latitude)) && Number.isFinite(Number(gps.longitude)) && Math.abs(Number(gps.latitude))<=90 && Math.abs(Number(gps.longitude))<=180){
+        return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(`${gps.latitude},${gps.longitude}`);
+      }
+      return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(o.address||'');
+    }
+    function addNavigationLink(parent,o){
+      if(!o.deliveryGPS && !o.address)return;
+      const link=document.createElement('a');link.href=navigationLinkForOrder(o);link.target='_blank';link.rel='noopener noreferrer';
+      link.className='inline-block text-emerald-700 underline font-bold text-xs mt-1';
+      link.textContent=o.deliveryGPS?'Navigate to customer GPS (Google Maps)':'Find address on Google Maps (approximate)';
+      parent.append(link);
     }
 
     function copyMerchantUpi() {
@@ -854,14 +915,13 @@
       const payMode=document.querySelector('input[name="payMethod"]:checked')?.value||'COD';const {total,count}=calculateCart();
       if(!count){alert('Add items to your basket.');return;}
       if(!name||!/^[+]?[0-9\s-]{10,15}$/.test(phone)||addr.length<12){alert('Enter your name, valid phone number and complete delivery address.');return;}
-      if(!/\b110010\b/.test(addr)){alert('We currently accept orders only for PIN 110010.');return;}
       const items=Object.entries(cart).map(([id,qty])=>{const p=products.find(x=>String(x.id)===id);return p&&p.available!==false&&(p.stockQty===undefined||Number(p.stockQty)>=qty)?{id:p.id,name:p.name,unit:p.unit,qty,price:p.price}:null}).filter(Boolean);
       if(items.length!==Object.keys(cart).length){alert('Some items are unavailable. Please remove them from your basket.');return;}
       if(!confirm(`Place order for ₹${total} via ${payMode}? Store will confirm availability and final amount. Stock is manually maintained by the store.`))return;
       const btn=document.querySelector('#placeOrderSection button');btn.disabled=true;
-      try{const result=await window.hmFirebase.createOrder({name,phone,address:addr,paymentMode:payMode,items,total});
+      try{const result=await window.hmFirebase.createOrder({name,phone,address:addr,...(checkoutGPS?{deliveryGPS:{...checkoutGPS}}:{}),paymentMode:payMode,items,total});
         localStorage.setItem('hm_last_order',JSON.stringify({id:'HM-'+result.id.slice(0,8).toUpperCase(),docId:result.id,status:'placed'}));
-        localStorage.setItem('hm_customer',JSON.stringify({name,phone,address:addr}));clearBasket();switchTab('track');
+        localStorage.setItem('hm_customer',JSON.stringify({name,phone,address:addr}));clearGPSLocation();clearBasket();switchTab('track');
         alert(payMode==='UPI'?'Order placed! Open My Orders and tap Pay via UPI on this order. Payment is not yet verified.':'Order placed successfully! The store will confirm it.');
       }catch(e){console.error(e);alert('Order could not be placed: '+e.message+' (If anonymous sign-in is disabled, enable it in Firebase Authentication.)');}
       finally{btn.disabled=false;}
@@ -924,6 +984,34 @@
       try{await window.hmFirebase.saveProduct(id,{...item,id,cat,available:false,stockQty:0});alert(`Added ${escapeHtml(item.name)}`);}
       catch(e){alert('Could not save product: '+e.message);}
     }
+    // Small JPEGs are saved directly with the product in Firestore on the current free setup.
+    // Limit size to avoid Firestore's 1 MiB document limit and excessive catalogue downloads.
+    const selectedProductPhotos={new:null,edit:null};
+    function clearSelectedPhoto(which){
+      selectedProductPhotos[which]=null;
+      const file=document.getElementById(which==='new'?'newSkuPhotoFile':'editPhotoFile');
+      if(file)file.value='';
+      if(which==='new')previewNewSkuImage();
+      else document.getElementById('editPhotoPreview').classList.add('hidden');
+    }
+    async function selectProductPhoto(which,input){
+      const file=input.files?.[0];if(!file)return;
+      if(!file.type.startsWith('image/')){alert('Please choose an image.');input.value='';return;}
+      if(file.size>12*1024*1024){alert('Photo is too large. Choose an image under 12 MB.');input.value='';return;}
+      try{
+        const image=await createImageBitmap(file);
+        const scale=Math.min(1,420/Math.max(image.width,image.height));
+        const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
+        const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);image.close?.();
+        let data=canvas.toDataURL('image/jpeg',0.7);
+        if(data.length>120000)data=canvas.toDataURL('image/jpeg',0.48);
+        if(data.length>120000)throw Error('Image is still too large after compression. Try a smaller photo.');
+        selectedProductPhotos[which]=data;
+        const preview=document.getElementById(which==='new'?'newSkuImagePreview':'editPhotoPreview');
+        preview.src=data;preview.classList.remove('hidden');
+        document.getElementById(which==='new'?'newSkuImage':'editImage').value='';
+      }catch(e){alert('Could not prepare photo: '+e.message);input.value='';}
+    }
     function previewNewSkuImage(){
       const input=document.getElementById('newSkuImage'),preview=document.getElementById('newSkuImagePreview');
       const url=input.value.trim();
@@ -937,12 +1025,12 @@
       const name=document.getElementById('newSkuName').value.trim(),unit=document.getElementById('newSkuUnit').value.trim();
       const price=Number(document.getElementById('newSkuPrice').value),strike=Number(document.getElementById('newSkuStrike').value)||price;
       if(!name||!unit||!Number.isFinite(price)||price<=0||strike<price){alert('Enter a product name, unit, valid selling price and MRP.');return;}
-      const img=document.getElementById('newSkuImage').value.trim();
-      if(img&&!/^https:\/\/[^\s]+$/i.test(img)){alert('Enter a public HTTPS image URL, or leave the photo blank.');return;}
+      const img=selectedProductPhotos.new||document.getElementById('newSkuImage').value.trim();
+      if(img&&!(/^(https:\/\/[^\s]+|data:image\/jpeg;base64,[A-Za-z0-9+/=]+)$/i.test(img))){alert('Enter a public HTTPS image URL, or leave the photo blank.');return;}
       const id=crypto.randomUUID();
       try{await window.hmFirebase.saveProduct(id,{id,name,unit,price,strike,cat:currentAdminStockCat,tag:'Grocery',img,available:false,stockQty:0});
         for(const field of ['newSkuName','newSkuUnit','newSkuPrice','newSkuStrike','newSkuImage'])document.getElementById(field).value='';
-        previewNewSkuImage();alert('Product saved for all customers.');}
+        clearSelectedPhoto('new');previewNewSkuImage();alert('Product saved for all customers.');}
       catch(e){alert('Could not save product: '+e.message);}
     }
     function renderAdminStock(){
@@ -968,14 +1056,14 @@
     }
     function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;
       for(const [key,val] of [['editProductId',p.id],['editName',p.name],['editUnit',p.unit],['editPrice',p.price],['editMrp',p.strike],['editImage',p.img],['editStockQty',p.stockQty]])document.getElementById(key).value=val??'';
-      document.getElementById('editCategory').value=p.cat;document.getElementById('productEditorPanel').scrollIntoView({behavior:'smooth'});
+      clearSelectedPhoto('edit');document.getElementById('editCategory').value=p.cat;document.getElementById('productEditorPanel').scrollIntoView({behavior:'smooth'});
     }
-    function resetProductEdit(){for(const id of ['editProductId','editName','editUnit','editPrice','editMrp','editImage','editStockQty'])document.getElementById(id).value='';}
+    function resetProductEdit(){clearSelectedPhoto('edit');for(const id of ['editProductId','editName','editUnit','editPrice','editMrp','editImage','editStockQty'])document.getElementById(id).value='';}
     async function saveProductEdit(){const id=document.getElementById('editProductId').value,p=products.find(x=>x.id===id);if(!p){alert('Select Edit beside a product first.');return;}
       const stockQty=Number(document.getElementById('editStockQty').value);
       if(document.getElementById('editStockQty').value===''||!Number.isSafeInteger(stockQty)||stockQty<0){alert('Enter a valid whole-number stock quantity.');return;}
-      const name=document.getElementById('editName').value.trim(),unit=document.getElementById('editUnit').value.trim(),price=Number(document.getElementById('editPrice').value),strike=Number(document.getElementById('editMrp').value),cat=document.getElementById('editCategory').value,img=document.getElementById('editImage').value.trim();
-      if(!name||!unit||!cat||!Number.isFinite(price)||price<=0||!Number.isFinite(strike)||strike<price||img&&!/^https:\/\//i.test(img)){alert('Enter valid name, unit, category, price, MRP and optional HTTPS image URL.');return;}
+      const name=document.getElementById('editName').value.trim(),unit=document.getElementById('editUnit').value.trim(),price=Number(document.getElementById('editPrice').value),strike=Number(document.getElementById('editMrp').value),cat=document.getElementById('editCategory').value,img=selectedProductPhotos.edit||document.getElementById('editImage').value.trim();
+      if(!name||!unit||!cat||!Number.isFinite(price)||price<=0||!Number.isFinite(strike)||strike<price||img&&!/^(https:\/\/|data:image\/jpeg;base64,)/i.test(img)){alert('Enter valid name, unit, category, price, MRP and optional HTTPS image URL.');return;}
       try{await window.hmFirebase.saveProduct(id,{...p,name,unit,price,strike,cat,img,stockQty,available:stockQty>0&&p.available!==false});resetProductEdit();alert('Product updated for all customers. Remember: orders do not automatically reduce stock in Spark manual mode.');}catch(e){alert(e.message);}
     }
     const DEFAULT_CATS=[['vegetables','🥬 Vegetables'],['fruits','🍎 Fruits'],['staples','🌾 Staples & Atta'],['dairy','🥛 Dairy & Bread'],['snacks','🍪 Snacks'],['personal','🧼 Personal & Baby'],['cleaning','🧹 Cleaning & Household']];
@@ -1025,7 +1113,7 @@
             actions.append(approve,reject);row.append(actions);
           }
         }
-        row.append(info,address,sel,pay,rider);el.append(row);
+        row.append(info,address);addNavigationLink(row,o);row.append(sel,pay,rider);el.append(row);
       });
     }
     function renderOrderHistory(){
@@ -1069,7 +1157,7 @@
     function downloadFullBusinessBackup(){return exportBackup(true);}
     window.renderRiderOrders=function(){const el=document.getElementById('riderOrders');if(!el)return;el.replaceChildren();const orders=window.hmRiderOrders||[];if(!orders.length){el.textContent='No assigned orders.';return;}
       orders.forEach(o=>{const r=document.createElement('div');r.className='border-b p-2';const t=document.createElement('p');t.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name} • ${o.phone} • ${o.address} • ${o.status}`;
-        const s=document.createElement('select');s.className='border rounded p-2 mt-1';['confirmed','packed','out_for_delivery','delivered'].forEach(st=>{const opt=document.createElement('option');opt.value=st;opt.textContent=st.replaceAll('_',' ');s.append(opt);});s.value=['confirmed','packed','out_for_delivery','delivered'].includes(o.status)?o.status:'confirmed';s.onchange=async()=>{try{await window.hmFirebase.updateOrder(o.id,{status:s.value});}catch(e){alert(e.message);}};r.append(t,s);el.append(r);});};
+        const s=document.createElement('select');s.className='border rounded p-2 mt-1';['confirmed','packed','out_for_delivery','delivered'].forEach(st=>{const opt=document.createElement('option');opt.value=st;opt.textContent=st.replaceAll('_',' ');s.append(opt);});s.value=['confirmed','packed','out_for_delivery','delivered'].includes(o.status)?o.status:'confirmed';s.onchange=async()=>{try{await window.hmFirebase.updateOrder(o.id,{status:s.value});}catch(e){alert(e.message);}};r.append(t);addNavigationLink(r,o);r.append(s);el.append(r);});};
     async function toggleBannerVisibility(){
       try{await window.hmFirebase.saveSettings({showBanner:document.getElementById('bannerToggle').checked});}
       catch(e){alert(e.message);}
