@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Home Mart FRESH</title>
+  
+  <!-- PWA & Mobile WebApp Capabilities (Zero Browser URL Chrome) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Home Mart">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#16a34a">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <!-- Leaflet Interactive Maps CSS & JS (100% Free, Zero API Keys, Ultra-smooth) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Plus Jakarta Sans Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #faf8ff;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      overscroll-behavior-y: none;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Leaflet map custom pulse animation */
+    @keyframes riderPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+    .rider-pulse {
+      animation: riderPulse 2s infinite;
+    }
+    .leaflet-control-attribution {
+      font-size: 8px !important;
+      background: rgba(255, 255, 255, 0.7) !important;
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 pb-28 min-h-screen bg-[#faf8ff]">
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-2.5 shadow-xs">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-extrabold text-sm shadow-sm tracking-tight">
+          HM
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-slate-900 tracking-tight text-base">Home Mart</span>
+            <span class="bg-emerald-100 text-emerald-800 font-bold text-[9px] px-1.5 py-0.5 rounded-full uppercase tracking-wider">FRESH</span>
+          </div>
+          <p class="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
+            <i class="fa-solid fa-bolt text-emerald-600 text-xs"></i> Serving Sadar Bazar, Delhi Cantt
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shadow-xs border border-emerald-100" href="https://wa.me/917006934064" target="_blank" title="Store WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <button class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs shadow-xs" onclick="switchTab('admin')" title="Admin Ops Hub">
+          <i class="fa-solid fa-user-shield"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Input (Visible only on Market Tab) -->
+    <div class="mt-2 relative" id="searchBarContainer">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+      <input class="w-full pl-8 pr-3 py-1.5 bg-slate-100 border border-slate-200/80 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" id="searchInput" oninput="renderStorefront()" placeholder="Search 'mango, palak, atta, maggi, ghee...'" type="text"/>
+    </div>
+  </header>
+
+  <!-- ================= VIEW 1: MARKET (STOREFRONT) ================= -->
+  <section class="block" id="view-market">
+    <!-- Editable Promo Banner -->
+    <div class="p-3" id="topBannerSection">
+      <div class="bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-600 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs">🥭</span>
+          <span class="bg-white/20 text-white font-bold text-[9px] uppercase px-2 py-0.5 rounded-full tracking-wider" id="bannerTagDisplay">Local Grocery Essentials</span>
+        </div>
+        <h2 class="text-base font-black mt-1 leading-tight tracking-tight" id="bannerHeadingDisplay">WELCOME TO HOME MART FRESH</h2>
+        <p class="text-xs text-emerald-100 mt-0.5 font-medium" id="bannerSubDisplay">Browse groceries and order on WhatsApp</p>
+        <div class="mt-2.5 flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 bg-white/15 text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg backdrop-blur-xs">
+            0% Fee UPI: <b class="font-mono" data-upi-display>9082207857@ybl</b>
+          </span>
+          <button class="bg-white text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-lg shadow-xs hover:bg-emerald-50 transition active:scale-95" onclick="copyMerchantUpi()">
+            COPY UPI
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills (Horizontal Scroll) -->
+    <div class="px-3 flex gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs font-semibold">
+      <button class="cat-pill bg-emerald-600 text-white px-3 py-1.5 rounded-full shrink-0 shadow-xs" onclick="selectCategory('all', this)">All Items</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('vegetables', this)">🥬 Vegetables</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('fruits', this)">🍎 Fruits</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('staples', this)">🌾 Staples &amp; Atta</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('dairy', this)">🥛 Dairy &amp; Bread</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('snacks', this)">🍪 Munchies &amp; Snacks</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('personal', this)">🧼 Personal &amp; Baby</button>
+      <button class="cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0" onclick="selectCategory('cleaning', this)">🧹 Cleaning &amp; Household</button>
+    </div>
+
+    <!-- Live Products Grid -->
+    <main class="px-3 mt-1">
+      <div class="flex items-center justify-between mb-2.5">
+        <h3 class="font-extrabold text-slate-900 text-xs tracking-tight">Fresh Daily Catalog</h3>
+        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">
+          <i class="fa-solid fa-check text-[9px]"></i> Available groceries
+        </span>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5 pb-8" id="productGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </main>
+  </section>
+
+  <!-- ================= VIEW 2: BASKET & CHECKOUT ================= -->
+  <section class="hidden p-3 space-y-3" id="view-basket">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
+        <i class="fa-solid fa-basket-shopping text-emerald-600"></i> Your Fresh Basket
+      </h2>
+      <button class="text-[11px] text-red-500 font-bold hover:underline flex items-center gap-1" onclick="clearBasket()">
+        <i class="fa-solid fa-trash-can text-[10px]"></i> Clear
+      </button>
+    </div>
+
+    <!-- Basket Items List -->
+    <div class="space-y-2" id="basketItemsList"></div>
+
+    <!-- Empty State Notice -->
+    <div class="hidden text-center py-12 bg-white rounded-2xl border border-slate-100 p-6 shadow-xs" id="emptyBasketNotice">
+      <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 text-xl mx-auto mb-2">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </div>
+      <h3 class="font-bold text-slate-800 text-xs">Your basket is empty</h3>
+      <p class="text-[11px] text-slate-400 mt-0.5 mb-3">Add Honeycrisp apples, baby palak &amp; daily staples</p>
+      <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-xs transition" onclick="switchTab('market')">
+        Browse Catalog
+      </button>
+    </div>
+
+    <!-- Customer Address & Live GPS Pinpoint Detection -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-3 shadow-xs" id="addressCard">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs font-bold text-slate-900 flex items-center gap-1">
+          <i class="fa-solid fa-location-dot text-emerald-600"></i> Delivery Address
+        </span>
+        <button class="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg flex items-center gap-1 transition shadow-xs border border-emerald-200" onclick="autoDetectGPS()">
+          <i class="fa-solid fa-crosshairs text-[9px] text-emerald-600"></i> Use GPS Location
+        </button>
+      </div>
+      <textarea class="w-full text-xs text-slate-700 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none" id="customerAddress" rows="2" placeholder="House/flat number, street, landmark, locality, city, state and PIN code"></textarea>
+      <p id="gpsLocationStatus" class="text-[10px] text-slate-500 mt-1" aria-live="polite">Optional: share GPS for accurate delivery. You can still enter your address manually.</p>
+      <button type="button" id="clearGPSButton" class="hidden text-[10px] text-red-600 underline mt-1" onclick="clearGPSLocation()">Remove shared GPS location</button>
+      <div class="mt-2 flex gap-2">
+        <input class="w-1/2 text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium" id="customerName" placeholder="Your Name" type="text" value=""/>
+        <input class="w-1/2 text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium" id="customerPhone" placeholder="Mobile Number" type="tel" value=""/>
+      </div>
+    </div>
+
+    <!-- Payment Selection Card -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-3 shadow-xs space-y-2" id="paymentModeCard">
+      <h3 class="text-xs font-bold text-slate-900">Select Payment Mode</h3>
+      <label class="flex items-center justify-between p-2.5 border-2 border-emerald-600 bg-emerald-50/50 rounded-xl cursor-pointer">
+        <div class="flex items-center gap-2">
+          <input checked class="text-emerald-600 focus:ring-emerald-500" name="payMethod" type="radio" value="UPI"/>
+          <div>
+            <div class="text-xs font-bold text-slate-800">Pay via UPI (confirm payment with store)</div>
+            <div class="text-[10px] text-slate-500 font-mono">GPay, PhonePe, Paytm, BHIM: <span data-upi-display>9082207857@ybl</span></div>
+          </div>
+        </div>
+        <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+      </label>
+      <label class="flex items-center justify-between p-2.5 border border-slate-200 rounded-xl cursor-pointer">
+        <div class="flex items-center gap-2">
+          <input class="text-emerald-600 focus:ring-emerald-500" name="payMethod" type="radio" value="Cash on Delivery (COD)"/>
+          <div>
+            <div class="text-xs font-bold text-slate-800">Cash on Delivery (COD)</div>
+            <div class="text-[10px] text-slate-500">Pay cash or rider QR upon delivery</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-money-bill text-slate-400 text-xs"></i>
+      </label>
+    </div>
+
+    <!-- Bill Breakdown Card -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-3 shadow-xs space-y-1.5 text-xs" id="billSummaryCard">
+      <h3 class="font-extrabold text-slate-900 text-[11px] uppercase tracking-wider mb-2">Bill Summary</h3>
+      <div class="flex justify-between text-slate-600">
+        <span>Items Subtotal</span>
+        <span class="font-bold text-slate-800" id="billSubtotal">₹0</span>
+      </div>
+      <div class="flex justify-between text-emerald-600">
+        <span>Discount</span>
+        <span class="font-bold" id="billDiscount">-₹0</span>
+      </div>
+      <div class="flex justify-between text-slate-600">
+        <span>Delivery fee</span>
+        <span class="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">FREE</span>
+      </div>
+      <div class="flex justify-between text-slate-600">
+        <span>Packaging</span>
+        <span class="font-semibold text-slate-800">₹0</span>
+      </div>
+      <div class="border-t border-slate-100 pt-2 flex justify-between text-sm font-extrabold text-slate-900">
+        <span>Total Payable</span>
+        <span class="text-emerald-700" id="billTotal">₹0</span>
+      </div>
+    </div>
+
+    <!-- Place WhatsApp Order CTA Button -->
+    <div class="pt-1" id="placeOrderSection">
+      <button class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3 px-4 rounded-2xl shadow-lg flex items-center justify-between text-xs transition active:scale-98" onclick="placeWhatsAppOrder()">
+        <span id="orderBtnTotal">Total ₹0</span>
+        <span class="flex items-center gap-1.5">Place Order <i class="fa-solid fa-check text-sm"></i></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= ORDER STATUS ================= -->
+  <section class="hidden p-3 space-y-3" id="view-track">
+    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+      <h2 class="text-base font-extrabold">My Orders</h2>
+      <p class="text-xs text-slate-500 mt-2">Orders placed using this browser account appear here. Order statuses are updated by the store.</p>
+      <div id="orderTrackingMessage" class="mt-4 text-sm font-semibold text-emerald-700">No orders yet.</div><div id="customerOrdersList" class="mt-3 space-y-2"></div>
+      <p class="text-xs text-slate-500 mt-3">For assistance, contact the store on WhatsApp.</p>
+      <a class="inline-block mt-3 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold" href="https://wa.me/917006934064" target="_blank" rel="noopener">Contact Store</a>
+    </div>
+  </section>
+
+  <!-- ================= VIEW 4: ADMIN OPS HUB (PIN PROTECTED) ================= -->
+  <section class="hidden p-3 space-y-3" id="view-admin">
+    <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-md text-center max-w-sm mx-auto my-6" id="adminPinGate">
+      <h3 class="text-sm font-extrabold text-slate-900 mb-3">Store Owner Login</h3>
+      <input id="adminEmailInput" type="email" autocomplete="username" placeholder="Owner email" class="w-full border rounded-xl p-2 mb-2 text-xs">
+      <input id="adminPasswordInput" type="password" autocomplete="current-password" placeholder="Password" class="w-full border rounded-xl p-2 mb-2 text-xs">
+      <p class="text-[10px] text-slate-500 mb-2">Store owner or registered rider login</p><p id="pinErrorMsg" class="hidden text-xs text-red-600 mb-2">Login failed.</p>
+      <button class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs" onclick="verifyAdminPin()">Sign In</button>
+    </div>
+
+    <!-- Rider OTP login: isolated test UI -->
+    <div id="riderOtpGate" class="bg-white border rounded-2xl p-4 max-w-sm mx-auto my-3 space-y-3">
+      <h3 class="font-extrabold text-sm">Rider Login — Mobile OTP (Test)</h3>
+      <p class="text-xs text-slate-500">Use your Firebase test phone number first. Never share an OTP with anyone.</p>
+      <input id="riderLoginPhone" type="tel" autocomplete="tel" class="w-full border rounded-xl p-2 text-sm" placeholder="Phone with country code, e.g. +91...">
+      <div id="riderRecaptcha"></div>
+      <button id="riderSendOtp" class="w-full bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold" onclick="window.hmSendRiderOtp()">Send OTP</button>
+      <div id="riderOtpStep" class="hidden space-y-2">
+        <input id="riderLoginCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" class="w-full border rounded-xl p-2 text-sm" placeholder="6-digit verification code">
+        <button class="w-full bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold" onclick="window.hmVerifyRiderOtp()">Verify OTP</button>
+      </div>
+      <p id="riderOtpMessage" role="status" class="text-xs text-slate-600"></p>
+    </div>
+    <!-- Authenticated Admin Desk -->
+    <div class="hidden space-y-3" id="adminControlPanel">
+      <div id="riderDashboard" class="hidden bg-white border rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-sm">My Assigned Deliveries</h3><button onclick="lockAdmin()" class="text-xs underline">Sign Out</button></div><div id="riderOrders" class="space-y-2 mt-2 text-xs"></div></div>
+      <div id="ownerDashboard">
+      <!-- Admin Header -->
+      <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-100 shadow-xs">
+        <div>
+          <h2 class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-cubes text-emerald-600"></i> Store Ops Hub
+          </h2>
+          <p class="text-[10px] text-slate-400">Store Management</p>
+        </div>
+        <button class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-slate-200 transition" onclick="lockAdmin()">
+          Sign Out
+        </button>
+      </div>
+
+      <details class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs" id="recentOrdersPanel">
+        <summary class="font-bold text-xs cursor-pointer">Active Orders <span id="activeOrdersCount" class="text-slate-500 font-normal"></span></summary>
+        <div id="adminOrdersList" class="space-y-2 text-xs mt-3">Loading orders…</div>
+      </details>
+      <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-2">
+        <h4 class="font-bold text-xs">Order History & Backups</h4>
+        <p class="text-[11px] text-slate-500">Search recent orders below. Daily ZIP includes today's orders and a full current snapshot for recovery. Owner only.</p>
+        <input id="orderHistorySearch" class="border rounded-lg p-2 text-xs w-full" placeholder="Search order ID, name or mobile" oninput="renderOrderHistory()">
+        <div class="flex gap-2 items-center flex-wrap">
+          <button class="bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs font-bold" onclick="downloadDailyBusinessBackup()">Download Daily ZIP</button>
+          <button class="bg-slate-100 rounded-lg px-3 py-2 text-xs font-bold" onclick="downloadFullBusinessBackup()">Full Backup ZIP</button>
+        </div>
+        <p id="backupStatus" class="text-[11px] text-slate-500" aria-live="polite"></p>
+        <details><summary class="text-xs font-semibold cursor-pointer">Browse recent order history (up to 100)</summary><div id="orderHistoryList" class="max-h-72 overflow-y-auto space-y-2 text-xs mt-2"></div></details>
+      </div>
+      <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs">
+        <h4 class="font-bold text-xs mb-2">Product Availability</h4>
+        <div id="adminStockList" class="space-y-2 max-h-64 overflow-y-auto text-xs"></div>
+      </div>
+
+      <div class="bg-white border rounded-2xl p-3 space-y-2" id="productEditorPanel">
+        <h4 class="font-bold text-xs">Edit Existing Product</h4>
+        
+        <input type="hidden" id="editProductId">
+        <div class="grid grid-cols-2 gap-2">
+          <input id="editName" class="border rounded p-2 text-xs" placeholder="Product name">
+          <input id="editUnit" class="border rounded p-2 text-xs" placeholder="Unit">
+          <input id="editPrice" type="number" min="0.01" step="0.01" class="border rounded p-2 text-xs" placeholder="Price ₹">
+          <input id="editMrp" type="number" min="0.01" step="0.01" class="border rounded p-2 text-xs" placeholder="MRP ₹">
+          <select id="editCategory" class="border rounded p-2 text-xs"></select>
+          <input id="editImage" class="border rounded p-2 text-xs" placeholder="Image HTTPS URL (optional)" oninput="clearSelectedPhoto('edit')">
+          <label class="text-xs">Or choose photo from gallery<input id="editPhotoFile" type="file" accept="image/*" class="block w-full border rounded p-2 text-xs" onchange="selectProductPhoto('edit',this)"></label>
+          <img id="editPhotoPreview" class="hidden w-24 h-24 object-contain rounded-lg border" alt="Selected photo preview">
+          <label class="text-xs">Available stock (selling units)<input id="editStockQty" type="number" min="0" step="1" class="w-full border rounded p-2 text-xs" placeholder="e.g. 10"></label>
+        </div>
+        <div class="flex gap-2"><button onclick="saveProductEdit()" class="flex-1 bg-emerald-700 text-white p-2 rounded text-xs">Save Changes</button><button onclick="resetProductEdit()" class="border p-2 rounded text-xs">Cancel</button></div>
+      </div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2">
+        <h4 class="font-bold text-xs">Departments / Categories</h4>
+        <div id="categoryAdminList" class="space-y-1 text-xs"></div>
+        <div class="flex gap-2"><input id="newCategoryName" placeholder="New category name" class="flex-1 min-w-0 border rounded p-2 text-xs"><button onclick="addCategory()" class="bg-emerald-700 text-white rounded p-2 text-xs">Add</button></div>
+        <p class="text-[10px] text-slate-500">Categories containing products cannot be deleted until their products are moved or removed.</p>
+      </div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2">
+        <h4 class="font-bold text-xs">Delivery Riders</h4>
+        <p class="text-[10px] text-slate-500">Register riders using a mobile number and vehicle number. No Firebase rider email/password is needed for registration. Rider OTP testing is available in the separate test version. Existing mobile-based rider records must be securely linked to their Firebase Authentication UID before assigned orders can appear.</p>
+        <input id="riderUid" type="hidden" value="">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2"><input id="riderName" class="border rounded p-2 text-xs" placeholder="Rider name (optional)"><input id="riderPhone" inputmode="tel" class="border rounded p-2 text-xs" placeholder="Mobile number (10 digits)"><input id="riderVehicle" class="border rounded p-2 text-xs" placeholder="Vehicle number (e.g. DL01AB1234)"></div>
+        <button onclick="saveRider()" class="w-full bg-emerald-700 text-white p-2 rounded text-xs">Add / Update Rider</button>
+        <div id="ridersList" class="space-y-2 text-xs"></div>
+      </div>
+      <!-- 2. OPTION 1: Category-First Quick Stocking Desk -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-layer-group text-emerald-600"></i> Category-First Stocking Desk
+          </h4>
+          <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Option 1 Active</span>
+        </div>
+        <p class="text-[10px] text-slate-500">Select a category below to stock items with pre-filled studio photos in 1-tap:</p>
+
+        <!-- Category Selector for Admin -->
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px] font-bold">
+          <button class="admin-cat-btn bg-emerald-600 text-white px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('vegetables', this)">🥬 Vegetables</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('fruits', this)">🍎 Fruits</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('staples', this)">🌾 Staples</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('dairy', this)">🥛 Dairy</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('snacks', this)">🍪 Snacks</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('personal', this)">🧼 Personal</button>
+          <button class="admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0" onclick="setAdminStockCat('cleaning', this)">🧹 Cleaning</button>
+        </div>
+
+        <!-- Ready Checklist: 1-Tap Stocking for Selected Category -->
+        <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+          <span class="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider block mb-2">
+            ✨ Quick Checklist (1-Tap Stock with Photo)
+          </span>
+          <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1" id="readyChecklistContainer"></div>
+        </div>
+
+        <!-- Custom Product SKU Form under active category -->
+        <div class="border-t border-slate-100 pt-2 space-y-2">
+          <span class="text-[11px] font-bold text-slate-800 block">+ Add Custom SKU to This Category</span>
+          <div class="grid grid-cols-2 gap-2">
+            <input class="border border-slate-200 rounded-xl p-1.5 text-xs" id="newSkuName" placeholder="Product Name" type="text"/>
+            <input class="border border-slate-200 rounded-xl p-1.5 text-xs" id="newSkuUnit" placeholder="Unit (e.g. 1 kg / 500g)" type="text"/>
+            <input class="border border-slate-200 rounded-xl p-1.5 text-xs" id="newSkuPrice" placeholder="Selling Price (₹)" type="number"/>
+            <input class="border border-slate-200 rounded-xl p-1.5 text-xs" id="newSkuStrike" placeholder="MRP Strike (₹)" type="number"/>
+          </div>
+          <label for="newSkuImage" class="text-[11px] font-semibold text-slate-700">Product photo URL (optional)</label>
+          <input class="w-full border border-slate-200 rounded-xl p-2 text-xs" id="newSkuImage" type="url" inputmode="url" placeholder="https://example.com/product-photo.jpg" oninput="previewNewSkuImage()"/>
+          <p class="text-[10px] text-slate-500">Paste a direct public HTTPS image URL, or select a photograph from your gallery.</p>
+          <label class="text-[11px] font-semibold text-slate-700">Or choose photo from gallery<input id="newSkuPhotoFile" type="file" accept="image/*" class="block w-full border border-slate-200 rounded-xl p-2 text-xs mt-1" onchange="selectProductPhoto('new',this)"></label>
+          <img id="newSkuImagePreview" class="hidden w-24 h-24 object-contain rounded-lg border border-slate-200" alt="Product image preview"/>
+          <button class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-xs" onclick="saveCustomSku()">
+            Save to Catalog
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Editable Top Banner Desk -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-rectangle-ad text-emerald-600"></i> Top Banner Desk
+          </h4>
+          <label class="flex items-center gap-1.5 text-[10px] font-bold text-slate-700">
+            <span>Show Banner</span>
+            <input checked class="rounded text-emerald-600" id="bannerToggle" onchange="toggleBannerVisibility()" type="checkbox"/>
+          </label>
+        </div>
+        <input class="w-full border border-slate-200 rounded-xl p-1.5 text-xs" id="bannerTagInput" placeholder="Banner Small Tag" type="text" value="Local Grocery Essentials"/>
+        <input class="w-full border border-slate-200 rounded-xl p-1.5 text-xs" id="bannerHeadingInput" placeholder="Main Heading" type="text" value="WELCOME TO HOME MART FRESH"/>
+        <input class="w-full border border-slate-200 rounded-xl p-1.5 text-xs" id="bannerSubInput" placeholder="Offer Details" type="text" value="Browse groceries and order on WhatsApp"/>
+        <button class="w-full bg-slate-900 text-white text-xs font-bold py-2 rounded-xl hover:bg-slate-800 transition" onclick="updateBannerSettings()">
+          Update Banner
+        </button>
+      </div>
+
+      <!-- 4. Merchant UPI Settings -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-3.5 shadow-xs space-y-2">
+        <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-qrcode text-emerald-600"></i> Merchant UPI Settings
+        </h4>
+        <input class="w-full border border-slate-200 rounded-xl p-2 text-xs font-mono" id="merchantUpiInput" type="text" value="9082207857@ybl"/>
+        <button class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-xl transition" onclick="updateMerchantUpi()">
+          Update UPI ID
+        </button>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STICKY SLIDE-UP CART PILL (Market View) ================= -->
+  <div class="fixed bottom-16 inset-x-3 z-40 transition-all duration-300 transform translate-y-36" id="stickyCartBar">
+    <div class="cursor-pointer bg-slate-900 text-white p-3 rounded-2xl shadow-xl flex items-center justify-between border border-slate-800" onclick="switchTab('basket')">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center font-extrabold text-white text-xs" id="stickyCartCount">
+          0
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-300 font-medium">Cart Total</div>
+          <div class="text-xs font-black text-white" id="stickyCartTotal">₹0</div>
+        </div>
+      </div>
+      <button class="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        Review Cart <i class="fa-solid fa-arrow-right text-[10px]"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= FIXED BOTTOM 4-TAB NAVIGATION ================= -->
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200/90 px-2 py-2 z-40 flex justify-around shadow-sm">
+    <button class="flex flex-col items-center text-emerald-600 font-bold text-[10px]" id="tab-market" onclick="switchTab('market')">
+      <i class="fa-solid fa-store text-base mb-0.5"></i> Market
+    </button>
+    <button class="flex flex-col items-center text-slate-400 text-[10px] relative" id="tab-basket" onclick="switchTab('basket')">
+      <span class="hidden absolute -top-1 right-2 bg-emerald-600 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center" id="navCartBadge">0</span>
+      <i class="fa-solid fa-basket-shopping text-base mb-0.5"></i> Basket
+    </button>
+    <button class="flex flex-col items-center text-slate-400 text-[10px]" id="tab-track" onclick="switchTab('track')">
+      <i class="fa-solid fa-motorcycle text-base mb-0.5"></i> Orders
+    </button>
+    <button class="flex flex-col items-center text-slate-400 text-[10px]" id="tab-admin" onclick="switchTab('admin')">
+      <i class="fa-solid fa-user-shield text-base mb-0.5"></i> Store Ops
+    </button>
+  </nav>
+
+  <footer class="px-4 pb-4 text-center text-[10px] text-slate-500">Home Mart FRESH • Orders are accepted by the store after review. UPI payments are verified manually. Cancellation requests are subject to approval. FSSAI registration/licence details will be displayed when available.</footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYZRWcTE0p5ZXYAApw_E10KrBRmAY-YFk",
+      authDomain: "home-mart-fresh-test.firebaseapp.com",
+      projectId: "home-mart-fresh-test",
+      storageBucket: "home-mart-fresh-test.firebasestorage.app",
+      messagingSenderId: "718879974790",
+      appId: "1:718879974790:web:3903ffe6d7f24b57d4f807"
+    };
+    const OWNER_UID='tHzJyvBtQGZijMUgmvwDRhG1LEh1';
+    const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+    const storeDoc=doc(db,'config','store');
+    let riderConfirmation=null, riderCaptcha=null;
+    const riderMessage=t=>{const el=document.getElementById('riderOtpMessage');if(el)el.textContent=t;};
+    window.hmSendRiderOtp=async()=>{
+      const phone=document.getElementById('riderLoginPhone').value.trim();
+      if(!/^\+[1-9]\d{7,14}$/.test(phone)){riderMessage('Enter a valid number including country code, e.g. +91.');return;}
+      const btn=document.getElementById('riderSendOtp');btn.disabled=true;
+      try{
+        if(!riderCaptcha)riderCaptcha=new RecaptchaVerifier(auth,'riderRecaptcha',{size:'normal'});
+        riderConfirmation=await signInWithPhoneNumber(auth,phone,riderCaptcha);
+        document.getElementById('riderOtpStep').classList.remove('hidden');
+        riderMessage('Enter the verification code. Firebase test numbers do not receive an SMS.');
+      }catch(e){riderMessage('Unable to send OTP: '+(e.message||e));riderCaptcha?.clear();riderCaptcha=null;document.getElementById('riderRecaptcha').replaceChildren();}
+      finally{btn.disabled=false;}
+    };
+    window.hmVerifyRiderOtp=async()=>{
+      if(!riderConfirmation){riderMessage('Send OTP first.');return;}
+      const code=document.getElementById('riderLoginCode').value.trim();
+      if(!/^\d{6}$/.test(code)){riderMessage('Enter the six-digit code.');return;}
+      try{await riderConfirmation.confirm(code);riderMessage('Phone verified. Checking rider registration…');}
+      catch(e){riderMessage('Verification failed: '+(e.message||e));}
+    };
+    let unsubscribeCustomer=null,unsubscribeOwner=null,unsubscribeRider=null,unsubscribeRiderOrders=null;
+    const fail=(area,e)=>{console.error(area,e);window.showNotice?.(`${area}: ${e.message||e}`);};
+    window.hmFirebase={
+      login:(email,password)=>signInWithEmailAndPassword(auth,email,password),
+      logout:()=>signOut(auth),
+      ensureCustomer:async()=>{if(auth.currentUser)return auth.currentUser;const r=await signInAnonymously(auth);return r.user;},
+      saveProduct:(id,data)=>setDoc(doc(db,'products',String(id)),data),
+      deleteProduct:id=>deleteDoc(doc(db,'products',String(id))),
+      addStock:(id,qty)=>updateDoc(doc(db,'products',String(id)),{stockQty:increment(qty),available:true}),
+      saveSettings:data=>setDoc(storeDoc,data,{merge:true}),
+      saveCategory:(id,data)=>setDoc(doc(db,'categories',id),data),
+      deleteCategory:id=>deleteDoc(doc(db,'categories',id)),
+      saveRider:(uid,data)=>setDoc(doc(db,'riders',uid),data),
+      createOrder:async data=>{const u=await window.hmFirebase.ensureCustomer();return addDoc(collection(db,'orders'),{...data,customerUid:u.uid,status:'placed',paymentStatus:'pending',riderUid:'',riderName:'',createdAt:serverTimestamp()});},
+      updateOrder:(id,changes)=>updateDoc(doc(db,'orders',id),{...changes,updatedAt:serverTimestamp()}),
+      cancelOrder:id=>updateDoc(doc(db,'orders',id),{cancelRequested:true,cancelDecision:'pending',cancelRequestedAt:serverTimestamp(),updatedAt:serverTimestamp()}),
+      exportBusinessRecords:async()=>{
+        if(!auth.currentUser||auth.currentUser.uid!==OWNER_UID)throw new Error('Owner login required.');
+        const names=['orders','products','riders','categories'];
+        const records={};
+        for(const name of names){const snap=await getDocs(collection(db,name));records[name]=snap.docs.map(d=>({id:d.id,...d.data()}));}
+        const settings=await getDoc(storeDoc);
+        records.storeSettings=settings.exists()?settings.data():{};
+        return records;
+      }
+    };
+    onSnapshot(collection(db,'products'),snap=>{products=snap.docs.map(d=>({id:d.id,...d.data()}));renderStorefront();renderBasket();updateCartUI();renderAdminStock();},e=>fail('Product catalogue unavailable',e));
+    onSnapshot(storeDoc,snap=>{if(snap.exists())window.applyStoreSettings(snap.data());},e=>fail('Store settings',e));
+    onSnapshot(collection(db,'categories'),snap=>{window.hmCategories=snap.docs.map(d=>({id:d.id,...d.data()}));window.refreshCategories?.();},e=>fail('Categories',e));
+    onAuthStateChanged(auth,async user=>{
+      [unsubscribeCustomer,unsubscribeOwner,unsubscribeRider,unsubscribeRiderOrders].forEach(fn=>fn?.());
+      unsubscribeCustomer=unsubscribeOwner=unsubscribeRider=unsubscribeRiderOrders=null;
+      window.hmOwner=!!user&&user.uid===OWNER_UID;window.hmRider=false;window.hmCurrentUid=user?.uid||null;
+      if(user&&!user.isAnonymous&&!window.hmOwner){
+        try{const d=await getDoc(doc(db,'riders',user.uid));window.hmRider=d.exists()&&d.data().active===true;}catch(e){fail('Rider account',e);}
+      }
+      window.dispatchEvent(new CustomEvent('hm-auth',{detail:window.hmOwner||window.hmRider}));
+      const otpGate=document.getElementById('riderOtpGate');
+      if(otpGate)otpGate.classList.toggle('hidden',!!user&&!user.isAnonymous);
+      if(user?.phoneNumber&&!window.hmRider)riderMessage('Phone verified, but this Firebase account is not yet linked to an active rider record. Ask the store owner to link the rider UID before assigning deliveries.');
+      if(user&&!window.hmRider){
+        unsubscribeCustomer=onSnapshot(query(collection(db,'orders'),where('customerUid','==',user.uid)),snap=>{
+          window.hmCustomerOrders=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderTracking();
+        },e=>fail('My orders',e));
+      }
+      if(window.hmOwner){
+        unsubscribeRider=onSnapshot(collection(db,'riders'),snap=>{window.hmRiders=snap.docs.map(d=>({uid:d.id,...d.data()}));window.renderRiders?.();window.renderAdminOrders?.();},e=>fail('Riders',e));
+        unsubscribeOwner=onSnapshot(query(collection(db,'orders'),orderBy('createdAt','desc'),limit(100)),snap=>{window.hmAdminOrders=snap.docs.map(d=>({id:d.id,...d.data()}));window.renderAdminOrders?.();},e=>fail('Admin orders',e));
+      }
+      if(window.hmRider){
+        unsubscribeRiderOrders=onSnapshot(query(collection(db,'orders'),where('riderUid','==',user.uid)),snap=>{window.hmRiderOrders=snap.docs.map(d=>({id:d.id,...d.data()}));window.renderRiderOrders?.();},e=>fail('Assigned orders',e));
+      }
+    });
+  </script>
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    const STORE_WHATSAPP = "917006934064";
+    let merchantUpi = "9082207857@ybl";
+    let adminPin = null;
+    let selectedCat = 'all';
+    let currentTab = 'market';
+    let currentAdminStockCat = 'vegetables';
+
+    // Map & Geolocation State
+    let leafletMap = null;
+    let riderMarker = null;
+    let customerMarker = null;
+    let routeLine = null;
+    let riderAnimationTimer = null;
+    // Coordinates for Sadar Bazar, Delhi Cantt & Delivery route
+    const STORE_COORDS = [28.5983, 77.1325]; // Sadar Bazar, Delhi Cantt
+    let customerCoords = [28.6045, 77.1420]; // Demo map only; not a customer order location
+    let checkoutGPS = null; // GPS is saved only after the customer explicitly requests it
+    let riderCoords = [28.6015, 77.1360];   // Rider en route on Parade Rd
+
+    // Core Live Catalog Database with high quality food and grocery imagery
+    let products = []; // Live Firestore catalogue only. Add products from the owner desk.
+
+    // Ready Checklists for 1-Tap Category Stocking (Option 1)
+    const categoryTemplates = {
+      vegetables: [
+        { name: "Farm Fresh Green Peas", unit: "500g", price: 45, strike: 60, tag: "Sweet Peas", img: "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=300&auto=format&fit=crop&q=80" },
+        { name: "Fresh Coriander (Dhaniya)", unit: "100g bunch", price: 15, strike: 20, tag: "Aromatic", img: "https://images.unsplash.com/photo-1608797178974-15b35a61dd75?w=300&auto=format&fit=crop&q=80" },
+        { name: "Red Onions (Nashik)", unit: "1 kg", price: 32, strike: 45, tag: "Kitchen Staple", img: "https://images.unsplash.com/photo-1508747703725-719777637510?w=300&auto=format&fit=crop&q=80" },
+        { name: "New Crop Potatoes", unit: "1 kg", price: 28, strike: 35, tag: "Farm Fresh", img: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300&auto=format&fit=crop&q=80" }
+      ],
+      fruits: [
+        { name: "Nagpur Sweet Oranges", unit: "1 kg", price: 85, strike: 110, tag: "Citrus Punch", img: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=300&auto=format&fit=crop&q=80" },
+        { name: "Robusta Ripe Bananas", unit: "1 kg (5-6 pcs)", price: 48, strike: 60, tag: "High Energy", img: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&auto=format&fit=crop&q=80" },
+        { name: "Ruby Red Pomegranate", unit: "2 pcs (500g)", price: 135, strike: 165, tag: "Antioxidant", img: "https://images.unsplash.com/photo-1541344999736-83eca872f242?w=300&auto=format&fit=crop&q=80" }
+      ],
+      staples: [
+        { name: "Fortune Sunflower Oil", unit: "1 Litre pouch", price: 142, strike: 165, tag: "Light & Pure", img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&auto=format&fit=crop&q=80" },
+        { name: "Tata Iodized Salt", unit: "1 kg", price: 28, strike: 30, tag: "Desh Ka Namak", img: "https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=300&auto=format&fit=crop&q=80" }
+      ],
+      dairy: [
+        { name: "Amul Salted Butter", unit: "100g pack", price: 58, strike: 60, tag: "Utterly Butterly", img: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=300&auto=format&fit=crop&q=80" },
+        { name: "Britannia 100% Whole Wheat Bread", unit: "400g loaf", price: 50, strike: 55, tag: "Brown Bread", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&auto=format&fit=crop&q=80" }
+      ],
+      snacks: [
+        { name: "Haldiram's Bhujia Sev", unit: "400g pack", price: 110, strike: 125, tag: "Spicy Crunch", img: "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=300&auto=format&fit=crop&q=80" }
+      ],
+      personal: [
+        { name: "Pampers Baby Diaper Pants (M)", unit: "Pack of 24", price: 349, strike: 410, tag: "12hr Dry", img: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=300&auto=format&fit=crop&q=80" }
+      ],
+      cleaning: [
+        { name: "Surf Excel Easy Wash Detergent", unit: "1 kg", price: 145, strike: 160, tag: "Deep Clean", img: "https://images.unsplash.com/photo-1584634731339-252c581abfc5?w=300&auto=format&fit=crop&q=80" }
+      ]
+    };
+
+    let cart = JSON.parse(localStorage.getItem('hm_cart') || '{}');
+
+    function saveCart() {
+      localStorage.setItem('hm_cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function addToCart(id) {
+      const p=products.find(x=>String(x.id)===String(id));
+      if(!p||p.available===false||(p.stockQty!==undefined&&p.stockQty<=0)){alert('Product is out of stock.');return;}
+      if(p.stockQty!==undefined&&(cart[id]||0)>=p.stockQty){alert('Only '+p.stockQty+' units available.');return;}
+      cart[id] = (cart[id] || 0) + 1;
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function changeQty(id, delta) {
+      const p=products.find(x=>String(x.id)===String(id));
+      if(delta>0&&(!p||p.available===false||(p.stockQty!==undefined&&(cart[id]||0)>=p.stockQty))){alert('Requested quantity exceeds available stock.');return;}
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function clearBasket() {
+      cart = {};
+      saveCart();
+      renderStorefront();
+      renderBasket();
+    }
+
+    function selectCategory(cat, btn) {
+      selectedCat = cat;
+      document.querySelectorAll('.cat-pill').forEach(el => {
+        el.className = "cat-pill bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-full shrink-0";
+      });
+      btn.className = "cat-pill bg-emerald-600 text-white px-3 py-1.5 rounded-full shrink-0 shadow-xs";
+      renderStorefront();
+    }
+
+    function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function renderStorefront() {
+      const query = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+      const grid = document.getElementById('productGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchesCategory = selectedCat === 'all' || p.cat === selectedCat;
+        const matchesSearch = p.name.toLowerCase().includes(query) || p.cat.toLowerCase().includes(query) || p.unit.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-2 py-10 text-center text-slate-400">
+            <i class="fa-solid fa-magnifying-glass text-2xl mb-2 text-slate-300"></i>
+            <p class="text-xs font-bold">No items found matching "${escapeHtml(query)}"</p>
+            <p class="text-[10px]">Try searching "mango", "apple", "rice", or select All Items</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const qty = cart[p.id] || 0;
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-100 rounded-2xl p-2.5 shadow-xs flex flex-col justify-between hover:border-emerald-200 transition";
+        card.innerHTML = `
+          <div>
+            <div class="relative w-full h-32 rounded-xl overflow-hidden mb-2 bg-slate-50 flex items-center justify-center">
+              <span class="absolute top-1.5 left-1.5 bg-white/90 backdrop-blur-xs text-emerald-800 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-xs uppercase tracking-wider">
+                ${escapeHtml(p.tag)}
+              </span>
+              <img src="${escapeHtml(p.img||'https://placehold.co/300x300?text=Grocery')}" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain">
+            </div>
+            <h4 class="font-extrabold text-xs text-slate-900 line-clamp-1">${escapeHtml(p.name)}</h4>
+            <p class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(p.unit)}</p>
+            <p class="text-[10px] font-semibold ${p.available===false||(p.stockQty!==undefined&&Number(p.stockQty)<=0)?'text-red-600':'text-emerald-700'}">${p.available===false||(p.stockQty!==undefined&&Number(p.stockQty)<=0)?'Out of Stock':'In Stock'}</p>
+            <div class="mt-1 flex items-baseline gap-1.5">
+              <span class="font-black text-sm text-slate-900">₹${p.price}</span>
+              <span class="text-[10px] text-slate-400 line-through">₹${p.strike}</span>
+            </div>
+          </div>
+          <div class="mt-2.5">
+            ${p.available===false||(p.stockQty!==undefined&&Number(p.stockQty)<=0) ? `<button disabled class="w-full py-1.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold">Out of Stock</button>` : qty === 0 ? `
+              <button onclick="addToCart('${p.id}')" class="w-full py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95">
+                <i class="fa-solid fa-plus text-[10px]"></i> ADD
+              </button>
+            ` : `
+              <div class="flex items-center justify-between bg-emerald-600 text-white rounded-xl px-2 py-1 shadow-xs">
+                <button onclick="changeQty('${p.id}', -1)" class="w-5 h-5 flex items-center justify-center font-bold text-sm leading-none active:scale-90">－</button>
+                <span class="text-xs font-bold">${qty}</span>
+                <button onclick="changeQty('${p.id}', 1)" class="w-5 h-5 flex items-center justify-center font-bold text-sm leading-none active:scale-90">＋</button>
+              </div>
+            `}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function calculateCart() {
+      let subtotal = 0;
+      let count = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = products.find(p => p.id == id);
+        if (item && qty > 0) {
+          count += qty;
+          subtotal += item.price * qty;
+        }
+      }
+      const discount = 0;
+      const total = subtotal > 0 ? subtotal : 0;
+      return { count, subtotal, discount, total };
+    }
+
+    function updateCartUI() {
+      const { count, total } = calculateCart();
+      const stickyBar = document.getElementById('stickyCartBar');
+      const navBadge = document.getElementById('navCartBadge');
+
+      if (navBadge) {
+        if (count > 0) {
+          navBadge.innerText = count;
+          navBadge.classList.remove('hidden');
+        } else {
+          navBadge.classList.add('hidden');
+        }
+      }
+
+      if (stickyBar) {
+        if (count > 0 && currentTab === 'market') {
+          document.getElementById('stickyCartCount').innerText = count;
+          document.getElementById('stickyCartTotal').innerText = `₹${total}`;
+          stickyBar.classList.remove('translate-y-36');
+        } else {
+          stickyBar.classList.add('translate-y-36');
+        }
+      }
+    }
+
+    function renderBasket() {
+      const { count, subtotal, discount, total } = calculateCart();
+      const list = document.getElementById('basketItemsList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = products.find(p => p.id == id);
+        if (item && qty > 0) {
+          const row = document.createElement('div');
+          row.className = "bg-white border border-slate-100 rounded-2xl p-2.5 shadow-xs flex items-center justify-between";
+          row.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <img src="${escapeHtml(item.img||'https://placehold.co/100x100?text=Grocery')}" class="w-10 h-10 rounded-lg object-cover bg-slate-50">
+              <div>
+                <h4 class="font-bold text-xs text-slate-900">${escapeHtml(item.name)}</h4>
+                <div class="text-[10px] text-slate-400">₹${item.price} • ${escapeHtml(item.unit)}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="flex items-center bg-slate-100 rounded-xl px-2 py-0.5">
+                <button onclick="changeQty('${item.id}', -1)" class="w-5 h-5 font-bold text-xs text-slate-600">－</button>
+                <span class="text-xs font-bold text-slate-800 px-1.5">${qty}</span>
+                <button onclick="changeQty('${item.id}', 1)" class="w-5 h-5 font-bold text-xs text-slate-600">＋</button>
+              </div>
+              <div class="text-xs font-extrabold text-slate-900 w-12 text-right">₹${item.price * qty}</div>
+            </div>
+          `;
+          list.appendChild(row);
+        }
+      }
+
+      if (count === 0) {
+        document.getElementById('emptyBasketNotice').classList.remove('hidden');
+        document.getElementById('addressCard').classList.add('hidden');
+        document.getElementById('paymentModeCard').classList.add('hidden');
+        document.getElementById('billSummaryCard').classList.add('hidden');
+        document.getElementById('placeOrderSection').classList.add('hidden');
+      } else {
+        document.getElementById('emptyBasketNotice').classList.add('hidden');
+        document.getElementById('addressCard').classList.remove('hidden');
+        document.getElementById('paymentModeCard').classList.remove('hidden');
+        document.getElementById('billSummaryCard').classList.remove('hidden');
+        document.getElementById('placeOrderSection').classList.remove('hidden');
+
+        document.getElementById('billSubtotal').innerText = `₹${subtotal}`;
+        document.getElementById('billDiscount').innerText = `-₹${discount}`;
+        document.getElementById('billTotal').innerText = `₹${total}`;
+        document.getElementById('orderBtnTotal').innerText = `Total ₹${total}`;
+      }
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      ['market', 'basket', 'track', 'admin'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const tabBtn = document.getElementById(`tab-${t}`);
+        if (view && tabBtn) {
+          if (t === tab) {
+            view.classList.remove('hidden');
+            tabBtn.className = "flex flex-col items-center text-emerald-600 font-bold text-[10px]";
+          } else {
+            view.classList.add('hidden');
+            tabBtn.className = "flex flex-col items-center text-slate-400 text-[10px]";
+          }
+        }
+      });
+
+      const search = document.getElementById('searchBarContainer');
+      if (search) {
+        if (tab === 'market') search.classList.remove('hidden');
+        else search.classList.add('hidden');
+      }
+
+      if (tab === 'basket') renderBasket();
+      if (tab === 'track') initOrUpdateMap();
+      updateCartUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initOrUpdateMap() { renderTracking(); }
+    function renderTracking(){
+      const el=document.getElementById('orderTrackingMessage'),list=document.getElementById('customerOrdersList');if(!el||!list)return;
+      const orders=window.hmCustomerOrders||[];el.textContent=orders.length?`${orders.length} order(s) found`:'No orders for this browser account yet.';list.replaceChildren();
+      orders.forEach(o=>{const card=document.createElement('div');card.className='border rounded-xl p-3 bg-slate-50 space-y-1';
+        const h=document.createElement('p');h.className='font-bold';h.textContent=`Order HM-${o.id.slice(0,8).toUpperCase()} • ₹${o.total} • ${o.status||'placed'}`;
+        const detail=document.createElement('p');detail.className='text-xs text-slate-600';detail.textContent=`Rider: ${o.riderName||'Not assigned'} • Payment: ${o.paymentStatus||'pending'}`;card.append(h,detail);
+        if(o.cancelRequested){const p=document.createElement('p');p.className='text-xs font-semibold';
+          const decision=o.cancelDecision||(o.status==='cancelled'?'approved':'pending');
+          p.textContent=o.status==='cancelled'||decision==='approved'?'Cancellation approved — order cancelled':decision==='rejected'?'Cancellation request rejected by store':'Cancellation requested — awaiting store decision';card.append(p);}
+        if(o.paymentMode==='UPI' && !['verified','paid','refunded'].includes(o.paymentStatus) && o.status!=='cancelled'){
+          const payRow=document.createElement('div');payRow.className='flex flex-wrap gap-2 pt-2';
+          // Use genuine user-tapped links. Chrome on Android may reject script-driven
+          // custom-scheme navigation; explicit app-targeted intent links provide alternatives.
+          const payBtn=document.createElement('a');
+          payBtn.className='bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-bold';
+          payBtn.textContent=`Pay ₹${Number(o.total).toFixed(2)} via UPI`;
+          payBtn.href=buildUpiLink(Number(o.total),o.id);
+          payBtn.setAttribute('aria-label','Open UPI payment app for this order');
+          const copyBtn=document.createElement('button');copyBtn.type='button';copyBtn.className='border border-emerald-600 text-emerald-700 px-3 py-2 rounded-lg text-xs font-bold';
+          copyBtn.textContent='Copy UPI ID';copyBtn.onclick=()=>copyMerchantUpi();
+          payRow.append(payBtn,copyBtn);card.append(payRow);
+          const appRow=document.createElement('div');appRow.className='flex flex-wrap gap-2 pt-1';
+          const appLabel=document.createElement('span');appLabel.className='text-[10px] text-slate-500 w-full';
+          appLabel.textContent='If the green button does not open an app, choose your installed UPI app:';appRow.append(appLabel);
+          [['Google Pay','com.google.android.apps.nbu.paisa.user'],['PhonePe','com.phonepe.app'],['Paytm','net.one97.paytm'],['BHIM','in.org.npci.upiapp']].forEach(([label,pkg])=>{
+            const link=document.createElement('a');link.href=buildUpiLink(Number(o.total),o.id,pkg);
+            link.textContent=label;link.className='border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700';
+            appRow.append(link);
+          });card.append(appRow);
+
+          const note=document.createElement('p');note.className='text-[10px] text-slate-500';note.textContent='If your UPI app does not open, copy the UPI ID and pay the displayed amount manually. Payment is verified by the store; opening the app does not mark this order paid.';card.append(note);
+        }
+        // Order details and repeat purchase: use current catalog prices and stock.
+        const details=document.createElement('details');details.className='mt-2 border-t border-slate-200 pt-2';
+        const summary=document.createElement('summary');summary.className='cursor-pointer text-xs font-semibold text-slate-700';summary.textContent='View order items';details.append(summary);
+        const pastItems=Array.isArray(o.items)?o.items:[];
+        if(pastItems.length){pastItems.forEach(item=>{const line=document.createElement('p');line.className='text-xs text-slate-600 mt-1';line.textContent=`${item.name||'Item'} • ${item.unit||''} • Qty ${item.qty||0} • ₹${Number(item.price||0).toFixed(2)} each (ordered price)`;details.append(line);});}
+        else {const line=document.createElement('p');line.className='text-xs text-slate-500 mt-1';line.textContent='Item details are unavailable for this order.';details.append(line);}
+        card.append(details);
+        if(pastItems.length){const buy=document.createElement('button');buy.type='button';buy.className='mt-2 bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs font-bold';buy.textContent='Buy Again';buy.onclick=()=>buyAgain(o);card.append(buy);}
+        if(['placed','confirmed','packed'].includes(o.status)&&(!o.cancelRequested||o.cancelDecision==='rejected')){const b=document.createElement('button');b.className='text-red-600 text-xs underline';b.textContent='Request Cancellation';b.onclick=async()=>{if(!confirm('Request cancellation of this order?'))return;try{await window.hmFirebase.cancelOrder(o.id);}catch(e){alert(e.message)}};card.append(b);}
+        list.append(card);
+      });
+    }
+    function buyAgain(order){
+      const pastItems=Array.isArray(order.items)?order.items:[];
+      if(!pastItems.length){alert('No products found in this order.');return;}
+      if(Object.keys(cart).length&&!confirm('Replace your current basket with items from this order?'))return;
+      const next={},skipped=[];
+      pastItems.forEach(old=>{
+        const p=products.find(x=>String(x.id)===String(old.id));
+        if(!p||p.available===false||(p.stockQty!==undefined&&Number(p.stockQty)<=0)){
+          skipped.push(old.name||'Unavailable item');return;
+        }
+        const wanted=Math.max(0,Math.floor(Number(old.qty)||0));
+        const available=p.stockQty===undefined?wanted:Math.max(0,Math.floor(Number(p.stockQty)||0));
+        const qty=Math.min(wanted,available);
+        if(qty>0)next[p.id]=(next[p.id]||0)+qty;
+        if(qty<wanted)skipped.push(`${p.name} (only ${qty} available)`);
+      });
+      if(!Object.keys(next).length){alert('These products are currently unavailable. Please browse the Market.');return;}
+      cart=next;saveCart();renderStorefront();renderBasket();switchTab('basket');
+      if(skipped.length)alert('Some items could not be added at their previous quantities:\n'+skipped.join('\n'));
+      else alert('Previous items added to your basket. Review current prices and quantities before ordering.');
+    }
+    function clearGPSLocation(){
+      checkoutGPS=null;
+      document.getElementById('gpsLocationStatus').textContent='GPS location removed. Enter your complete delivery address manually.';
+      document.getElementById('clearGPSButton').classList.add('hidden');
+    }
+    function autoDetectGPS(){
+      if(!navigator.geolocation){alert('GPS is not supported. Please enter your full delivery address.');return;}
+      const status=document.getElementById('gpsLocationStatus');
+      status.textContent='Requesting your location permission…';
+      navigator.geolocation.getCurrentPosition(pos=>{
+        checkoutGPS={latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracyMeters:Math.round(pos.coords.accuracy),capturedAt:new Date().toISOString()};
+        status.textContent=`GPS location captured (accuracy about ${checkoutGPS.accuracyMeters} metres). Confirm your house number, landmark and complete address below.`;
+        document.getElementById('clearGPSButton').classList.remove('hidden');
+      },err=>{
+        clearGPSLocation();
+        status.textContent='Location unavailable or permission denied. You can still order using your full address.';
+      },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+    }
+    function navigationLinkForOrder(o){
+      const gps=o.deliveryGPS;
+      if(gps && Number.isFinite(Number(gps.latitude)) && Number.isFinite(Number(gps.longitude)) && Math.abs(Number(gps.latitude))<=90 && Math.abs(Number(gps.longitude))<=180){
+        return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(`${gps.latitude},${gps.longitude}`);
+      }
+      return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(o.address||'');
+    }
+    function addNavigationLink(parent,o){
+      if(!o.deliveryGPS && !o.address)return;
+      const link=document.createElement('a');link.href=navigationLinkForOrder(o);link.target='_blank';link.rel='noopener noreferrer';
+      link.className='inline-block text-emerald-700 underline font-bold text-xs mt-1';
+      link.textContent=o.deliveryGPS?'Navigate to customer GPS (Google Maps)':'Find address on Google Maps (approximate)';
+      parent.append(link);
+    }
+
+    function copyMerchantUpi() {
+      navigator.clipboard.writeText(merchantUpi);
+      alert("Merchant UPI Copied: " + merchantUpi);
+    }
+
+    function buildUpiLink(amount,orderId='',androidPackage=''){
+      if(!Number.isFinite(amount)||amount<=0||!merchantUpi)return '#';
+      const orderNote=orderId?'HM-'+orderId.slice(0,8).toUpperCase():'Home Mart grocery order';
+      const query=new URLSearchParams({pa:merchantUpi,pn:'Home Mart FRESH',am:amount.toFixed(2),cu:'INR',tn:orderNote}).toString();
+      if(androidPackage && /Android/i.test(navigator.userAgent)){
+        return `intent://pay?${query}#Intent;scheme=upi;package=${androidPackage};end`;
+      }
+      return 'upi://pay?'+query;
+    }
+    function openDirectUpiPayment(amount,orderId=''){
+      // Retained for backward compatibility; checkout now uses directly tapped links.
+      window.location.href=buildUpiLink(amount,orderId);
+    }
+    async function placeWhatsAppOrder(){
+      const name=document.getElementById('customerName').value.trim(),phone=document.getElementById('customerPhone').value.trim(),addr=document.getElementById('customerAddress').value.trim();
+      const payMode=document.querySelector('input[name="payMethod"]:checked')?.value||'COD';const {total,count}=calculateCart();
+      if(!count){alert('Add items to your basket.');return;}
+      if(!name||!/^[+]?[0-9\s-]{10,15}$/.test(phone)||addr.length<12){alert('Enter your name, valid phone number and complete delivery address.');return;}
+      const items=Object.entries(cart).map(([id,qty])=>{const p=products.find(x=>String(x.id)===id);return p&&p.available!==false&&(p.stockQty===undefined||Number(p.stockQty)>=qty)?{id:p.id,name:p.name,unit:p.unit,qty,price:p.price}:null}).filter(Boolean);
+      if(items.length!==Object.keys(cart).length){alert('Some items are unavailable. Please remove them from your basket.');return;}
+      if(!confirm(`Place order for ₹${total} via ${payMode}? Store will confirm availability and final amount. Stock is manually maintained by the store.`))return;
+      const btn=document.querySelector('#placeOrderSection button');btn.disabled=true;
+      try{const result=await window.hmFirebase.createOrder({name,phone,address:addr,...(checkoutGPS?{deliveryGPS:{...checkoutGPS}}:{}),paymentMode:payMode,items,total});
+        localStorage.setItem('hm_last_order',JSON.stringify({id:'HM-'+result.id.slice(0,8).toUpperCase(),docId:result.id,status:'placed'}));
+        localStorage.setItem('hm_customer',JSON.stringify({name,phone,address:addr}));clearGPSLocation();clearBasket();switchTab('track');
+        alert(payMode==='UPI'?'Order placed! Open My Orders and tap Pay via UPI on this order. Payment is not yet verified.':'Order placed successfully! The store will confirm it.');
+      }catch(e){console.error(e);alert('Order could not be placed: '+e.message+' (If anonymous sign-in is disabled, enable it in Firebase Authentication.)');}
+      finally{btn.disabled=false;}
+    }
+    // ================= ADMIN & OPTION 1 FUNCTIONS =================
+    async function verifyAdminPin(){
+      const email=document.getElementById('adminEmailInput').value.trim();
+      const password=document.getElementById('adminPasswordInput').value;
+      try{await window.hmFirebase.login(email,password);document.getElementById('adminPasswordInput').value='';}
+      catch(e){console.error(e);document.getElementById('pinErrorMsg').classList.remove('hidden');}
+    }
+    async function lockAdmin(){await window.hmFirebase.logout();}
+    window.addEventListener('hm-auth',e=>{
+      document.getElementById('adminPinGate').classList.toggle('hidden',e.detail);
+      document.getElementById('adminControlPanel').classList.toggle('hidden',!e.detail);
+      document.getElementById('ownerDashboard').classList.toggle('hidden',!window.hmOwner);
+      document.getElementById('riderDashboard').classList.toggle('hidden',!window.hmRider);
+      if(window.hmOwner){renderAdminChecklist();renderAdminStock();renderAdminOrders();renderRiders();refreshCategories();}
+      if(window.hmRider)renderRiderOrders();
+    });
+
+    function setAdminStockCat(cat, btn) {
+      currentAdminStockCat = cat;
+      document.querySelectorAll('.admin-cat-btn').forEach(b => {
+        b.className = "admin-cat-btn bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl shrink-0";
+      });
+      btn.className = "admin-cat-btn bg-emerald-600 text-white px-2.5 py-1 rounded-xl shrink-0";
+      renderAdminChecklist();
+    }
+
+    function renderAdminChecklist() {
+      const container = document.getElementById('readyChecklistContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      const list = categoryTemplates[currentAdminStockCat] || [];
+
+      list.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = "bg-white p-2 rounded-lg flex items-center justify-between border border-slate-100 shadow-xs";
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <img src="${escapeHtml(item.img)}" class="w-7 h-7 rounded object-cover">
+            <div>
+              <div class="text-[11px] font-bold text-slate-800">${escapeHtml(item.name)}</div>
+              <div class="text-[9px] text-slate-400">₹${item.price} • ${escapeHtml(item.unit)}</div>
+            </div>
+          </div>
+          <button onclick="stockFromTemplate('${currentAdminStockCat}', ${idx})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] px-2 py-1 rounded-md border border-emerald-200">
+            + Stock Item
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    async function stockFromTemplate(cat,index){
+      if(!window.hmOwner)return;
+      const item=categoryTemplates[cat][index];
+      const id=crypto.randomUUID();
+      try{await window.hmFirebase.saveProduct(id,{...item,id,cat,available:false,stockQty:0});alert(`Added ${escapeHtml(item.name)}`);}
+      catch(e){alert('Could not save product: '+e.message);}
+    }
+    // Small JPEGs are saved directly with the product in Firestore on the current free setup.
+    // Limit size to avoid Firestore's 1 MiB document limit and excessive catalogue downloads.
+    const selectedProductPhotos={new:null,edit:null};
+    function clearSelectedPhoto(which){
+      selectedProductPhotos[which]=null;
+      const file=document.getElementById(which==='new'?'newSkuPhotoFile':'editPhotoFile');
+      if(file)file.value='';
+      if(which==='new')previewNewSkuImage();
+      else document.getElementById('editPhotoPreview').classList.add('hidden');
+    }
+    async function selectProductPhoto(which,input){
+      const file=input.files?.[0];if(!file)return;
+      if(!file.type.startsWith('image/')){alert('Please choose an image.');input.value='';return;}
+      if(file.size>12*1024*1024){alert('Photo is too large. Choose an image under 12 MB.');input.value='';return;}
+      try{
+        const image=await createImageBitmap(file);
+        const scale=Math.min(1,420/Math.max(image.width,image.height));
+        const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
+        const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);image.close?.();
+        let data=canvas.toDataURL('image/jpeg',0.7);
+        if(data.length>120000)data=canvas.toDataURL('image/jpeg',0.48);
+        if(data.length>120000)throw Error('Image is still too large after compression. Try a smaller photo.');
+        selectedProductPhotos[which]=data;
+        const preview=document.getElementById(which==='new'?'newSkuImagePreview':'editPhotoPreview');
+        preview.src=data;preview.classList.remove('hidden');
+        document.getElementById(which==='new'?'newSkuImage':'editImage').value='';
+      }catch(e){alert('Could not prepare photo: '+e.message);input.value='';}
+    }
+    function previewNewSkuImage(){
+      const input=document.getElementById('newSkuImage'),preview=document.getElementById('newSkuImagePreview');
+      const url=input.value.trim();
+      if(!/^https:\/\/[^\s]+$/i.test(url)){preview.classList.add('hidden');preview.removeAttribute('src');return;}
+      preview.onerror=()=>preview.classList.add('hidden');
+      preview.onload=()=>preview.classList.remove('hidden');
+      preview.src=url;
+    }
+    async function saveCustomSku(){
+      if(!window.hmOwner)return;
+      const name=document.getElementById('newSkuName').value.trim(),unit=document.getElementById('newSkuUnit').value.trim();
+      const price=Number(document.getElementById('newSkuPrice').value),strike=Number(document.getElementById('newSkuStrike').value)||price;
+      if(!name||!unit||!Number.isFinite(price)||price<=0||strike<price){alert('Enter a product name, unit, valid selling price and MRP.');return;}
+      const img=selectedProductPhotos.new||document.getElementById('newSkuImage').value.trim();
+      if(img&&!(/^(https:\/\/[^\s]+|data:image\/jpeg;base64,[A-Za-z0-9+/=]+)$/i.test(img))){alert('Enter a public HTTPS image URL, or leave the photo blank.');return;}
+      const id=crypto.randomUUID();
+      try{await window.hmFirebase.saveProduct(id,{id,name,unit,price,strike,cat:currentAdminStockCat,tag:'Grocery',img,available:false,stockQty:0});
+        for(const field of ['newSkuName','newSkuUnit','newSkuPrice','newSkuStrike','newSkuImage'])document.getElementById(field).value='';
+        clearSelectedPhoto('new');previewNewSkuImage();alert('Product saved for all customers.');}
+      catch(e){alert('Could not save product: '+e.message);}
+    }
+    function renderAdminStock(){
+      const el=document.getElementById('adminStockList');if(!el)return;el.replaceChildren();
+      products.forEach(p=>{const row=document.createElement('div');row.className='flex items-center justify-between gap-2 border-b py-1';
+        const label=document.createElement('span');label.className='min-w-0 flex-1 break-words';label.textContent=`${p.name} — ₹${p.price} | ${p.stockQty===undefined?'Qty not set':p.stockQty+' × '+(p.unit||'units')}`;
+        const add=document.createElement('button');add.className='bg-emerald-700 text-white rounded px-2 py-1';add.textContent='+ Stock';add.onclick=()=>quickAddStock(p.id);
+        const edit=document.createElement('button');edit.className='bg-emerald-100 rounded px-2 py-1';edit.textContent='Edit';edit.onclick=()=>editProduct(p.id);
+        const toggle=document.createElement('button');toggle.className='bg-slate-100 rounded px-2 py-1';toggle.textContent=p.available===false?'In stock':'Out of stock';
+        toggle.onclick=async()=>{if(p.available===false&&p.stockQty!==undefined&&Number(p.stockQty)<=0){alert('Edit product and enter available stock before enabling it.');return;}try{await window.hmFirebase.saveProduct(p.id,{...p,available:p.available===false});}catch(e){alert(e.message);}};
+        const del=document.createElement('button');del.className='text-red-600 px-1';del.textContent='Delete';del.onclick=async()=>{if(confirm(`Permanently delete ${p.name}?`))try{await window.hmFirebase.deleteProduct(p.id);}catch(e){alert(e.message);}};
+        const actions=document.createElement('div');actions.className='flex gap-1 shrink-0';actions.append(add,edit,toggle,del);row.append(label,actions);el.append(row);
+      });
+    }
+    async function quickAddStock(id){
+      const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+      const answer=prompt(`Add how many selling units to ${p.name} (${p.unit})?\nCurrent stock: ${p.stockQty===undefined?'not set':p.stockQty}\nExample: enter 10 to add 10 units.`,'10');
+      if(answer===null)return;
+      const qty=Number(answer.trim());
+      if(!Number.isSafeInteger(qty)||qty<=0||qty>100000){alert('Enter a positive whole number of selling units.');return;}
+      if(p.stockQty===undefined){alert('First use Edit to set the current stock balance. Then + Stock will add to it.');return;}
+      try{await window.hmFirebase.addStock(id,qty);alert(`Added ${qty} units to ${p.name}.`);}catch(e){alert('Could not add stock: '+e.message);}
+    }
+    function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;
+      for(const [key,val] of [['editProductId',p.id],['editName',p.name],['editUnit',p.unit],['editPrice',p.price],['editMrp',p.strike],['editImage',p.img],['editStockQty',p.stockQty]])document.getElementById(key).value=val??'';
+      clearSelectedPhoto('edit');document.getElementById('editCategory').value=p.cat;document.getElementById('productEditorPanel').scrollIntoView({behavior:'smooth'});
+    }
+    function resetProductEdit(){clearSelectedPhoto('edit');for(const id of ['editProductId','editName','editUnit','editPrice','editMrp','editImage','editStockQty'])document.getElementById(id).value='';}
+    async function saveProductEdit(){const id=document.getElementById('editProductId').value,p=products.find(x=>x.id===id);if(!p){alert('Select Edit beside a product first.');return;}
+      const stockQty=Number(document.getElementById('editStockQty').value);
+      if(document.getElementById('editStockQty').value===''||!Number.isSafeInteger(stockQty)||stockQty<0){alert('Enter a valid whole-number stock quantity.');return;}
+      const name=document.getElementById('editName').value.trim(),unit=document.getElementById('editUnit').value.trim(),price=Number(document.getElementById('editPrice').value),strike=Number(document.getElementById('editMrp').value),cat=document.getElementById('editCategory').value,img=selectedProductPhotos.edit||document.getElementById('editImage').value.trim();
+      if(!name||!unit||!cat||!Number.isFinite(price)||price<=0||!Number.isFinite(strike)||strike<price||img&&!/^(https:\/\/|data:image\/jpeg;base64,)/i.test(img)){alert('Enter valid name, unit, category, price, MRP and optional HTTPS image URL.');return;}
+      try{await window.hmFirebase.saveProduct(id,{...p,name,unit,price,strike,cat,img,stockQty,available:stockQty>0&&p.available!==false});resetProductEdit();alert('Product updated for all customers. Remember: orders do not automatically reduce stock in Spark manual mode.');}catch(e){alert(e.message);}
+    }
+    const DEFAULT_CATS=[['vegetables','🥬 Vegetables'],['fruits','🍎 Fruits'],['staples','🌾 Staples & Atta'],['dairy','🥛 Dairy & Bread'],['snacks','🍪 Snacks'],['personal','🧼 Personal & Baby'],['cleaning','🧹 Cleaning & Household']];
+    function allCats(){const c=new Map(DEFAULT_CATS);(window.hmCategories||[]).forEach(x=>c.set(x.id,x.name));return [...c].map(([id,name])=>({id,name}));}
+    window.refreshCategories=function(){const cats=allCats(),market=document.querySelector('#view-market .cat-pill')?.parentElement,admin=document.querySelector('.admin-cat-btn')?.parentElement,edit=document.getElementById('editCategory');
+      if(market){market.replaceChildren();for(const c of [{id:'all',name:'All Items'},...cats]){const b=document.createElement('button');b.className='cat-pill px-3 py-1.5 rounded-full shrink-0 '+(selectedCat===c.id?'bg-emerald-600 text-white':'bg-white border text-slate-600');b.textContent=c.name;b.onclick=()=>selectCategory(c.id,b);market.append(b);}}
+      if(admin){admin.replaceChildren();cats.forEach(c=>{const b=document.createElement('button');b.className='admin-cat-btn px-2.5 py-1 rounded-xl shrink-0 '+(currentAdminStockCat===c.id?'bg-emerald-600 text-white':'bg-slate-100 text-slate-600');b.textContent=c.name;b.onclick=()=>setAdminStockCat(c.id,b);admin.append(b);});}
+      if(edit){edit.replaceChildren();cats.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;edit.append(o);});}
+      const list=document.getElementById('categoryAdminList');if(list){list.replaceChildren();cats.forEach(c=>{const r=document.createElement('div');r.className='flex justify-between border-b py-1';const n=document.createElement('span');n.textContent=c.name;const b=document.createElement('button');b.textContent='Delete';b.className='text-red-600';b.disabled=DEFAULT_CATS.some(x=>x[0]===c.id);if(b.disabled)b.textContent='Built-in';b.onclick=async()=>{if(products.some(p=>p.cat===c.id)){alert('Move or remove products from this category first.');return;}if(confirm('Delete category?'))try{await window.hmFirebase.deleteCategory(c.id);}catch(e){alert(e.message);}};r.append(n,b);list.append(r);});}
+    };
+    async function addCategory(){const el=document.getElementById('newCategoryName'),name=el.value.trim();if(name.length<2||name.length>40){alert('Enter a category name of 2–40 characters.');return;}const id='custom-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');if(!id||allCats().some(c=>c.id===id)){alert('Category already exists or name invalid.');return;}try{await window.hmFirebase.saveCategory(id,{name});el.value='';}catch(e){alert(e.message);}}
+    async function saveRider(){
+      const existingId=document.getElementById('riderUid').value.trim();
+      const name=document.getElementById('riderName').value.trim();
+      const phone=document.getElementById('riderPhone').value.replace(/\D/g,'');
+      const vehicle=document.getElementById('riderVehicle').value.trim().toUpperCase().replace(/[\s-]/g,'');
+      if(!/^[6-9][0-9]{9}$/.test(phone)){alert('Enter a valid 10-digit Indian mobile number.');return;}
+      if(!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$/.test(vehicle)){alert('Enter a valid Indian vehicle number such as DL01AB1234.');return;}
+      const duplicate=(window.hmRiders||[]).find(r=>r.uid!==existingId&&(r.phone===phone||r.vehicleNumber===vehicle));
+      if(duplicate){alert('This mobile or vehicle number is already registered.');return;}
+      const uid=existingId||'mobile_'+phone;
+      const prior=(window.hmRiders||[]).find(r=>r.uid===uid);
+      try{
+        await window.hmFirebase.saveRider(uid,{name:name||'Rider '+phone.slice(-4),phone,vehicleNumber:vehicle,active:prior?.active??true,registrationMode:'owner_mobile_vehicle'});
+        document.getElementById('riderUid').value='';document.getElementById('riderName').value='';document.getElementById('riderPhone').value='';document.getElementById('riderVehicle').value='';
+        alert('Rider registered. You can now assign orders in Store Ops. Rider self-login is not enabled in this version.');
+      }catch(e){alert('Rider registration failed: '+e.message);}
+    }
+    window.renderRiders=function(){const el=document.getElementById('ridersList');if(!el)return;el.replaceChildren();(window.hmRiders||[]).forEach(r=>{const line=document.createElement('div');line.className='flex justify-between items-center border-b py-2';const t=document.createElement('span');t.textContent=`${r.name} • ${r.phone} • ${r.vehicleNumber||'No vehicle'} • ${r.active?'Active':'Inactive'}`;const b=document.createElement('button');b.className='bg-slate-100 rounded p-1';b.textContent=r.active?'Deactivate':'Activate';b.onclick=async()=>{try{await window.hmFirebase.saveRider(r.uid,{...r,active:!r.active});}catch(e){alert(e.message);}};const e=document.createElement('button');e.textContent='Edit';e.className='text-emerald-700';e.onclick=()=>{document.getElementById('riderUid').value=r.uid;document.getElementById('riderName').value=r.name;document.getElementById('riderPhone').value=r.phone;document.getElementById('riderVehicle').value=r.vehicleNumber||'';};line.append(t,e,b);el.append(line);});};
+    function renderAdminOrders(){const el=document.getElementById('adminOrdersList');if(!el)return;el.replaceChildren();const orders=(window.hmAdminOrders||[]).filter(o=>!['delivered','cancelled'].includes(o.status));const count=document.getElementById('activeOrdersCount');if(count)count.textContent=`(${orders.length} in recent 100)`;renderOrderHistory();if(!orders.length){el.textContent='No active orders in recent 100.';return;}
+      orders.forEach(o=>{const row=document.createElement('div');row.className='border-b py-2 space-y-1';
+        const info=document.createElement('div');info.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name||'Customer'} • ${o.phone||''} • ₹${o.total||0} • ${o.status||'placed'}`;
+        const address=document.createElement('div');address.className='text-slate-500';address.textContent=`Address: ${o.address||''} | ${o.items?.map(x=>`${x.name} x${x.qty}`).join(', ')||''}`;
+        const sel=document.createElement('select');sel.className='border rounded p-1';['placed','confirmed','packed','out_for_delivery','delivered','cancelled'].forEach(st=>{const op=document.createElement('option');op.value=st;op.textContent=st.replaceAll('_',' ');sel.append(op);});sel.value=o.status||'placed';sel.onchange=async()=>{const next=sel.value;if(next==='cancelled'&&!confirm('Cancel this order?')){sel.value=o.status||'placed';return;}try{await window.hmFirebase.updateOrder(o.id,next==='cancelled'?{status:'cancelled',...(o.cancelRequested?{cancelDecision:'approved',cancelDecidedAt:new Date().toISOString(),cancelDecidedBy:window.hmCurrentUid||''}:{})}:{status:next});}catch(e){sel.value=o.status||'placed';alert(e.message);}};
+        const pay=document.createElement('select');pay.className='border rounded p-1 ml-2';['pending','verified','refunded'].forEach(st=>{const op=document.createElement('option');op.value=st;op.textContent='Payment '+st;pay.append(op);});pay.value=o.paymentStatus||'pending';pay.onchange=async()=>{if(!confirm('Confirm this payment-status change after checking payment records?')){pay.value=o.paymentStatus||'pending';return;}try{await window.hmFirebase.updateOrder(o.id,{paymentStatus:pay.value});}catch(e){alert(e.message);}};
+        const rider=document.createElement('select');rider.className='border rounded p-1 ml-2';const none=document.createElement('option');none.value='';none.textContent='Unassigned';rider.append(none);(window.hmRiders||[]).filter(r=>r.active||r.uid===o.riderUid).forEach(r=>{const op=document.createElement('option');op.value=r.uid;op.textContent=`${r.name} (${r.vehicleNumber||r.phone})`;rider.append(op);});rider.value=o.riderUid||'';rider.onchange=async()=>{const r=(window.hmRiders||[]).find(x=>x.uid===rider.value);try{await window.hmFirebase.updateOrder(o.id,{riderUid:r?.uid||'',riderName:r?.name||''});}catch(e){alert(e.message);}};
+        if(o.cancelRequested){
+          const decision=o.cancelDecision||(o.status==='cancelled'?'approved':'pending');
+          const flag=document.createElement('strong');flag.className='block '+(decision==='pending'&&o.status!=='cancelled'?'text-red-600':'text-slate-600');
+          flag.textContent=o.status==='cancelled'||decision==='approved'?'Cancellation approved':decision==='rejected'?'Cancellation rejected':'Customer requested cancellation — awaiting decision';row.append(flag);
+          if(decision==='pending'&&o.status!=='cancelled'){
+            const actions=document.createElement('div');actions.className='flex flex-wrap gap-2 mt-1';
+            const approve=document.createElement('button');approve.className='bg-red-600 text-white rounded px-3 py-1';approve.textContent='Approve Cancellation';
+            approve.onclick=async()=>{if(!confirm('Approve cancellation of this order?'))return;approve.disabled=true;reject.disabled=true;try{await window.hmFirebase.updateOrder(o.id,{status:'cancelled',cancelDecision:'approved',cancelDecidedAt:new Date().toISOString(),cancelDecidedBy:window.hmCurrentUid||''});}catch(e){alert(e.message);approve.disabled=false;reject.disabled=false;}};
+            const reject=document.createElement('button');reject.className='border rounded px-3 py-1';reject.textContent='Reject Cancellation';
+            reject.onclick=async()=>{if(!confirm('Reject this cancellation request?'))return;approve.disabled=true;reject.disabled=true;try{await window.hmFirebase.updateOrder(o.id,{cancelDecision:'rejected',cancelDecidedAt:new Date().toISOString(),cancelDecidedBy:window.hmCurrentUid||''});}catch(e){alert(e.message);approve.disabled=false;reject.disabled=false;}};
+            actions.append(approve,reject);row.append(actions);
+          }
+        }
+        row.append(info,address);addNavigationLink(row,o);row.append(sel,pay,rider);el.append(row);
+      });
+    }
+    function renderOrderHistory(){
+      const el=document.getElementById('orderHistoryList');if(!el)return;
+      const term=(document.getElementById('orderHistorySearch')?.value||'').trim().toLowerCase();
+      const orders=(window.hmAdminOrders||[]).filter(o=>!term||[o.id,`HM-${o.id?.slice(0,8).toUpperCase()}`,o.name,o.phone].some(v=>String(v||'').toLowerCase().includes(term)));
+      el.replaceChildren();
+      if(!orders.length){el.textContent='No matching orders in recent 100. Full backup exports all orders.';return;}
+      for(const o of orders){const row=document.createElement('div');row.className='border-b py-2';row.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name||''} • ${o.phone||''} • ₹${o.total||0} • ${o.status||'placed'} • Payment ${o.paymentStatus||'pending'}`;el.append(row);}
+    }
+    function exportDate(t){if(!t)return null;if(typeof t.toDate==='function')return t.toDate();if(typeof t.seconds==='number')return new Date(t.seconds*1000);if(typeof t==='string'){const d=new Date(t);return isNaN(d)?null:d;}return null;}
+    function serialise(v){return JSON.parse(JSON.stringify(v,(k,x)=>x&&typeof x.toDate==='function'?x.toDate().toISOString():x));}
+    function csv(rows,fields){const quote=v=>'"'+String(v??'').replaceAll('"','""')+'"';return [fields.map(quote).join(','),...rows.map(r=>fields.map(k=>quote(r[k])).join(','))].join('\r\n');}
+    function loadZipLibrary(){
+      if(window.JSZip)return Promise.resolve(window.JSZip);
+      return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';script.onload=()=>window.JSZip?resolve(window.JSZip):reject(new Error('ZIP library unavailable'));script.onerror=()=>reject(new Error('Could not load ZIP library. Check internet connection.'));document.head.append(script);});
+    }
+    async function exportBackup(full){
+      if(!window.hmOwner){alert('Sign in as store owner first.');return;}
+      const status=document.getElementById('backupStatus');const buttons=[...document.querySelectorAll('button[onclick*="BusinessBackup"]')];buttons.forEach(b=>b.disabled=true);
+      try{
+        status.textContent='Fetching complete records from Firebase…';
+        const raw=await window.hmFirebase.exportBusinessRecords();
+        const all=serialise(raw),now=new Date(),day=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+        const todayOrders=all.orders.filter(o=>{const d=exportDate(o.createdAt);return d&&new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)===day;});
+        const rows=(full?all.orders:todayOrders).map(o=>({orderId:o.id,createdAt:exportDate(o.createdAt)?.toISOString()||'',name:o.name,phone:o.phone,address:o.address,items:JSON.stringify(o.items||[]),total:o.total,paymentMode:o.paymentMode||o.paymentMethod||'',paymentStatus:o.paymentStatus,status:o.status,riderName:o.riderName,cancelRequested:o.cancelRequested,cancelDecision:o.cancelDecision,updatedAt:exportDate(o.updatedAt)?.toISOString()||''}));
+        status.textContent='Building ZIP backup…';const Zip=await loadZipLibrary(),zip=new Zip();
+        zip.file('Orders.csv',csv(rows,['orderId','createdAt','name','phone','address','items','total','paymentMode','paymentStatus','status','riderName','cancelRequested','cancelDecision','updatedAt']));
+        zip.file('Inventory.csv',csv(all.products.map(p=>({id:p.id,name:p.name,unit:p.unit,price:p.price,mrp:p.strike,stockQty:p.stockQty,available:p.available,category:p.cat})),['id','name','unit','price','mrp','stockQty','available','category']));
+        const customerMap=new Map();for(const o of all.orders){const key=o.phone||o.customerUid;if(key){const prev=customerMap.get(key)||{name:o.name,phone:o.phone,address:o.address,orders:0};prev.orders++;customerMap.set(key,prev);}}
+        zip.file('Customers.csv',csv([...customerMap.values()],['name','phone','address','orders']));
+        zip.file('Payments.csv',csv(rows,['orderId','createdAt','total','paymentMode','paymentStatus','updatedAt']));
+        zip.file('Full_Backup.json',JSON.stringify(all,null,2));
+        zip.file('README.txt','Home Mart FRESH owner export.\nThis ZIP includes personal customer data: store privately and encrypted.\nFull_Backup.json is a snapshot, not an automatic Firebase restore file.\nAudit change history is not available for changes made before logging was implemented.\nOrders.csv in daily mode contains orders placed on the selected day; Full_Backup.json always contains the complete current collection snapshot.\n');
+        zip.file('manifest.json',JSON.stringify({exportedAt:now.toISOString(),timeZone:'Asia/Kolkata',date:day,mode:full?'full':'daily',counts:{allOrders:all.orders.length,dailyOrders:todayOrders.length,products:all.products.length,riders:all.riders.length,categories:all.categories.length}},null,2));
+        const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`HomeMart_${full?'Full':'Daily'}_${day}.zip`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+        status.textContent=`Backup prepared: ${all.orders.length} total orders, ${todayOrders.length} placed today. Confirm the ZIP is saved in Downloads.`;
+      }catch(e){console.error(e);status.textContent='Backup failed: '+e.message;alert('Backup failed: '+e.message);}finally{buttons.forEach(b=>b.disabled=false);}
+    }
+    function downloadDailyBusinessBackup(){return exportBackup(false);}
+    function downloadFullBusinessBackup(){return exportBackup(true);}
+    // Rider actions match Firestore rules: only packed -> out_for_delivery -> delivered.
+    window.renderRiderOrders=function(){
+      const el=document.getElementById('riderOrders');
+      if(!el)return;
+      el.replaceChildren();
+      const orders=window.hmRiderOrders||[];
+      if(!orders.length){el.textContent='No assigned orders.';return;}
+      orders.forEach(o=>{
+        const r=document.createElement('div');r.className='border-b p-2';
+        const t=document.createElement('p');
+        t.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name} • ${o.phone} • ${o.address} • ${o.status}`;
+        r.append(t);addNavigationLink(r,o);
+        const nextStatus={packed:'out_for_delivery',out_for_delivery:'delivered'}[o.status];
+        if(nextStatus){
+          const s=document.createElement('select');s.className='border rounded p-2 mt-1';
+          for(const st of [o.status,nextStatus]){
+            const opt=document.createElement('option');opt.value=st;opt.textContent=st.replaceAll('_',' ');s.append(opt);
+          }
+          s.value=o.status;
+          s.onchange=async()=>{
+            if(s.value!==nextStatus){s.value=o.status;return;}
+            s.disabled=true;
+            try{await window.hmFirebase.updateOrder(o.id,{status:nextStatus});}
+            catch(e){s.value=o.status;alert(e.message);s.disabled=false;}
+          };
+          r.append(s);
+        }else{
+          const note=document.createElement('p');note.className='text-xs text-slate-500 mt-1';
+          note.textContent=o.status==='delivered'?'Delivery completed.':'Waiting for store owner to pack the order.';
+          r.append(note);
+        }
+        el.append(r);
+      });
+    };
+    async function toggleBannerVisibility(){
+      try{await window.hmFirebase.saveSettings({showBanner:document.getElementById('bannerToggle').checked});}
+      catch(e){alert(e.message);}
+    }
+    async function updateBannerSettings(){
+      const settings={bannerTag:document.getElementById('bannerTagInput').value,bannerHeading:document.getElementById('bannerHeadingInput').value,bannerSub:document.getElementById('bannerSubInput').value};
+      try{await window.hmFirebase.saveSettings(settings);alert('Banner updated for all customers.');}catch(e){alert(e.message);}
+    }
+    async function updateMerchantUpi(){
+      const upi=document.getElementById('merchantUpiInput').value.trim();
+      if(!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+$/.test(upi)){alert('Enter a valid UPI ID.');return;}
+      try{await window.hmFirebase.saveSettings({merchantUpi:upi});alert('UPI updated for all customers.');}catch(e){alert(e.message);}
+    }
+    window.applyStoreSettings=function(d){
+      if(d.merchantUpi){merchantUpi=d.merchantUpi;document.getElementById('merchantUpiInput').value=merchantUpi;document.querySelectorAll('[data-upi-display]').forEach(e=>e.textContent=merchantUpi);}
+      for(const [key,input,display] of [['bannerTag','bannerTagInput','bannerTagDisplay'],['bannerHeading','bannerHeadingInput','bannerHeadingDisplay'],['bannerSub','bannerSubInput','bannerSubDisplay']]){
+        if(typeof d[key]==='string'){document.getElementById(input).value=d[key];document.getElementById(display).textContent=d[key];}
+      }
+      if(typeof d.showBanner==='boolean'){document.getElementById('bannerToggle').checked=d.showBanner;document.getElementById('topBannerSection').classList.toggle('hidden',!d.showBanner);}
+    };
+
+    window.showNotice=msg=>{console.warn(msg);};
+    // Initialize App & Auto Render
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('productGrid').textContent='Loading catalogue…';
+      const customer=JSON.parse(localStorage.getItem('hm_customer')||'null');
+      if(customer){document.getElementById('customerName').value=customer.name||'';document.getElementById('customerPhone').value=customer.phone||'';document.getElementById('customerAddress').value=customer.address||'';}
+      refreshCategories();renderTracking();updateCartUI();
+    });
+  </script>
+</body>
+</html>
