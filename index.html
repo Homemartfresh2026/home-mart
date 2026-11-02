@@ -258,6 +258,19 @@
       <button class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs" onclick="verifyAdminPin()">Sign In</button>
     </div>
 
+    <!-- Rider OTP login: isolated test UI -->
+    <div id="riderOtpGate" class="bg-white border rounded-2xl p-4 max-w-sm mx-auto my-3 space-y-3">
+      <h3 class="font-extrabold text-sm">Rider Login — Mobile OTP (Test)</h3>
+      <p class="text-xs text-slate-500">Use your Firebase test phone number first. Never share an OTP with anyone.</p>
+      <input id="riderLoginPhone" type="tel" autocomplete="tel" class="w-full border rounded-xl p-2 text-sm" placeholder="Phone with country code, e.g. +91...">
+      <div id="riderRecaptcha"></div>
+      <button id="riderSendOtp" class="w-full bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold" onclick="window.hmSendRiderOtp()">Send OTP</button>
+      <div id="riderOtpStep" class="hidden space-y-2">
+        <input id="riderLoginCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" class="w-full border rounded-xl p-2 text-sm" placeholder="6-digit verification code">
+        <button class="w-full bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold" onclick="window.hmVerifyRiderOtp()">Verify OTP</button>
+      </div>
+      <p id="riderOtpMessage" role="status" class="text-xs text-slate-600"></p>
+    </div>
     <!-- Authenticated Admin Desk -->
     <div class="hidden space-y-3" id="adminControlPanel">
       <div id="riderDashboard" class="hidden bg-white border rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-sm">My Assigned Deliveries</h3><button onclick="lockAdmin()" class="text-xs underline">Sign Out</button></div><div id="riderOrders" class="space-y-2 mt-2 text-xs"></div></div>
@@ -320,7 +333,7 @@
       </div>
       <div class="bg-white border rounded-2xl p-3 space-y-2">
         <h4 class="font-bold text-xs">Delivery Riders</h4>
-        <p class="text-[10px] text-slate-500">Register riders using a mobile number and vehicle number. No Firebase rider email/password is needed for registration. Rider self-login will require separate secure authentication later.</p>
+        <p class="text-[10px] text-slate-500">Register riders using a mobile number and vehicle number. No Firebase rider email/password is needed for registration. Rider OTP testing is available in the separate test version. Existing mobile-based rider records must be securely linked to their Firebase Authentication UID before assigned orders can appear.</p>
         <input id="riderUid" type="hidden" value="">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2"><input id="riderName" class="border rounded p-2 text-xs" placeholder="Rider name (optional)"><input id="riderPhone" inputmode="tel" class="border rounded p-2 text-xs" placeholder="Mobile number (10 digits)"><input id="riderVehicle" class="border rounded p-2 text-xs" placeholder="Vehicle number (e.g. DL01AB1234)"></div>
         <button onclick="saveRider()" class="w-full bg-emerald-700 text-white p-2 rounded text-xs">Add / Update Rider</button>
@@ -448,7 +461,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
     import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyAYZRWcTE0p5ZXYAApw_E10KrBRmAY-YFk",
@@ -461,6 +474,27 @@
     const OWNER_UID='tHzJyvBtQGZijMUgmvwDRhG1LEh1';
     const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
     const storeDoc=doc(db,'config','store');
+    let riderConfirmation=null, riderCaptcha=null;
+    const riderMessage=t=>{const el=document.getElementById('riderOtpMessage');if(el)el.textContent=t;};
+    window.hmSendRiderOtp=async()=>{
+      const phone=document.getElementById('riderLoginPhone').value.trim();
+      if(!/^\+[1-9]\d{7,14}$/.test(phone)){riderMessage('Enter a valid number including country code, e.g. +91.');return;}
+      const btn=document.getElementById('riderSendOtp');btn.disabled=true;
+      try{
+        if(!riderCaptcha)riderCaptcha=new RecaptchaVerifier(auth,'riderRecaptcha',{size:'normal'});
+        riderConfirmation=await signInWithPhoneNumber(auth,phone,riderCaptcha);
+        document.getElementById('riderOtpStep').classList.remove('hidden');
+        riderMessage('Enter the verification code. Firebase test numbers do not receive an SMS.');
+      }catch(e){riderMessage('Unable to send OTP: '+(e.message||e));riderCaptcha?.clear();riderCaptcha=null;document.getElementById('riderRecaptcha').replaceChildren();}
+      finally{btn.disabled=false;}
+    };
+    window.hmVerifyRiderOtp=async()=>{
+      if(!riderConfirmation){riderMessage('Send OTP first.');return;}
+      const code=document.getElementById('riderLoginCode').value.trim();
+      if(!/^\d{6}$/.test(code)){riderMessage('Enter the six-digit code.');return;}
+      try{await riderConfirmation.confirm(code);riderMessage('Phone verified. Checking rider registration…');}
+      catch(e){riderMessage('Verification failed: '+(e.message||e));}
+    };
     let unsubscribeCustomer=null,unsubscribeOwner=null,unsubscribeRider=null,unsubscribeRiderOrders=null;
     const fail=(area,e)=>{console.error(area,e);window.showNotice?.(`${area}: ${e.message||e}`);};
     window.hmFirebase={
@@ -498,6 +532,9 @@
         try{const d=await getDoc(doc(db,'riders',user.uid));window.hmRider=d.exists()&&d.data().active===true;}catch(e){fail('Rider account',e);}
       }
       window.dispatchEvent(new CustomEvent('hm-auth',{detail:window.hmOwner||window.hmRider}));
+      const otpGate=document.getElementById('riderOtpGate');
+      if(otpGate)otpGate.classList.toggle('hidden',!!user&&!user.isAnonymous);
+      if(user?.phoneNumber&&!window.hmRider)riderMessage('Phone verified, but this Firebase account is not yet linked to an active rider record. Ask the store owner to link the rider UID before assigning deliveries.');
       if(user&&!window.hmRider){
         unsubscribeCustomer=onSnapshot(query(collection(db,'orders'),where('customerUid','==',user.uid)),snap=>{
           window.hmCustomerOrders=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderTracking();
@@ -833,10 +870,23 @@
         if(pastItems.length){pastItems.forEach(item=>{const line=document.createElement('p');line.className='text-xs text-slate-600 mt-1';line.textContent=`${item.name||'Item'} • ${item.unit||''} • Qty ${item.qty||0} • ₹${Number(item.price||0).toFixed(2)} each (ordered price)`;details.append(line);});}
         else {const line=document.createElement('p');line.className='text-xs text-slate-500 mt-1';line.textContent='Item details are unavailable for this order.';details.append(line);}
         card.append(details);
+        if(pastItems.length){const bill=document.createElement('button');bill.type='button';bill.className='mt-2 mr-2 border border-emerald-700 text-emerald-800 rounded-lg px-3 py-2 text-xs font-bold';bill.textContent='Print / Save Bill';bill.onclick=()=>printCustomerBill(o);card.append(bill);}
         if(pastItems.length){const buy=document.createElement('button');buy.type='button';buy.className='mt-2 bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs font-bold';buy.textContent='Buy Again';buy.onclick=()=>buyAgain(o);card.append(buy);}
         if(['placed','confirmed','packed'].includes(o.status)&&(!o.cancelRequested||o.cancelDecision==='rejected')){const b=document.createElement('button');b.className='text-red-600 text-xs underline';b.textContent='Request Cancellation';b.onclick=async()=>{if(!confirm('Request cancellation of this order?'))return;try{await window.hmFirebase.cancelOrder(o.id);}catch(e){alert(e.message)}};card.append(b);}
         list.append(card);
       });
+    }
+    function printCustomerBill(o){
+      const items=Array.isArray(o.items)?o.items:[];
+      if(!items.length){alert('No item details available for this bill.');return;}
+      const esc=escapeHtml;
+      const rupees=n=>'₹'+Number(n||0).toFixed(2);
+      const lines=items.map(i=>`<tr><td>${esc(i.name||'Item')} (${esc(i.unit||'')})</td><td>${Number(i.qty||0)}</td><td>${rupees(i.price)}</td><td>${rupees(Number(i.qty||0)*Number(i.price||0))}</td></tr>`).join('');
+      const date=exportDate(o.createdAt);
+      const markup=`<!doctype html><html><head><meta charset="utf-8"><title>Home Mart FRESH - Sales Receipt</title><style>body{font:14px Arial,sans-serif;max-width:720px;margin:28px auto;color:#182434;padding:12px}h1{margin-bottom:3px}small{color:#555}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:10px 6px;border-bottom:1px solid #ddd;text-align:left}td:nth-child(n+2),th:nth-child(n+2){text-align:right}.total{text-align:right;font-size:20px;font-weight:bold;margin-top:20px}.print{padding:10px 18px;margin-top:20px}@media print{.print{display:none}body{margin:0}}</style></head><body><h1>Home Mart FRESH</h1><small>Sales Receipt • SABSE SASTA.. BEST QUALITY</small><p><b>Order:</b> HM-${esc(o.id.slice(0,8).toUpperCase())}<br><b>Date:</b> ${esc(date?date.toLocaleString('en-IN'):'Not available')}<br><b>Customer:</b> ${esc(o.name||'')}<br><b>Payment method:</b> ${esc(o.paymentMode||o.paymentMethod||'Not specified')}<br><b>Payment status:</b> ${esc(o.paymentStatus||'pending')}<br><b>Order status:</b> ${esc(o.status||'placed')}</p><table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${lines}</tbody></table><div class="total">Total: ${rupees(o.total)}</div><p><small>Prices shown are those recorded when the order was placed. No GST is charged separately.</small></p><button class="print" onclick="window.print()">Print / Save as PDF</button></body></html>`;
+      const win=window.open('','_blank');
+      if(!win){alert('Allow pop-ups to print or save your bill.');return;}
+      win.document.open();win.document.write(markup);win.document.close();
     }
     function buyAgain(order){
       const pastItems=Array.isArray(order.items)?order.items:[];
@@ -1122,7 +1172,35 @@
       const orders=(window.hmAdminOrders||[]).filter(o=>!term||[o.id,`HM-${o.id?.slice(0,8).toUpperCase()}`,o.name,o.phone].some(v=>String(v||'').toLowerCase().includes(term)));
       el.replaceChildren();
       if(!orders.length){el.textContent='No matching orders in recent 100. Full backup exports all orders.';return;}
-      for(const o of orders){const row=document.createElement('div');row.className='border-b py-2';row.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name||''} • ${o.phone||''} • ₹${o.total||0} • ${o.status||'placed'} • Payment ${o.paymentStatus||'pending'}`;el.append(row);}
+      for(const o of orders){
+        const row=document.createElement('div');row.className='border-b py-2';
+        const info=document.createElement('span');
+        info.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name||''} • ${o.phone||''} • ₹${o.total||0} • ${o.status||'placed'} • Payment ${o.paymentStatus||'pending'}`;
+        row.append(info);
+        if(window.hmOwner && o.status==='delivered' && o.paymentStatus==='pending'){
+          const verify=document.createElement('button');verify.type='button';
+          verify.className='ml-2 border rounded px-2 py-1 bg-emerald-700 text-white';
+          verify.textContent='Verify Payment';
+          verify.onclick=async()=>{
+            if(!confirm(`Confirm payment was received for order HM-${o.id.slice(0,8).toUpperCase()} (₹${o.total||0})?`))return;
+            verify.disabled=true;
+            try{await window.hmFirebase.updateOrder(o.id,{paymentStatus:'verified'});}
+            catch(e){alert('Payment verification failed: '+(e.message||e));verify.disabled=false;}
+          };
+          row.append(verify);
+        }
+        if(window.hmOwner && ['verified','paid'].includes(o.paymentStatus) && ['cancelled','delivered'].includes(o.status)){
+          const refund=document.createElement('button');refund.type='button';refund.className='ml-2 border rounded px-2 py-1 bg-amber-100 text-amber-900';refund.textContent='Mark as Refunded';
+          refund.onclick=async()=>{
+            if(!confirm(`Only continue if the refund of ₹${o.total||0} for order HM-${o.id.slice(0,8).toUpperCase()} has already been completed. This records the refund; it does NOT send money. Mark as refunded?`))return;
+            refund.disabled=true;
+            try{await window.hmFirebase.updateOrder(o.id,{paymentStatus:'refunded'});}
+            catch(e){alert('Refund status update failed: '+(e.message||e));refund.disabled=false;}
+          };
+          row.append(refund);
+        }
+        el.append(row);
+      }
     }
     function exportDate(t){if(!t)return null;if(typeof t.toDate==='function')return t.toDate();if(typeof t.seconds==='number')return new Date(t.seconds*1000);if(typeof t==='string'){const d=new Date(t);return isNaN(d)?null:d;}return null;}
     function serialise(v){return JSON.parse(JSON.stringify(v,(k,x)=>x&&typeof x.toDate==='function'?x.toDate().toISOString():x));}
@@ -1155,9 +1233,40 @@
     }
     function downloadDailyBusinessBackup(){return exportBackup(false);}
     function downloadFullBusinessBackup(){return exportBackup(true);}
-    window.renderRiderOrders=function(){const el=document.getElementById('riderOrders');if(!el)return;el.replaceChildren();const orders=window.hmRiderOrders||[];if(!orders.length){el.textContent='No assigned orders.';return;}
-      orders.forEach(o=>{const r=document.createElement('div');r.className='border-b p-2';const t=document.createElement('p');t.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name} • ${o.phone} • ${o.address} • ${o.status}`;
-        const s=document.createElement('select');s.className='border rounded p-2 mt-1';['confirmed','packed','out_for_delivery','delivered'].forEach(st=>{const opt=document.createElement('option');opt.value=st;opt.textContent=st.replaceAll('_',' ');s.append(opt);});s.value=['confirmed','packed','out_for_delivery','delivered'].includes(o.status)?o.status:'confirmed';s.onchange=async()=>{try{await window.hmFirebase.updateOrder(o.id,{status:s.value});}catch(e){alert(e.message);}};r.append(t);addNavigationLink(r,o);r.append(s);el.append(r);});};
+    // Rider actions match Firestore rules: only packed -> out_for_delivery -> delivered.
+    window.renderRiderOrders=function(){
+      const el=document.getElementById('riderOrders');
+      if(!el)return;
+      el.replaceChildren();
+      const orders=window.hmRiderOrders||[];
+      if(!orders.length){el.textContent='No assigned orders.';return;}
+      orders.forEach(o=>{
+        const r=document.createElement('div');r.className='border-b p-2';
+        const t=document.createElement('p');
+        t.textContent=`HM-${o.id.slice(0,8).toUpperCase()} • ${o.name} • ${o.phone} • ${o.address} • ${o.status}`;
+        r.append(t);addNavigationLink(r,o);
+        const nextStatus={packed:'out_for_delivery',out_for_delivery:'delivered'}[o.status];
+        if(nextStatus){
+          const s=document.createElement('select');s.className='border rounded p-2 mt-1';
+          for(const st of [o.status,nextStatus]){
+            const opt=document.createElement('option');opt.value=st;opt.textContent=st.replaceAll('_',' ');s.append(opt);
+          }
+          s.value=o.status;
+          s.onchange=async()=>{
+            if(s.value!==nextStatus){s.value=o.status;return;}
+            s.disabled=true;
+            try{await window.hmFirebase.updateOrder(o.id,{status:nextStatus});}
+            catch(e){s.value=o.status;alert(e.message);s.disabled=false;}
+          };
+          r.append(s);
+        }else{
+          const note=document.createElement('p');note.className='text-xs text-slate-500 mt-1';
+          note.textContent=o.status==='delivered'?'Delivery completed.':'Waiting for store owner to pack the order.';
+          r.append(note);
+        }
+        el.append(r);
+      });
+    };
     async function toggleBannerVisibility(){
       try{await window.hmFirebase.saveSettings({showBanner:document.getElementById('bannerToggle').checked});}
       catch(e){alert(e.message);}
